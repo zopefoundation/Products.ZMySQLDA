@@ -1,5 +1,10 @@
 Z MySQL DA Releases
 
+  3.1.1
+
+    #3106015: zope 2.12/plone4 compatibility fix (thanks Mark Van den Borre)
+    #3076433: column descriptions always said NOT NULL (thanks Frank Hoffmann)
+
   3.1
     
     #2357223: Savepoint support
