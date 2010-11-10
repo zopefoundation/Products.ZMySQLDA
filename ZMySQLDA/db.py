@@ -485,7 +485,7 @@ class DB(joinTM):
             info['extra'] = Extra,
             info['description'] = ' '.join([Type, field_default, Extra or '',
                                         key_types.get(Key, Key or ''),
-                                        Null != 'NO' and 'NOT NULL' or ''])
+                                        Null == 'NO' and 'NOT NULL' or ''])
             info['nullable'] = (Null == 'YES') and 1 or 0
             if Key:
                 info['index'] = True
