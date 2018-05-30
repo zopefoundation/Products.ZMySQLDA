@@ -1,25 +1,34 @@
-#!/usr/bin/python2.4
 from setuptools import setup, find_packages
-
-# See MANIFEST.in for filelist
 
 setup(
     name="Products.ZMySQLDA",
-    version="3.1",
+    version="4.0dev0",
     license="Zope Public License (ZPL) Version 1.0",
-    author="John Eikenberry",
-    author_email="jae@zhar.net",
-    url="http://sourceforge.net/projects/mysql-python",
-    description="MySQL Zope2 adapter.",
+    author="HOFFMANN+LIEBENBERG in association with SNTL Publishing, Andy Dustman, John Eikenberry",
+    author_email="zms@sntl-publishing.com",
+    url="https://github.com/zms-publishing/Products.ZMySQLDA",
+    description="MySQL Zope adapter.",
     long_description=(
-        "MySQL Database Adapter for Zope 2. Extensively "
-        "reworked for stability and compatibility with versions 2.8+ and "
-        "modern MySQL versions. New features from auto-creating database "
-        "to limited Unicode support."
+        "MySQL Database Adapter for Zope."
     ),
+    classifiers=[
+        "Development Status :: 6 - Mature",
+        "Environment :: Web Environment",
+        "Framework :: Zope :: 4",
+        "License :: OSI Approved :: Zope Public License",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
+    ],
     packages=find_packages(),
     include_package_data=True,
     namespace_packages=["Products"],
     zip_safe=False,
-    install_requires="mysqlclient",
+    install_requires=[
+        "mysqlclient",
+        "Zope",
+    ]
 )
