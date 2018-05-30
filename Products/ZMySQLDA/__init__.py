@@ -82,12 +82,14 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
+from __future__ import absolute_import
+
 __doc__='''Generic Database Adapter Package Registration
 
 $Id$'''
 __version__='$Revision$'[11:-2]
 
-import DA
+from . import DA
 
 misc_=DA.misc_
 
@@ -102,4 +104,3 @@ def initialize(context):
 
     context.registerHelp()
     context.registerHelpTitle('ZMySQLDA')
-

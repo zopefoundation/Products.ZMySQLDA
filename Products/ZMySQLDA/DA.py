@@ -82,6 +82,9 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
+
+from __future__ import absolute_import
+
 database_type='MySQL'
 __doc__='''%s Database Connection
 
@@ -89,11 +92,11 @@ $Id$''' % database_type
 __version__='$Revision$'[11:-2]
 
 import os, os.path
-from db import DBPool, DB
+from .db import DBPool, DB
 from thread import allocate_lock
 
 from Shared.DC import ZRDB
-import DABase
+from . import DABase
 from App.ImageFile import ImageFile
 import Globals
 
@@ -249,4 +252,3 @@ for icon in ('table', 'view', 'stable', 'what',
         'field', 'text','bin','int','float',
         'date','time','datetime'):
     misc_[icon]=ImageFile(os.path.join('icons','%s.gif') % icon, globals())
-

@@ -84,6 +84,7 @@
 ##############################################################################
 
 '''$Id$'''
+from __future__ import absolute_import
 __version__='$Revision$'[11:-2]
 
 import time
@@ -99,9 +100,8 @@ except AttributeError:
     MySQLdb_version = getattr(_mysql, 'version_info', (0,0,0))
 
 if MySQLdb_version < MySQLdb_version_required:
-    raise NotSupportedError, \
-        "ZMySQLDA requires at least MySQLdb %s, %s found" % \
-        (MySQLdb_version_required, _v)
+    raise NotSupportedError("ZMySQLDA requires at least MySQLdb %s, %s found" % \
+        (MySQLdb_version_required, _v))
 
 from MySQLdb.converters import conversions
 from MySQLdb.constants import FIELD_TYPE, CR, ER, CLIENT, FLAG
@@ -111,7 +111,7 @@ from DateTime import DateTime
 from thread import get_ident, allocate_lock
 import logging
 LOG = logging.getLogger('ZMySQLDA')
-from joinTM import joinTM
+from .joinTM import joinTM
 
 hosed_connection = {
         CR.SERVER_GONE_ERROR:    "Server gone.",
@@ -230,7 +230,7 @@ class DBPool(object):
         if db_flags['try_transactions'] == '-':
             transactional = False
         elif not transactional and db_flags['try_transactions'] == '+':
-            raise NotSupportedError, "transactions not supported by this server"
+            raise NotSupportedError("transactions not supported by this server")
         db_flags['transactions'] = transactional
         del db_flags['try_transactions']
         if transactional or db_flags['mysql_lock']:
@@ -518,7 +518,7 @@ class DB(joinTM):
         """
         try:
             self.db.query(query)
-        except OperationalError, m:
+        except OperationalError as m:
             if m[0] in query_syntax_error:
                 raise OperationalError(m[0], '%s: %s' % (m[1], query))
             if ((not force_reconnect) and \
@@ -531,7 +531,7 @@ class DB(joinTM):
                 LOG.error('%s Forcing a reconnect.' % hosed_connection[m[0]])
             self._forceReconnection()
             self.db.query(query)
-        except ProgrammingError, m:
+        except ProgrammingError as m:
             if m[0] in hosed_connection:
                 self._forceReconnection()
                 LOG.error('%s Forcing a reconnect.' % hosed_connection[m[0]])
@@ -672,5 +672,3 @@ class _SavePoint(object):
 
     def rollback(self):
         self.dm._query("ROLLBACK TO %s" % self.ident)
-
-

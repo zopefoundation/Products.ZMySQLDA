@@ -127,7 +127,7 @@ class Connection(Shared.DC.ZRDB.Connection.Connection):
 class Browser(Base):
     def __getattr__(self, name):
         try: return self._d[name]
-        except KeyError: raise AttributeError, name
+        except KeyError: raise AttributeError(name)
 
 class values:
 
