@@ -4,12 +4,14 @@ from Shared.DC.ZRDB.TM import TM
 from ZODB.POSException import TransactionFailedError
 
 import logging
-LOG = logging.getLogger('ZMySQLDA')
+
+LOG = logging.getLogger("ZMySQLDA")
+
 
 class joinTM(TM):
 
     _registered = False
-    _finalize   = False
+    _finalize = False
 
     def _register(self):
         """ Override to replace transaction register() call with join().
@@ -36,6 +38,4 @@ class joinTM(TM):
             else:
                 self._begin()
                 self._registered = True
-                self._finalize   = False
-
-
+                self._finalize = False

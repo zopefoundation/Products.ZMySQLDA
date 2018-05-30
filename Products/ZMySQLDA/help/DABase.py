@@ -1,6 +1,6 @@
-def manage_addZMySQLConnection(self, id, title,
-                                connection_string,
-                                check=None, REQUEST=None):
+def manage_addZMySQLConnection(
+    self, id, title, connection_string, check=None, REQUEST=None
+):
     """Add a MySQL connection to a folder.
 
     Arguments:
@@ -26,6 +26,7 @@ def manage_addZMySQLConnection(self, id, title,
         after the password.
 
     """
+
 
 class Connection(object):
     """MySQL Connection Object"""

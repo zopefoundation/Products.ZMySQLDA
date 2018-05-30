@@ -11,13 +11,15 @@ setup(
     author_email="jae@zhar.net",
     url="http://sourceforge.net/projects/mysql-python",
     description="MySQL Zope2 adapter.",
-    long_description=("MySQL Database Adapter for Zope 2. Extensively "
+    long_description=(
+        "MySQL Database Adapter for Zope 2. Extensively "
         "reworked for stability and compatibility with versions 2.8+ and "
         "modern MySQL versions. New features from auto-creating database "
-        "to limited Unicode support."),
+        "to limited Unicode support."
+    ),
     packages=find_packages(),
     include_package_data=True,
-    namespace_packages=['Products'],
+    namespace_packages=["Products"],
     zip_safe=False,
-    install_requires = "mysqlclient",
+    install_requires="mysqlclient",
 )
