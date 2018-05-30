@@ -108,7 +108,7 @@ from MySQLdb.constants import FIELD_TYPE, CR, ER, CLIENT, FLAG
 from ZODB.POSException import ConflictError
 from DateTime import DateTime
 
-from thread import get_ident, allocate_lock
+from six.moves._thread import get_ident, allocate_lock
 import logging
 LOG = logging.getLogger('ZMySQLDA')
 from .joinTM import joinTM
@@ -162,10 +162,6 @@ def _mysql_timestamp_converter(s):
 def DateTime_or_None(s):
     try: return DateTime(s)
     except: return None
-
-def int_or_long(s):
-    try: return int(s)
-    except: return long(s)
 
 
 class DBPool(object):
@@ -339,7 +335,7 @@ class DB(joinTM):
         }
 
     conv=conversions.copy()
-    conv[FIELD_TYPE.LONG] = int_or_long
+    conv[FIELD_TYPE.LONG] = int
     conv[FIELD_TYPE.DATETIME] = DateTime_or_None
     conv[FIELD_TYPE.DATE] = DateTime_or_None
     conv[FIELD_TYPE.DECIMAL] = float

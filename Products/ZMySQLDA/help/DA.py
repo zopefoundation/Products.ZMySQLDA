@@ -53,9 +53,7 @@ def manage_addZMySQLConnection(self, id, title,
 
         """
 
-class Connection:
+class Connection(object):
     """MySQL Connection Object"""
 
     __constructor__ = manage_addZMySQLConnection
-
-

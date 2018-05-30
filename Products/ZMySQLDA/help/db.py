@@ -1,4 +1,4 @@
-class DB:
+class DB(object):
 
     """This is the ZMySQLDA Database Connection Object."""
 

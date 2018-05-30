@@ -93,12 +93,15 @@ __version__='$Revision$'[11:-2]
 
 import os, os.path
 from .db import DBPool, DB
-from thread import allocate_lock
+from six.moves._thread import allocate_lock
 
 from Shared.DC import ZRDB
 from . import DABase
 from App.ImageFile import ImageFile
 import Globals
+
+import six
+
 
 manage_addZMySQLConnectionForm=Globals.HTMLFile('connectionAdd',globals())
 
@@ -185,7 +188,7 @@ class Connection(DABase.Connection):
         except AttributeError:
             self.connect(self.connection_string)
             connection = self._v_database_connection
-        if self.use_unicode and isinstance(v, unicode):
+        if self.use_unicode and isinstance(v, six.text_type):
             return connection.unicode_literal(v)
         else:
             return connection.string_literal(v)

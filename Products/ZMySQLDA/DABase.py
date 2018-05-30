@@ -129,7 +129,7 @@ class Browser(Base):
         try: return self._d[name]
         except KeyError: raise AttributeError(name)
 
-class values:
+class values(object):
 
     def len(self): return 1
 
@@ -180,4 +180,3 @@ table_icons={
     'view':'view',
     'system_table': 'stable',
     }
-
