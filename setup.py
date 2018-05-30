@@ -19,6 +19,5 @@ setup(
     include_package_data=True,
     namespace_packages=['Products'],
     zip_safe=False,
-    install_requires = "MySQL-python >= 1.2.1",
-    )
-
+    install_requires = "mysqlclient",
+)
