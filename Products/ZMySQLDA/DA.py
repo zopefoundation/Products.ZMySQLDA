@@ -101,12 +101,13 @@ from six.moves._thread import allocate_lock
 from Shared.DC import ZRDB
 from . import DABase
 from App.ImageFile import ImageFile
-import Globals
+from App.special_dtml import HTMLFile
+from Persistence import Persistent
 
 import six
 
 
-manage_addZMySQLConnectionForm = Globals.HTMLFile("connectionAdd", globals())
+manage_addZMySQLConnectionForm = HTMLFile("connectionAdd", globals())
 
 
 def manage_addZMySQLConnection(
@@ -160,7 +161,7 @@ class Connection(DABase.Connection):
     use_unicode = False
     _v_connected = ""
 
-    manage_properties = Globals.HTMLFile("connectionEdit", globals())
+    manage_properties = HTMLFile("connectionEdit", globals())
 
     def factory(self):
         """ Base API. Returns factory method for DB connections.
@@ -226,7 +227,7 @@ class Connection(DABase.Connection):
         """ Skip super's __setstate__ as it connects which we don't want
             due to pool_key depending on acquisition.
         """
-        Globals.Persistent.__setstate__(self, state)
+        Persistent.__setstate__(self, state)
 
     def manage_edit(
         self,

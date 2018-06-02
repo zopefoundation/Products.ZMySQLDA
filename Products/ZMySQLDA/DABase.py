@@ -88,7 +88,7 @@ $Id$"""
 __version__ = "$Revision$"[11:-2]
 
 import Shared.DC.ZRDB.Connection, sys
-from Globals import HTMLFile
+from App.special_dtml import HTMLFile
 from ExtensionClass import Base
 import Acquisition
 
