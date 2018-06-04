@@ -30,5 +30,6 @@ setup(
     install_requires=[
         "mysqlclient",
         "Zope",
+        "Products.ZSQLMethods",
     ]
 )

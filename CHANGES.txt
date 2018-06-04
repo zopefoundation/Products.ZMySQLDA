@@ -1,5 +1,9 @@
 Z MySQL DA Releases
 
+  4.0beta1
+
+    Added simple buildout configuration with tox integration
+
   3.1.1
 
     #3106015: zope 2.12/plone4 compatibility fix (thanks Mark Van den Borre)
