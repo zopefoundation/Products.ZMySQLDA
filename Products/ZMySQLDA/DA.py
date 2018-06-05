@@ -18,6 +18,8 @@ import six
 from six.moves._thread import allocate_lock
 
 from AccessControl.class_init import InitializeClass
+from AccessControl.Permissions import change_database_methods
+from AccessControl.Permissions import use_database_methods
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityInfo import ModuleSecurityInfo
 from App.ImageFile import ImageFile
@@ -100,6 +102,7 @@ class Connection(DABase.Connection):
         """
         Persistent.__setstate__(self, state)
 
+    @security.protected(use_database_methods)
     def factory(self):
         """ Base API. Returns factory method for DB connections.
         """
@@ -110,6 +113,7 @@ class Connection(DABase.Connection):
         """
         return self.getPhysicalPath()
 
+    @security.protected(use_database_methods)
     def connect(self, s):
         """ Base API. Opens connection to mysql. Raises if problems.
         """
@@ -138,6 +142,7 @@ class Connection(DABase.Connection):
 
         return self  # ??? why doesn't this return the connection ???
 
+    @security.protected(use_database_methods)
     def sql_quote__(self, v, escapes={}):
         """ Base API. Used to message strings for use in queries.
         """
@@ -152,6 +157,7 @@ class Connection(DABase.Connection):
         else:
             return connection.string_literal(v)
 
+    @security.protected(change_database_methods)
     def manage_edit(self, title, connection_string, check=None,
                     use_unicode=None, auto_create_db=None):
         """ Zope management API.
