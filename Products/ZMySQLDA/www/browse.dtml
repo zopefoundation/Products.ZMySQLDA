@@ -4,7 +4,8 @@
 <main class="container-fluid">
 
   <dtml-tree header=info>
-    <img src="&dtml-SCRIPT_NAME;/misc_/ZMySQLDA/&dtml-icon;" alt="&dtml-type;" border="0">
+    <img src="&dtml-SCRIPT_NAME;/misc_/ZMySQLDA/&dtml-icon;"
+         alt="&dtml-type;" border="0">
     <dtml-var name><dtml-var description>
   </dtml-tree>
 
