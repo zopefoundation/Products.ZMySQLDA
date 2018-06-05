@@ -19,7 +19,6 @@ from ExtensionClass import Base
 import Shared.DC.ZRDB.Connection
 
 
-
 class Connection(Shared.DC.ZRDB.Connection.Connection):
     _isAnSQLConnection = 1
 

@@ -10,15 +10,6 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-from __future__ import absolute_import
-
-__doc__ = """Generic Database Adapter Package Registration
-
-$Id$"""
-__version__ = "$Revision$"[11:-2]
-
-from App.ImageFile import ImageFile
-
 from . import DA
 from .permissions import add_zmysql_database_connections
 

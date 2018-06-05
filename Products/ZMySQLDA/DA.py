@@ -23,7 +23,6 @@ from AccessControl.SecurityInfo import ModuleSecurityInfo
 from App.ImageFile import ImageFile
 from App.special_dtml import HTMLFile
 from Persistence import Persistent
-from Shared.DC import ZRDB
 
 from . import DABase
 from .db import DBPool, DB
@@ -40,6 +39,8 @@ manage_addZMySQLConnectionForm = HTMLFile("www/connectionAdd", globals())
 
 mod_security.declareProtected(add_zmysql_database_connections,
                               'manage_addZMySQLConnection')
+
+
 def manage_addZMySQLConnection(self, id, title, connection_string, check=None,
                                use_unicode=None, auto_create_db=None,
                                REQUEST=None):
