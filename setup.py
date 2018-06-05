@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name="Products.ZMySQLDA",
     version="4.0.dev0",
-    license="Zope Public License (ZPL) Version 1.0",
+    license="ZPL 2.1",
     author="HOFFMANN+LIEBENBERG in association with "
             "SNTL Publishing, Andy Dustman, John Eikenberry",
     author_email="zms@sntl-publishing.com",
