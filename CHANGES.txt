@@ -1,170 +1,204 @@
-Z MySQL DA Releases
+Change log
+==========
 
-  4.0beta1
+4.0beta1 (unreleased)
+---------------------
+- New maintainers: SNTL PUBLISHING / HOFFMANN+LIEBENBERG GMBH and
+  Jens Vagelpohl
 
-    Added simple buildout configuration with tox integration
+- Moved away from the unsupported ``MySQLdb1`` to the fork
+  ``mysqlclient``, which is Python 3-compatible.
 
-  3.1.1
+- Added simple buildout configuration with tox integration
 
-    #3106015: zope 2.12/plone4 compatibility fix (thanks Mark Van den Borre)
-    #3076433: column descriptions always said NOT NULL (thanks Frank Hoffmann)
-
-  3.1
-    
-    #2357223: Savepoint support
-
-  3.0
-
-    Added setuptools support to create an egg package thanks to Brett Carter.
-
-    Added condition to handle connection getting "out of sync". This can occur
-    when, for instance, you get a stray semicolon in a query. When a connection
-    gets in this state it is hosed and must be closed and reconnected.
-
-    Made some changes to how use_unicode and auto_create_db are set to better
-    allow for subclassing and extensions of the base classes.
-
-    Added handling of NEWDECIMAL which was added for mysql 5.0.
-
-    Added basic support for procedure calls using "CALL" query.
-
-  3.0beta1
-
-    Fixed issue with sql_quote__ getting called prior to connection being made.
-    Fixed bug #1916952. Updating to API change in MySQLdb 1.2.2 ping method.
-    Fixed backwards compatibility issue with MySQLdb versions <= 1.2.1.
-
-  3.0alpha4
-
-    Fixed pernicious corner case bug with joining a transaction after the
-    transaction has started and been aborted.
-    Zope dependency raised to Zope-2.8 or newer.
-
-  3.0alpha3
-
-    Unicode support now works!
-    Unicode support reworked to use MySQLdb's unicode support instead of its
-        own half-baked layer.
-    Minor cleanups and extensions to database introspection methods.
-    Minor cleanups/fixes to dtml.
-    Removed a few unnecessary thread locks.
-    Changed failed query logging entries from errors to warnings.
-    
-
-  3.0alpha2
-
-    Moved DBPool instantiation from factory() to connect() to better facilitate
-    API backwards compatibility.
-
-    Changed all default values on keyword aruments for the auto create db
-    feature. They all now default to True.
-
-    Left in a bit of debugging code that disabled the new create_db
-    functionality. Removed it.
-
-  3.0alpha1
-
-    New maintainer: John Eikenberry <jae@zhar.net>
-
-    Note that there are some changes in the internal API. So if you have
-    subclassed you should double check compatibility.
-
-    Features:
-
-    Experimental Unicode support has been added. It is hardcoded to UTF-8 and
-    has had limited testing at this point. Adapted from patches made by Graeme
-    Mathieson.
-
-    New optional feature of automatically creating the database provided in the
-    connection string. The mysql 'user' used for the connection must have
-    CREATE permission. It defaults to on to encourage more testing.
-
-    Database connection not created until first use instead of when the 
-    object is first loaded. Ie. connection created at connect() call instead
-    of __setstate__() call. This helps conserve system resources and makes
-    debugging connection issues a bit easier. It is also needed for the new
-    db pool implementation (see below).
-
-    Bugs:
-    
-    Automatically reopens connections closed by client timeouts.
-
-    Fixed major deadlock causing bug that can occur with versions of Zope 
-    greater than 2.8. It was caused by the use of the volatile attribute 
-    (_v_) to keep the reference to the existing connection. Volatile
-    attributes can go away mid-transaction which would cause a deadlock when
-    used with a transactional engine (eg. innodb). The fix involves a fixed
-    pool of adapters and db connections. This also allowed for the elimination
-    of many of the locks. Adapted from patches made by Vincent Pelletier.
-
-    #670137:  missing sortKey() fixed in Zope
-    #814378:  infinite reconnect recursion fixed
-    #1560557: missing import
-    #1242842: missing MULTI_STATEMENTS
-    #1226690: missing close() method
+- Zope 4 and Python 3 compatibility
 
 
-  2.0.9
+3.1.1
+-----
+- #3106015: zope 2.12/plone4 compatibility fix (thanks Mark Van den Borre)
 
-    Allow the connection string to work without a specified database.
+- #3076433: column descriptions always said NOT NULL (thanks Frank Hoffmann)
 
-    Wrap queries with a lock to prevent multiple threads from using
-    the connection simultaneously (this may or may not be happening).
-    If transactional, then there is an additional transaction lock,
-    acquired at the beginning of the transaction and released when
-    either finished or aborted.
 
-    A named lock can be specified by inserting *LOCKNAME at the start
-    of the connection string. This is probably best used only if you
-    must use non-transactional tables.
+3.1
+---
+- #2357223: Savepoint support
 
-    Some stuff will be logged as an error when bad things happen
-    during the transaction manager hooks.
 
-  2.0.8
+3.0
+---
+- Added setuptools support to create an egg package thanks to Brett Carter.
 
-    More information about columns is available from the table
-    browser. This is primarily to support SQL Blender.
+- Added condition to handle connection getting "out of sync". This can occur
+  when, for instance, you get a stray semicolon in a query. When a connection
+  gets in this state it is hosed and must be closed and reconnected.
 
-    DECIMAL and NUMERIC columns now returned as floating-point numbers
-    (was string). This has also been fixed in MySQLdb-0.9.1, but the
-    fix is included here just in case you don't upgrade. Upgrading is
-    a good idea anyway, because some memory-related bugs are fixed,
-    particularly if using Zope 2.4 and Python 2.1.
+- Made some changes to how use_unicode and auto_create_db are set to better
+  allow for subclassing and extensions of the base classes.
 
-  2.0.7
+- Added handling of NEWDECIMAL which was added for mysql 5.0.
 
-    Transaction support tweaked some more. A plus (+) or minus (-)
-    at the beginning of the connection string will force transactions
-    on or off respectively. By default, transactions are enabled if
-    the server supports them. Beware: If you are using non-TST tables
-    on a server that supports transactions, you should probably force
-    transactions off.
+- Added basic support for procedure calls using "CALL" query.
 
-  2.0.6
 
-    This version finally should have all the transaction support
-    working correctly. If your MySQL server supports transactions,
-    i.e. it has at least one transaction-safe table (TST) handler,
-    transactions are enabled automatically. If transactions are
-    enabled, rollbacks (aborts) fail if any non-TST tables were
-    modified.
+3.0beta1
+--------
+- Fixed issue with sql_quote__ getting called prior to connection being made.
 
-  2.0.5
+- Fixed bug #1916952. Updating to API change in MySQLdb 1.2.2 ping method.
 
-    Transactions don't really work right in this and prior versions.
+- Fixed backwards compatibility issue with MySQLdb versions <= 1.2.1.
 
-  2.0.4
 
-    INT columns, whether UNSIGNED or not, are returned as Python
-    long integers to avoid overflows. Python-1.5.2 adds an 'L' to
-    the end of long integers when printing. Later versions do not.
-    As a workaround, use affected columns with a format string,
-    i.e. '<dtml-var x fmt="%d">'.
+3.0alpha4
+---------
+- Fixed pernicious corner case bug with joining a transaction after the
+  transaction has started and been aborted.
 
-  2.0.0
+- Zope dependency raised to Zope-2.8 or newer.
 
-    This is the first version of the database adapter using MySQLdb
-    for Zope.  This database adapter is based on the Z DCOracle DA
-    version 2.2.0.
 
+3.0alpha3
+---------
+- Unicode support now works!
+
+- Unicode support reworked to use MySQLdb's unicode support instead of its
+  own half-baked layer.
+
+- Minor cleanups and extensions to database introspection methods.
+
+- Minor cleanups/fixes to dtml.
+
+- Removed a few unnecessary thread locks.
+
+- Changed failed query logging entries from errors to warnings.
+  
+
+3.0alpha2
+---------
+- Moved DBPool instantiation from factory() to connect() to better facilitate
+  API backwards compatibility.
+
+- Changed all default values on keyword aruments for the auto create db
+  feature. They all now default to True.
+
+- Left in a bit of debugging code that disabled the new create_db
+  functionality. Removed it.
+
+
+3.0alpha1
+---------
+- New maintainer: John Eikenberry <jae@zhar.net>
+
+- Note that there are some changes in the internal API. So if you have
+  subclassed you should double check compatibility.
+
+Features:
+~~~~~~~~~
+- Experimental Unicode support has been added. It is hardcoded to UTF-8 and
+  has had limited testing at this point. Adapted from patches made by Graeme
+  Mathieson.
+
+- New optional feature of automatically creating the database provided in the
+  connection string. The mysql 'user' used for the connection must have
+  CREATE permission. It defaults to on to encourage more testing.
+
+- Database connection not created until first use instead of when the 
+  object is first loaded. Ie. connection created at connect() call instead
+  of __setstate__() call. This helps conserve system resources and makes
+  debugging connection issues a bit easier. It is also needed for the new
+  db pool implementation (see below).
+
+Bugs:
+~~~~~
+- Automatically reopens connections closed by client timeouts.
+
+- Fixed major deadlock causing bug that can occur with versions of Zope 
+  greater than 2.8. It was caused by the use of the volatile attribute 
+  (_v_) to keep the reference to the existing connection. Volatile
+  attributes can go away mid-transaction which would cause a deadlock when
+  used with a transactional engine (eg. innodb). The fix involves a fixed
+  pool of adapters and db connections. This also allowed for the elimination
+  of many of the locks. Adapted from patches made by Vincent Pelletier.
+
+- #670137:  missing sortKey() fixed in Zope
+
+- #814378:  infinite reconnect recursion fixed
+
+- #1560557: missing import
+
+- #1242842: missing MULTI_STATEMENTS
+
+- #1226690: missing close() method
+
+
+2.0.9
+-----
+- Allow the connection string to work without a specified database.
+
+- Wrap queries with a lock to prevent multiple threads from using
+  the connection simultaneously (this may or may not be happening).
+  If transactional, then there is an additional transaction lock,
+  acquired at the beginning of the transaction and released when
+  either finished or aborted.
+
+- A named lock can be specified by inserting *LOCKNAME at the start
+  of the connection string. This is probably best used only if you
+  must use non-transactional tables.
+
+- Some stuff will be logged as an error when bad things happen
+  during the transaction manager hooks.
+
+
+2.0.8
+-----
+- More information about columns is available from the table
+  browser. This is primarily to support SQL Blender.
+
+- DECIMAL and NUMERIC columns now returned as floating-point numbers
+  (was string). This has also been fixed in MySQLdb-0.9.1, but the
+  fix is included here just in case you don't upgrade. Upgrading is
+  a good idea anyway, because some memory-related bugs are fixed,
+  particularly if using Zope 2.4 and Python 2.1.
+
+
+2.0.7
+-----
+- Transaction support tweaked some more. A plus (+) or minus (-)
+  at the beginning of the connection string will force transactions
+  on or off respectively. By default, transactions are enabled if
+  the server supports them. Beware: If you are using non-TST tables
+  on a server that supports transactions, you should probably force
+  transactions off.
+
+
+2.0.6
+-----
+- This version finally should have all the transaction support
+  working correctly. If your MySQL server supports transactions,
+  i.e. it has at least one transaction-safe table (TST) handler,
+  transactions are enabled automatically. If transactions are
+  enabled, rollbacks (aborts) fail if any non-TST tables were
+  modified.
+
+
+2.0.5
+-----
+- Transactions don't really work right in this and prior versions.
+
+
+2.0.4
+-----
+- INT columns, whether UNSIGNED or not, are returned as Python
+  long integers to avoid overflows. Python-1.5.2 adds an 'L' to
+  the end of long integers when printing. Later versions do not.
+  As a workaround, use affected columns with a format string,
+  i.e. '<dtml-var x fmt="%d">'.
+
+
+2.0.0
+-----
+- This is the first version of the database adapter using MySQLdb
+  for Zope.  This database adapter is based on the Z DCOracle DA
+  version 2.2.0.
