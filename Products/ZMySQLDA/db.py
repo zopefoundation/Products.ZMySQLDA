@@ -29,8 +29,6 @@ from MySQLdb.constants import CLIENT
 from MySQLdb.constants import CR
 from MySQLdb.constants import ER
 from MySQLdb.constants import FIELD_TYPE
-from MySQLdb.constants import FLAG
-
 
 from .joinTM import joinTM
 
@@ -459,22 +457,26 @@ class DB(joinTM):
         try:
             self.db.query(query)
         except OperationalError as m:
-            if m[0] in query_syntax_error:
-                raise OperationalError(m[0], "%s: %s" % (m[1], query))
-            if (not force_reconnect) and \
-                (self._mysql_lock or self._transactions) or \
-               m[0] not in hosed_connection:
+            if m.args[0] in query_syntax_error:
+                raise OperationalError(m.args[0],
+                                       "%s: %s" % (m.args[1], query))
+
+            if not force_reconnect and \
+               (self._mysql_lock or self._transactions) or \
+               m.args[0] not in hosed_connection:
                 LOG.warning("query failed: %s" % (query,))
                 raise
             # Hm. maybe the db is hosed.  Let's restart it.
-            if m[0] in hosed_connection:
-                LOG.error("%s Forcing a reconnect." % hosed_connection[m[0]])
+            if m.args[0] in hosed_connection:
+                msg = "%s Forcing a reconnect." % hosed_connection[m.args[0]]
+                LOG.error(msg)
             self._forceReconnection()
             self.db.query(query)
         except ProgrammingError as m:
-            if m[0] in hosed_connection:
+            if m.args[0] in hosed_connection:
                 self._forceReconnection()
-                LOG.error("%s Forcing a reconnect." % hosed_connection[m[0]])
+                msg = "%s Forcing a reconnect." % hosed_connection[m.args[0]]
+                LOG.error(msg)
             else:
                 LOG.warning("query failed: %s" % (query,))
             raise
