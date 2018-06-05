@@ -102,7 +102,8 @@ class Connection(DABase.Connection):
         """
         Persistent.__setstate__(self, state)
 
-    @security.protected(use_database_methods)
+    security.declareProtected(use_database_methods, 'factory')
+
     def factory(self):
         """ Base API. Returns factory method for DB connections.
         """
@@ -113,7 +114,8 @@ class Connection(DABase.Connection):
         """
         return self.getPhysicalPath()
 
-    @security.protected(use_database_methods)
+    security.declareProtected(use_database_methods, 'connect')
+
     def connect(self, s):
         """ Base API. Opens connection to mysql. Raises if problems.
         """
@@ -142,7 +144,8 @@ class Connection(DABase.Connection):
 
         return self  # ??? why doesn't this return the connection ???
 
-    @security.protected(use_database_methods)
+    security.declareProtected(use_database_methods, 'sql_quote__')
+
     def sql_quote__(self, v, escapes={}):
         """ Base API. Used to message strings for use in queries.
         """
@@ -157,7 +160,8 @@ class Connection(DABase.Connection):
         else:
             return connection.string_literal(v)
 
-    @security.protected(change_database_methods)
+    security.declareProtected(change_database_methods, 'manage_edit')
+
     def manage_edit(self, title, connection_string, check=None,
                     use_unicode=None, auto_create_db=None):
         """ Zope management API.
