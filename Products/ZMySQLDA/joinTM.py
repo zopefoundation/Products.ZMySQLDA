@@ -21,7 +21,7 @@ class joinTM(TM):
             bare except: that hides useful errors. The latter deals poorly with
             exceptions raised from the join due to state modifications made
             before the join attempt.
-    
+
             They also both (for our purposes) needlessly add wrapper objects
             around self, resulting in unnecessary overhead.
         """

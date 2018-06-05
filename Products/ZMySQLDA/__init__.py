@@ -99,8 +99,8 @@ def initialize(context):
     context.registerClass(
         DA.Connection,
         permission="Add Z MySQL Database Connections",
-        constructors=(DA.manage_addZMySQLConnectionForm, DA.manage_addZMySQLConnection),
-    )
+        constructors=(DA.manage_addZMySQLConnectionForm,
+                      DA.manage_addZMySQLConnection))
 
     context.registerHelp()
     context.registerHelpTitle("ZMySQLDA")

@@ -1,3 +1,5 @@
+
+
 def manage_addZMySQLConnection(
     self, id, title, connection_string, check=None, REQUEST=None
 ):
@@ -26,8 +28,8 @@ def manage_addZMySQLConnection(
         full path to it after the password. Hint: To use a
         non-standard port on the local system, use 127.0.0.1 for the
         host instead of localhost.
-        
-        Either a database or a host or both must be specified.     
+
+        Either a database or a host or both must be specified.
 
         A '-' in front of the database tells ZMySQLDA to not use
         Zope's Transaction Manager, even if the server supports

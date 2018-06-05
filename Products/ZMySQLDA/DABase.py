@@ -87,7 +87,7 @@ __doc__ = """Database Connection
 $Id$"""
 __version__ = "$Revision$"[11:-2]
 
-import Shared.DC.ZRDB.Connection, sys
+import Shared.DC.ZRDB.Connection
 from App.special_dtml import HTMLFile
 from ExtensionClass import Base
 import Acquisition
@@ -120,7 +120,7 @@ class Connection(Shared.DC.ZRDB.Connection.Connection):
                 b._c = c
                 b.icon = table_icons.get(d["table_type"], "text")
                 r.append(b)
-            except:
+            except Exception:
                 pass
         return r
 

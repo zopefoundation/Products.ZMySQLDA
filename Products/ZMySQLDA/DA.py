@@ -84,17 +84,8 @@
 ##############################################################################
 
 from __future__ import absolute_import
-
-database_type = "MySQL"
-__doc__ = (
-    """%s Database Connection
-
-$Id$"""
-    % database_type
-)
-__version__ = "$Revision$"[11:-2]
-
-import os, os.path
+import os
+import os.path
 from .db import DBPool, DB
 from six.moves._thread import allocate_lock
 
@@ -105,6 +96,16 @@ from App.special_dtml import HTMLFile
 from Persistence import Persistent
 
 import six
+
+
+database_type = "MySQL"
+__doc__ = (
+    """%s Database Connection
+
+$Id$"""
+    % database_type
+)
+__version__ = "$Revision$"[11:-2]
 
 
 manage_addZMySQLConnectionForm = HTMLFile("connectionAdd", globals())
@@ -185,7 +186,8 @@ class Connection(DABase.Connection):
             if connection is not None:
                 connection.closeConnection()
             DB = self.factory()
-            DB = DBPool(DB, create_db=self.auto_create_db, use_unicode=self.use_unicode)
+            DB = DBPool(DB, create_db=self.auto_create_db,
+                        use_unicode=self.use_unicode)
             database_connection_pool_lock.acquire()
             try:
                 database_connection_pool[pool_key] = connection = DB(s)
@@ -212,16 +214,16 @@ class Connection(DABase.Connection):
         else:
             return connection.string_literal(v)
 
-    def __init__(
-        self, id, title, connection_string, check, use_unicode=None, auto_create_db=None
-    ):
+    def __init__(self, id, title, connection_string, check, use_unicode=None,
+                 auto_create_db=None):
         """ Instance setup. Optionally opens the connection (check arg).
         """
         if use_unicode is not None:
             self.use_unicode = bool(use_unicode)
         if auto_create_db is not None:
             self.auto_create_db = bool(auto_create_db)
-        return DABase.Connection.__init__(self, id, title, connection_string, check)
+        return DABase.Connection.__init__(self, id, title, connection_string,
+                                          check)
 
     def __setstate__(self, state):
         """ Skip super's __setstate__ as it connects which we don't want
@@ -243,7 +245,8 @@ class Connection(DABase.Connection):
             self.use_unicode = bool(use_unicode)
         if auto_create_db is not None:
             self.auto_create_db = bool(auto_create_db)
-        return DABase.Connection.manage_edit(self, title, connection_string, check=None)
+        return DABase.Connection.manage_edit(self, title, connection_string,
+                                             check=None)
 
 
 classes = ("DA.Connection",)
@@ -267,11 +270,8 @@ __ac_permissions__ = (
     ),
 )
 
-misc_ = {
-    "conn": ImageFile(
-        os.path.join(os.path.dirname(ZRDB.__file__), "www", "DBAdapterFolder_icon.gif")
-    )
-}
+misc_ = {"conn": ImageFile(os.path.join(os.path.dirname(ZRDB.__file__),
+                                        "www", "DBAdapterFolder_icon.gif"))}
 
 for icon in (
     "table",

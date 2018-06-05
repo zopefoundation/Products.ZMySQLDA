@@ -82,16 +82,28 @@
 # attributions are listed in the accompanying credits file.
 #
 ##############################################################################
-
-"""$Id$"""
 from __future__ import absolute_import
-
-__version__ = "$Revision$"[11:-2]
 
 import time
 import _mysql
 import MySQLdb
-from _mysql_exceptions import OperationalError, NotSupportedError, ProgrammingError
+from _mysql_exceptions import NotSupportedError
+from _mysql_exceptions import OperationalError
+from _mysql_exceptions import ProgrammingError
+
+from MySQLdb.converters import conversions
+from MySQLdb.constants import FIELD_TYPE, CR, ER, CLIENT, FLAG
+from ZODB.POSException import ConflictError
+from DateTime import DateTime
+
+from six.moves._thread import get_ident, allocate_lock
+import logging
+
+from .joinTM import joinTM
+
+__version__ = "$Revision$"[11:-2]
+
+LOG = logging.getLogger("ZMySQLDA")
 
 MySQLdb_version_required = (1, 2, 1)
 
@@ -103,26 +115,14 @@ except AttributeError:
 if MySQLdb_version < MySQLdb_version_required:
     raise NotSupportedError(
         "ZMySQLDA requires at least MySQLdb %s, %s found"
-        % (MySQLdb_version_required, _v)
+        % (MySQLdb_version_required, MySQLdb_version)
     )
-
-from MySQLdb.converters import conversions
-from MySQLdb.constants import FIELD_TYPE, CR, ER, CLIENT, FLAG
-from ZODB.POSException import ConflictError
-from DateTime import DateTime
-
-from six.moves._thread import get_ident, allocate_lock
-import logging
-
-LOG = logging.getLogger("ZMySQLDA")
-from .joinTM import joinTM
 
 hosed_connection = {
     CR.SERVER_GONE_ERROR: "Server gone.",
     CR.SERVER_LOST: "Server lost.",
-    CR.COMMANDS_OUT_OF_SYNC: (
-        "Commands out of sync. Possibly a misplaced" " semicolon (;) in a query."
-    ),
+    CR.COMMANDS_OUT_OF_SYNC: "Commands out of sync. Possibly a misplaced"
+                             " semicolon (;) in a query."
 }
 
 query_syntax_error = (ER.BAD_FIELD_ERROR,)
@@ -176,7 +176,7 @@ def _mysql_timestamp_converter(s):
 def DateTime_or_None(s):
     try:
         return DateTime(s)
-    except:
+    except Exception:
         return None
 
 
@@ -230,7 +230,8 @@ class DBPool(object):
                 connection = MySQLdb.connect(**kw_args)
                 create_query = "create database %s" % db
                 if self.use_unicode:
-                    create_query += " default character set %s" % DB.unicode_charset
+                    create_query += " default character set %s" % (
+                                        DB.unicode_charset)
                 connection.query(create_query)
                 connection.store_result()
             else:
@@ -242,7 +243,7 @@ class DBPool(object):
         if db_flags["try_transactions"] == "-":
             transactional = False
         elif not transactional and db_flags["try_transactions"] == "+":
-            raise NotSupportedError("transactions not supported by this server")
+            raise NotSupportedError("transactions not supported by the server")
         db_flags["transactions"] = transactional
         del db_flags["try_transactions"]
         if transactional or db_flags["mysql_lock"]:
@@ -404,7 +405,7 @@ class DB(joinTM):
         """
         try:  # try to clean up first
             self.db.close()
-        except:
+        except Exception:
             pass
         self.db = MySQLdb.connect(**self._kw_args)
         # Newer mysqldb requires ping argument to attmept a reconnect.
@@ -483,7 +484,7 @@ class DB(joinTM):
         try:
             # Field, Type, Null, Key, Default, Extra
             c = self._query("SHOW COLUMNS FROM %s" % table_name)
-        except:
+        except Exception:
             return ()
         r = []
         for Field, Type, Null, Key, Default, Extra in c.fetch_row(0):
@@ -497,7 +498,8 @@ class DB(joinTM):
                 short_type, size = Type[:end].split("(", 1)
                 if short_type not in ("set", "enum"):
                     if "," in size:
-                        info["scale"], info["precision"] = map(int, size.split(",", 1))
+                        info["scale"], info["precision"] = map(
+                                int, size.split(",", 1))
                     else:
                         info["scale"] = int(size)
             else:
@@ -553,9 +555,9 @@ class DB(joinTM):
         except OperationalError as m:
             if m[0] in query_syntax_error:
                 raise OperationalError(m[0], "%s: %s" % (m[1], query))
-            if (
-                (not force_reconnect) and (self._mysql_lock or self._transactions)
-            ) or m[0] not in hosed_connection:
+            if (not force_reconnect) and \
+                (self._mysql_lock or self._transactions) or \
+               m[0] not in hosed_connection:
                 LOG.warning("query failed: %s" % (query,))
                 raise
             # Hm. maybe the db is hosed.  Let's restart it.
@@ -582,11 +584,11 @@ class DB(joinTM):
             qtype = qs.split(None, 1)[0].upper()
             if qtype == "SELECT" and max_rows:
                 qs = "%s LIMIT %d" % (qs, max_rows)
-                r = 0
             c = self._query(qs)
             if desc is not None:
                 if c and (c.describe() != desc):
-                    raise ProgrammingError("Multiple select schema are not allowed")
+                    msg = "Multiple select schema are not allowed."
+                    raise ProgrammingError(msg)
             if c:
                 desc = c.describe()
                 result = c.fetch_row(max_rows)
@@ -635,7 +637,7 @@ class DB(joinTM):
                 self._query("BEGIN")
             if self._mysql_lock:
                 self._query("SELECT GET_LOCK('%s',0)" % self._mysql_lock)
-        except:
+        except Exception:
             LOG.error("exception during _begin", exc_info=True)
             raise ConflictError
 
@@ -650,7 +652,7 @@ class DB(joinTM):
                 self._query("SELECT RELEASE_LOCK('%s')" % self._mysql_lock)
             if self._transactions:
                 self._query("COMMIT")
-        except:
+        except Exception:
             LOG.error("exception during _finish", exc_info=True)
             raise ConflictError
 

@@ -4,7 +4,8 @@ setup(
     name="Products.ZMySQLDA",
     version="4.0.dev0",
     license="Zope Public License (ZPL) Version 1.0",
-    author="HOFFMANN+LIEBENBERG in association with SNTL Publishing, Andy Dustman, John Eikenberry",
+    author="HOFFMANN+LIEBENBERG in association with "
+            "SNTL Publishing, Andy Dustman, John Eikenberry",
     author_email="zms@sntl-publishing.com",
     url="https://github.com/zms-publishing/Products.ZMySQLDA",
     description="MySQL Zope adapter.",
