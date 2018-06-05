@@ -36,18 +36,6 @@ from .joinTM import joinTM
 
 
 LOG = logging.getLogger("ZMySQLDA")
-MySQLdb_version_required = (1, 2, 1)
-
-try:
-    MySQLdb_version = MySQLdb.version_info[:3]
-except AttributeError:
-    MySQLdb_version = getattr(_mysql, "version_info", (0, 0, 0))
-
-if MySQLdb_version < MySQLdb_version_required:
-    raise NotSupportedError(
-        "ZMySQLDA requires at least MySQLdb %s, %s found"
-        % (MySQLdb_version_required, MySQLdb_version)
-    )
 
 hosed_connection = {
     CR.SERVER_GONE_ERROR: "Server gone.",
@@ -296,11 +284,6 @@ class DB(joinTM):
     conv[FIELD_TYPE.DECIMAL] = float
     conv[FIELD_TYPE.NEWDECIMAL] = float
     del conv[FIELD_TYPE.TIME]
-    # compatibility/fix for older mysqldb versions
-    # without this you can get character arrays for some values
-    # eg. group_concat()
-    if MySQLdb_version < (1, 2, 2):
-        conv[FIELD_TYPE.BLOB][0] = (FLAG.BINARY, str)
 
     _p_oid = _p_changed = _registered = None
 
@@ -334,8 +317,7 @@ class DB(joinTM):
         self.db = MySQLdb.connect(**self._kw_args)
         # Newer mysqldb requires ping argument to attmept a reconnect.
         # This setting is persistent, so only needed once per connection.
-        if MySQLdb_version >= (1, 2, 2):
-            self.db.ping(True)
+        self.db.ping(True)
 
     @classmethod
     def _parse_connection_string(cls, connection, use_unicode=False):
