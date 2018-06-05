@@ -10,29 +10,6 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-from __future__ import absolute_import
-
-__doc__ = """Generic Database Adapter Package Registration
-
-$Id$"""
-__version__ = "$Revision$"[11:-2]
-
-from App.ImageFile import ImageFile
-
-from . import DA
-from .permissions import add_zmysql_database_connections
-
-misc_ = DA.misc_
-
-
-def initialize(context):
-
-    context.registerClass(
-        DA.Connection,
-        permission=add_zmysql_database_connections,
-        constructors=(DA.manage_addZMySQLConnectionForm,
-                      DA.manage_addZMySQLConnection),
-        icon='www/da.gif')
-
-    context.registerHelp()
-    context.registerHelpTitle("ZMySQLDA")
+""" Zope permissions for the ZMySQL database adapter
+"""
+add_zmysql_database_connections = "Add Z MySQL Database Connections"

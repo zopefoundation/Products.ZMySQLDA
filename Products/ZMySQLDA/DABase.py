@@ -10,15 +10,14 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-__doc__ = """Database Connection
+"""Database Connection
+"""
 
-$Id$"""
-__version__ = "$Revision$"[11:-2]
-
-import Shared.DC.ZRDB.Connection
+from Acquisition import Implicit
 from App.special_dtml import HTMLFile
 from ExtensionClass import Base
-import Acquisition
+import Shared.DC.ZRDB.Connection
+
 
 
 class Connection(Shared.DC.ZRDB.Connection.Connection):
@@ -28,7 +27,7 @@ class Connection(Shared.DC.ZRDB.Connection.Connection):
         {"label": "Browse", "action": "manage_browse"},
     )
 
-    manage_browse = HTMLFile("browse", globals())
+    manage_browse = HTMLFile("www/browse", globals())
 
     info = None
 
@@ -74,10 +73,10 @@ class values(object):
         return self._d[i]
 
 
-class TableBrowser(Browser, Acquisition.Implicit):
+class TableBrowser(Browser, Implicit):
     icon = "what"
     description = check = ""
-    info = HTMLFile("table_info", globals())
+    info = HTMLFile("www/table_info", globals())
 
     def tpValues(self):
         v = values()

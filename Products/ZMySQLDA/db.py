@@ -10,29 +10,32 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-from __future__ import absolute_import
-
+import logging
 import time
+
+from six.moves._thread import allocate_lock
+from six.moves._thread import get_ident
+
+from DateTime import DateTime
+from ZODB.POSException import ConflictError
+
 import _mysql
-import MySQLdb
 from _mysql_exceptions import NotSupportedError
 from _mysql_exceptions import OperationalError
 from _mysql_exceptions import ProgrammingError
-
+import MySQLdb
 from MySQLdb.converters import conversions
-from MySQLdb.constants import FIELD_TYPE, CR, ER, CLIENT, FLAG
-from ZODB.POSException import ConflictError
-from DateTime import DateTime
+from MySQLdb.constants import CLIENT
+from MySQLdb.constants import CR
+from MySQLdb.constants import ER
+from MySQLdb.constants import FIELD_TYPE
+from MySQLdb.constants import FLAG
 
-from six.moves._thread import get_ident, allocate_lock
-import logging
 
 from .joinTM import joinTM
 
-__version__ = "$Revision$"[11:-2]
 
 LOG = logging.getLogger("ZMySQLDA")
-
 MySQLdb_version_required = (1, 2, 1)
 
 try:
@@ -141,7 +144,6 @@ class DBPool(object):
         """
         self.connection = connection
         DB = self.DB
-        #
         db_flags = DB._parse_connection_string(connection, self.use_unicode)
         self._db_flags = db_flags
 
@@ -304,14 +306,8 @@ class DB(joinTM):
 
     unicode_charset = "utf8"  # hardcoded for now
 
-    def __init__(
-        self,
-        connection=None,
-        kw_args=None,
-        use_TM=None,
-        mysql_lock=None,
-        transactions=None,
-    ):
+    def __init__(self, connection=None, kw_args=None, use_TM=None,
+                 mysql_lock=None, transactions=None):
         self.connection = connection  # backwards compat
         self._kw_args = kw_args
         self._mysql_lock = mysql_lock

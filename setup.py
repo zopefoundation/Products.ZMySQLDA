@@ -45,7 +45,6 @@ setup(
     zip_safe=False,
     install_requires=[
         "mysqlclient",
-        "Zope",
         "Products.ZSQLMethods",
     ]
 )

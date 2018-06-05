@@ -10,12 +10,12 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-import transaction
+import logging
 
 from Shared.DC.ZRDB.TM import TM
+import transaction
 from ZODB.POSException import TransactionFailedError
 
-import logging
 
 LOG = logging.getLogger("ZMySQLDA")
 
