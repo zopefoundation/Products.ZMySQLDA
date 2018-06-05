@@ -1,9 +1,8 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
-<html lang="en">
-  <head><title>Edit <dtml-var title_or_id></title></head>
-  <body bgcolor="#FFFFFF" link="#000099" vlink="#555555" alink="#77003B">
-    <dtml-var manage_tabs>
-    
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<main class="container-fluid">
+
     <h2>Edit <dtml-var title_or_id></h2>
     
     <form action="manage_edit" method="POST">
@@ -58,5 +57,6 @@
       </table>
     </form>
 
-  </body>
-</html>
+</main>
+
+<dtml-var manage_page_footer>

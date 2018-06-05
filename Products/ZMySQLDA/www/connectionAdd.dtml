@@ -1,9 +1,11 @@
-<html>
-  <head><title>Add Z MySQL Database Connection</title></head>
-  <body bgcolor="#FFFFFF" link="#000099" vlink="#555555" alink="#77003B">
-  
-    <h2>Add Z MySQL Database Connection</h2>
-    
+<dtml-var manage_page_header>
+
+<main class="container-fluid">
+
+<dtml-var "manage_form_title(this(), _,
+           form_title='Add Z MySQL Database Connection'
+           )">
+
     <form action="manage_addZMySQLConnection" method="POST">
       <table cellspacing="2">
         <tr>
@@ -105,4 +107,7 @@
 </dd></dl>
 
   </body>
-</html>
+
+</main>
+
+<dtml-var manage_page_footer>

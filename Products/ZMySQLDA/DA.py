@@ -74,6 +74,7 @@ class Connection(DABase.Connection):
     id = "%s_database_connection" % database_type
     meta_type = title = "Z %s Database Connection" % database_type
     security = ClassSecurityInfo()
+    zmi_icon = 'fas fa-database'
 
     auto_create_db = True
     use_unicode = False
