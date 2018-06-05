@@ -11,20 +11,18 @@
       <tr>
         <th align="left" valign="top">Id</th>
         <td align="left" valign="top">
-          <input type="text" name="id" size="40"
-              value="MySQL_database_connection">
+          <input type="text" name="id" size="40"/>
         </td>
       </tr>
       <tr>
         <th align="left" valign="top"><em>Title</em></th>
         <td align="left" valign="top">
-          <input type="text" name="title" size="40"
-              value="Z MySQL Database Connection">
+          <input type="text" name="title" size="40"/>
         </td>
       </tr>
       <tr>
         <th align="left" valign="top">
-           Enter a Database Connection String
+           Database Connection String
            <a href="#1"><sup>1</sup></a></th>
         <td align="left" valign="top">
           <input type="text" name="connection_string" size="40">
@@ -34,6 +32,7 @@
         <th align="left" valign="top">Connect immediately</th>
         <td align="left" valign="top">
           <input name="check" type="checkbox" value="yes" checked>
+          <small>Open the database connection after instantiation.</small>
         </td>
       </tr>
       <tr>
@@ -48,7 +47,7 @@
         <td align="left" valign="top">
           <input name="auto_create_db" type="checkbox" value="yes" checked>
           <small>
-            Created when first accessed based on database in connection string.
+            Create database from connection string if it does not exist yet.
           </small>
         </td>
       </tr>

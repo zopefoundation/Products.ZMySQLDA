@@ -72,9 +72,7 @@ class Connection(DABase.Connection):
     """ ZMySQL Database Adapter Connection.
     """
 
-    database_type = 'MySQL'
-    id = "%s_database_connection" % database_type
-    meta_type = title = "Z %s Database Connection" % database_type
+    meta_type = "Z MySQL Database Connection"
     security = ClassSecurityInfo()
     zmi_icon = 'fas fa-database'
 
@@ -82,6 +80,7 @@ class Connection(DABase.Connection):
     use_unicode = False
     _v_connected = ""
 
+    security.declareProtected(change_database_methods, 'manage_properties')
     manage_properties = HTMLFile("www/connectionEdit", globals())
 
     def __init__(self, id, title, connection_string, check, use_unicode=None,
