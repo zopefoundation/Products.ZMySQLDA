@@ -51,7 +51,7 @@ class TableBrowser(BrowserBase, Implicit):
 
     def tpValues_(self):
         r = []
-        tname = self.__name__
+        tname = self._d["table_name"]
         for d in self._c.columns(tname):
             b = ColumnBrowser()
             b._d = d
@@ -77,7 +77,7 @@ class ColumnBrowser(BrowserBase):
     icon = "field"
 
     def check(self):
-        return '\t<input type=checkbox name="%s.%s">' % (
+        return '\t<input type="checkbox" name="%s.%s"/>' % (
             self.table_name,
             self._d["name"],
         )

@@ -16,7 +16,8 @@ import time
 from six.moves._thread import allocate_lock
 from six.moves._thread import get_ident
 
-from DateTime import DateTime
+from DateTime.DateTime import DateTime
+from DateTime.interfaces import DateTimeError
 from Shared.DC.ZRDB.TM import TM
 import transaction
 from ZODB.POSException import ConflictError
@@ -83,25 +84,18 @@ type_xlate = {
 }
 
 
-def _mysql_timestamp_converter(s):
-    if len(s) < 14:
-        s = s + "0" * (14 - len(s))
-        parts = map(int, (s[:4], s[4:6], s[6:8], s[8:10], s[10:12], s[12:14]))
-    return DateTime("%04d-%02d-%02d %02d:%02d:%02d" % tuple(parts))
-
-
 def DateTime_or_None(s):
     try:
         return DateTime(s)
-    except Exception:
+    except DateTimeError:
         return None
 
 
 class DBPool(object):
     """
-      This class is an interface to DB.
+      This class is an interface to the database connection..
       Its caracteristic is that an instance of this class interfaces multiple
-      instanes of DB class, each one being bound to a specific thread.
+      instanes of db_cls class, each one being bound to a specific thread.
     """
 
     connected_timestamp = ""
@@ -109,9 +103,9 @@ class DBPool(object):
     use_unicode = False
 
     def __init__(self, db_cls, create_db=False, use_unicode=False):
-        """ Set transaction managed DB class for use in pool.
+        """ Set transaction managed class for use in pool.
         """
-        self.DB = db_cls
+        self._db_cls = db_cls
         # pool of one db object/thread
         self._db_pool = {}
         self._db_lock = allocate_lock()
@@ -124,17 +118,17 @@ class DBPool(object):
         """ Parse the connection string.
 
             Initiate a trial connection with the database to check
-            transactionality once instead of once per DB instance.
+            transactionality once instead of once per db_cls instance.
 
             Create database if option is enabled and database doesn't exist.
         """
         self.connection = connection
-        DB = self.DB
-        db_flags = DB._parse_connection_string(connection, self.use_unicode)
+        db_flags = self._db_cls._parse_connection_string(connection,
+                                                         self.use_unicode)
         self._db_flags = db_flags
 
         # connect to server to determin tranasactional capabilities
-        # can't use DB instance as it requires this information to work
+        # can't use db_cls instance as it requires this information to work
         try:
             connection = MySQLdb.connect(**db_flags["kw_args"])
         except OperationalError:
@@ -147,7 +141,7 @@ class DBPool(object):
                 create_query = "create database %s" % db
                 if self.use_unicode:
                     create_query += " default character set %s" % (
-                                        DB.unicode_charset)
+                                        self._db_cls.unicode_charset)
                 connection.query(create_query)
                 connection.store_result()
             else:
@@ -175,7 +169,7 @@ class DBPool(object):
 
     def closeConnection(self):
         """ Close this threads connection. Used when DA is being reused
-            but the connection string has changed. Need to close the DB
+            but the connection string has changed. Need to close the db_cls
             instances and recreate to the new database. Only have to worry
             about this thread as when each thread hits the new connection
             string in the DA this method will be called.
@@ -188,7 +182,7 @@ class DBPool(object):
 
     def close(self):
         """ Used when manually closing the database. Resetting the pool
-            dereferences the DB instances where they are then collected
+            dereferences the db_cls instances where they are then collected
             and closed.
         """
         self._db_pool = {}
@@ -221,7 +215,7 @@ class DBPool(object):
         """
         return self._db_flags["kw_args"]["db"]
 
-    # Passthrough aliases for methods on DB class.
+    # Passthrough aliases for methods on db_cls class.
     def variables(self, *args, **kw):
         return self._access_db(method_id="variables", args=args, kw=kw)
 
@@ -243,13 +237,13 @@ class DBPool(object):
     def _access_db(self, method_id, args, kw):
         """
           Generic method to call pooled objects' methods.
-          When the current thread had never issued any call, create a DB
+          When the current thread had never issued any call, create a db_cls
           instance.
         """
         ident = get_ident()
         db = self._pool_get(ident)
         if db is None:
-            db = self.DB(**self._db_flags)
+            db = self._db_cls(**self._db_flags)
             self._pool_set(ident, db)
         return getattr(db, method_id)(*args, **kw)
 

@@ -23,7 +23,6 @@ from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityInfo import ModuleSecurityInfo
 from App.special_dtml import HTMLFile
 from Persistence import Persistent
-
 from Shared.DC.ZRDB.Connection import Connection as ConnectionBase
 
 from .db import DB
@@ -31,7 +30,6 @@ from .db import DBPool
 from .permissions import add_zmysql_database_connections
 from .utils import TableBrowser
 from .utils import table_icons
-
 
 # Connection Pool for connections to MySQL.
 # Maps one mysql client connection to one DA object instance.

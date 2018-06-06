@@ -2,6 +2,7 @@
 .installed.cfg
 .tox/
 bin/
+coverage.xml
 develop-eggs/
 htmlcov/
 parts/

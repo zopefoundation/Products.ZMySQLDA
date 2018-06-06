@@ -13,6 +13,8 @@ Change log
 
 - Zope 4 and Python 3 compatibility
 
+- Added unit tests
+
 
 3.1.1
 -----
