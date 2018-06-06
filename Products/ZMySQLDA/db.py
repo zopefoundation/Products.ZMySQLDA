@@ -17,7 +17,10 @@ from six.moves._thread import allocate_lock
 from six.moves._thread import get_ident
 
 from DateTime import DateTime
+from Shared.DC.ZRDB.TM import TM
+import transaction
 from ZODB.POSException import ConflictError
+from ZODB.POSException import TransactionFailedError
 
 import _mysql
 from _mysql_exceptions import NotSupportedError
@@ -29,9 +32,6 @@ from MySQLdb.constants import CLIENT
 from MySQLdb.constants import CR
 from MySQLdb.constants import ER
 from MySQLdb.constants import FIELD_TYPE
-
-from .joinTM import joinTM
-
 
 LOG = logging.getLogger("ZMySQLDA")
 
@@ -254,7 +254,7 @@ class DBPool(object):
         return getattr(db, method_id)(*args, **kw)
 
 
-class DB(joinTM):
+class DB(TM):
 
     Database_Error = _mysql.Error
 
@@ -283,7 +283,9 @@ class DB(joinTM):
     conv[FIELD_TYPE.NEWDECIMAL] = float
     del conv[FIELD_TYPE.TIME]
 
-    _p_oid = _p_changed = _registered = None
+    _p_oid = _p_changed = None
+    _registered = False
+    _finalize = False
 
     unicode_charset = "utf8"  # hardcoded for now
 
@@ -535,6 +537,34 @@ class DB(joinTM):
         return self.db.unicode_literal(s)
 
     # Zope 2-phase transaction handling methods
+
+    def _register(self):
+        """ Override to replace transaction register() call with join().
+
+            The primary reason for this is to eliminate issues in both the
+            super's _register() and transaction register(). The former has a
+            bare except: that hides useful errors. The latter deals poorly with
+            exceptions raised from the join due to state modifications made
+            before the join attempt.
+
+            They also both (for our purposes) needlessly add wrapper objects
+            around self, resulting in unnecessary overhead.
+        """
+        if not self._registered:
+            try:
+                transaction.get().join(self)
+            except TransactionFailedError:
+                msg = "database connection failed to join transaction."
+                LOG.error(msg)
+            except ValueError:
+                msg = "database connection failed to join transaction."
+                LOG.error(msg, exc_info=True)
+                raise
+            else:
+                self._begin()
+                self._registered = True
+                self._finalize = False
+
     def _begin(self, *ignored):
         """ Called from _register() upon first query.
         """
