@@ -12,48 +12,25 @@
 ##############################################################################
 """ MySQL Database Connection
 """
-import os
-
 import six
 from six.moves._thread import allocate_lock
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import change_database_methods
 from AccessControl.Permissions import use_database_methods
+from AccessControl.Permissions import view_management_screens
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.SecurityInfo import ModuleSecurityInfo
-from App.ImageFile import ImageFile
 from App.special_dtml import HTMLFile
 from Persistence import Persistent
 
-from . import DABase
-from .db import DBPool, DB
+from Shared.DC.ZRDB.Connection import Connection as ConnectionBase
+
+from .db import DB
+from .db import DBPool
 from .permissions import add_zmysql_database_connections
-
-
-mod_security = ModuleSecurityInfo('Products.ZMySQLDA.DA')
-
-
-mod_security.declareProtected(add_zmysql_database_connections,
-                              'manage_addZMySQLConnectionForm')
-manage_addZMySQLConnectionForm = HTMLFile("www/connectionAdd", globals())
-
-
-mod_security.declareProtected(add_zmysql_database_connections,
-                              'manage_addZMySQLConnection')
-
-
-def manage_addZMySQLConnection(self, id, title, connection_string, check=None,
-                               use_unicode=None, auto_create_db=None,
-                               REQUEST=None):
-    """Add a DB connection to a folder"""
-    self._setObject(id,
-                    Connection(id, title, connection_string, check,
-                               use_unicode=use_unicode,
-                               auto_create_db=auto_create_db))
-
-    if REQUEST is not None:
-        return self.manage_main(self, REQUEST)
+from .utils import TableBrowser
+from .utils import table_icons
 
 
 # Connection Pool for connections to MySQL.
@@ -68,10 +45,9 @@ database_connection_pool = {}
 # DBPool_instance[thread id] == DB instance
 
 
-class Connection(DABase.Connection):
+class Connection(ConnectionBase):
     """ ZMySQL Database Adapter Connection.
     """
-
     meta_type = "Z MySQL Database Connection"
     security = ClassSecurityInfo()
     zmi_icon = 'fas fa-database'
@@ -79,9 +55,17 @@ class Connection(DABase.Connection):
     auto_create_db = True
     use_unicode = False
     _v_connected = ""
+    _isAnSQLConnection = 1
+    info = None
+
+    security.declareProtected(view_management_screens, 'manage_browse')
+    manage_browse = HTMLFile("www/browse", globals())
 
     security.declareProtected(change_database_methods, 'manage_properties')
     manage_properties = HTMLFile("www/connectionEdit", globals())
+
+    manage_options = ConnectionBase.manage_options + (
+        {"label": "Browse", "action": "manage_browse"},)
 
     def __init__(self, id, title, connection_string, check, use_unicode=None,
                  auto_create_db=None):
@@ -92,8 +76,8 @@ class Connection(DABase.Connection):
         if auto_create_db is not None:
             self.auto_create_db = bool(auto_create_db)
 
-        return DABase.Connection.__init__(self, id, title, connection_string,
-                                          check)
+        return super(Connection, self).__init__(id, title, connection_string,
+                                                check)
 
     def __setstate__(self, state):
         """ Skip super's __setstate__ as it connects which we don't want
@@ -170,26 +154,59 @@ class Connection(DABase.Connection):
         if auto_create_db is not None:
             self.auto_create_db = bool(auto_create_db)
 
-        return DABase.Connection.manage_edit(self, title, connection_string,
-                                             check=None)
+        return super(Connection, self).manage_edit(title, connection_string,
+                                                   check=None)
+
+    security.declareProtected(view_management_screens, 'tpValues')
+
+    def tpValues(self):
+        """ Support the DTML ``tree`` tag
+
+        Used in the ZMI ``Browse`` tab
+        """
+        r = []
+        try:
+            c = self._v_database_connection
+        except AttributeError:
+            self.connect(self.connection_string)
+            c = self._v_database_connection
+        for d in c.tables(rdb=0):
+            try:
+                name = d["table_name"]
+                b = TableBrowser()
+                b.__name__ = name
+                b._d = d
+                b._c = c
+                b.icon = table_icons.get(d["table_type"], "text")
+                r.append(b)
+            except Exception:
+                pass
+        return r
 
 
 InitializeClass(Connection)
-mod_security.apply(globals())
 
-misc_ = {}
-for icon in (
-    "table",
-    "view",
-    "stable",
-    "what",
-    "field",
-    "text",
-    "bin",
-    "int",
-    "float",
-    "date",
-    "time",
-    "datetime",
-):
-    misc_[icon] = ImageFile(os.path.join("www", "%s.gif") % icon, globals())
+
+mod_security = ModuleSecurityInfo('Products.ZMySQLDA.DA')
+mod_security.declareProtected(add_zmysql_database_connections,
+                              'manage_addZMySQLConnectionForm')
+manage_addZMySQLConnectionForm = HTMLFile("www/connectionAdd", globals())
+
+mod_security.declareProtected(add_zmysql_database_connections,
+                              'manage_addZMySQLConnection')
+
+
+def manage_addZMySQLConnection(self, id, title, connection_string, check=None,
+                               use_unicode=None, auto_create_db=None,
+                               REQUEST=None):
+    """Add a DB connection to a folder"""
+    self._setObject(id,
+                    Connection(id, title, connection_string, check,
+                               use_unicode=use_unicode,
+                               auto_create_db=auto_create_db))
+
+    if REQUEST is not None:
+        return self.manage_main(self, REQUEST)
+
+
+mod_security.apply(globals())

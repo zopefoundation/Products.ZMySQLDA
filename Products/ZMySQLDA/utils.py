@@ -10,48 +10,15 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Database Connection
+""" Utility classes and functions
 """
 
 from Acquisition import Implicit
 from App.special_dtml import HTMLFile
 from ExtensionClass import Base
-import Shared.DC.ZRDB.Connection
 
 
-class Connection(Shared.DC.ZRDB.Connection.Connection):
-    _isAnSQLConnection = 1
-
-    manage_options = Shared.DC.ZRDB.Connection.Connection.manage_options + (
-        {"label": "Browse", "action": "manage_browse"},
-    )
-
-    manage_browse = HTMLFile("www/browse", globals())
-
-    info = None
-
-    def tpValues(self):
-        r = []
-        try:
-            c = self._v_database_connection
-        except AttributeError:
-            self.connect(self.connection_string)
-            c = self._v_database_connection
-        for d in c.tables(rdb=0):
-            try:
-                name = d["table_name"]
-                b = TableBrowser()
-                b.__name__ = name
-                b._d = d
-                b._c = c
-                b.icon = table_icons.get(d["table_type"], "text")
-                r.append(b)
-            except Exception:
-                pass
-        return r
-
-
-class Browser(Base):
+class BrowserBase(Base):
     def __getattr__(self, name):
         try:
             return self._d[name]
@@ -72,7 +39,7 @@ class values(object):
         return self._d[i]
 
 
-class TableBrowser(Browser, Implicit):
+class TableBrowser(BrowserBase, Implicit):
     icon = "what"
     description = check = ""
     info = HTMLFile("www/table_info", globals())
@@ -106,7 +73,7 @@ class TableBrowser(Browser, Implicit):
         return self._d["table_type"]
 
 
-class ColumnBrowser(Browser):
+class ColumnBrowser(BrowserBase):
     icon = "field"
 
     def check(self):

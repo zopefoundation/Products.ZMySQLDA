@@ -10,10 +10,12 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+import os
+
+from App.ImageFile import ImageFile
+
 from . import DA
 from .permissions import add_zmysql_database_connections
-
-misc_ = DA.misc_
 
 
 def initialize(context):
@@ -27,3 +29,9 @@ def initialize(context):
 
     context.registerHelp()
     context.registerHelpTitle("ZMySQLDA")
+
+
+misc_ = {}
+for icon in ("table", "view", "stable", "what", "field", "text", "bin",
+             "int", "float", "date", "time", "datetime",):
+    misc_[icon] = ImageFile(os.path.join("www", "%s.gif") % icon, globals())
