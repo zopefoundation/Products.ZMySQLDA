@@ -13,9 +13,12 @@
 ##############################################################################
 from setuptools import setup, find_packages
 
+def read(*rnames):
+    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+
 setup(
     name="Products.ZMySQLDA",
-    version="4.0.dev0",
+    version=read('version.txt').strip(),
     license="ZPL 2.1",
     author="HOFFMANN+LIEBENBERG in association with "
             "SNTL Publishing, Andy Dustman, John Eikenberry",
