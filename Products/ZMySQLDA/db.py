@@ -379,7 +379,7 @@ class DB(TM):
         return r
 
     def columns(self, table_name):
-        """ Returns list of columns for [table_name].
+        """ Returns list of column descriptions for ``table_name``.
         """
         try:
             # Field, Type, Null, Key, Default, Extra
@@ -479,7 +479,7 @@ class DB(TM):
         return self.db.store_result()
 
     def query(self, query_string, max_rows=1000):
-        """ API method for making the query to mysql.
+        """ Execute ``query_string`` and return at most ``max_rows``.
         """
         self._use_TM and self._register()
         desc = None
@@ -560,7 +560,9 @@ class DB(TM):
                 self._finalize = False
 
     def _begin(self, *ignored):
-        """ Called from _register() upon first query.
+        """ Begin a transaction, if transactions are enabled.
+
+        Also called from _register() upon first query.
         """
         try:
             self._transaction_begun = True
@@ -574,7 +576,8 @@ class DB(TM):
             raise ConflictError
 
     def _finish(self, *ignored):
-        """ Called as final event in transaction system.
+        """ Commit a transaction, if transactions are enabled and the
+        Zope transaction has committed successfully.
         """
         if not self._transaction_begun:
             return
@@ -589,7 +592,8 @@ class DB(TM):
             raise ConflictError
 
     def _abort(self, *ignored):
-        """ Called in case of transactional error.
+        """ Roll back the database transaction if the Zope transaction
+        has been aborted, usually due to a transaction error.
         """
         if not self._transaction_begun:
             return

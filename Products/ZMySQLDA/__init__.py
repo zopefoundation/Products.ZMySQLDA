@@ -27,9 +27,6 @@ def initialize(context):
                       DA.manage_addZMySQLConnection),
         icon='www/da.gif')
 
-    context.registerHelp()
-    context.registerHelpTitle("ZMySQLDA")
-
 
 misc_ = {}
 for icon in ("table", "view", "stable", "what", "field", "text", "bin",

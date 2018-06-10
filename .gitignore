@@ -4,5 +4,6 @@
 bin/
 coverage.xml
 develop-eggs/
+docs/_build/
 htmlcov/
 parts/

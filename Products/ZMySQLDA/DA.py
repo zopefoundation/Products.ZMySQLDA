@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-""" MySQL Database Connection
+""" The ZODB-based MySQL Database Connection object
 """
 import six
 from six.moves._thread import allocate_lock
@@ -44,7 +44,7 @@ database_connection_pool = {}
 
 
 class Connection(ConnectionBase):
-    """ ZMySQL Database Adapter Connection.
+    """ Zope database adapter for MySQL/MariaDB
     """
     meta_type = "Z MySQL Database Connection"
     security = ClassSecurityInfo()
@@ -67,7 +67,24 @@ class Connection(ConnectionBase):
 
     def __init__(self, id, title, connection_string, check, use_unicode=None,
                  auto_create_db=None):
-        """ Instance setup. Optionally opens the connection (check arg).
+        """ Instance setup. Optionally opens the connection.
+
+        :string: id -- The id of the ZMySQLDA Connection
+
+        :string: title -- The title of the ZMySQLDA Connection
+
+        :string: connection_string -- The connection string describes how to
+                                      connect to the relational database.
+                                      See the documentation for details.
+
+        :bool: check -- Check if the database connection can be opened after
+                        instantiation.
+
+        :bool: use_unicode -- Use unicode internally. Default: False.
+
+        :bool: auto_create_db -- If the database given in ``connection_string``
+                                 does not exist, create it automatically.
+                                 Default: False.
         """
         if use_unicode is not None:
             self.use_unicode = bool(use_unicode)
@@ -99,6 +116,8 @@ class Connection(ConnectionBase):
 
     def connect(self, s):
         """ Base API. Opens connection to mysql. Raises if problems.
+
+        :string: s -- The database connection string
         """
         pool_key = self._pool_key()
         connection = database_connection_pool.get(pool_key)
@@ -128,7 +147,12 @@ class Connection(ConnectionBase):
     security.declareProtected(use_database_methods, 'sql_quote__')
 
     def sql_quote__(self, v, escapes={}):
-        """ Base API. Used to message strings for use in queries.
+        """ Base API. Used to massage SQL strings for use in queries.
+
+        :string: v -- The raw SQ string to transform.
+
+        :dict: escapes -- Additional escape transformations.
+                          Default: empty ``dict``.
         """
         try:
             connection = self._v_database_connection
@@ -145,7 +169,22 @@ class Connection(ConnectionBase):
 
     def manage_edit(self, title, connection_string, check=None,
                     use_unicode=None, auto_create_db=None):
-        """ Zope management API.
+        """ Edit the connection attributes through the Zope ZMI.
+
+        :string: title -- The title of the ZMySQLDA Connection
+
+        :string: connection_string -- The connection string describes how to
+                                      connect to the relational database.
+                                      See the documentation for details.
+
+        :bool: check -- Check if the database connection can be opened after
+                        instantiation. Default: False.
+
+        :bool: use_unicode -- Use unicode internally. Default: False.
+
+        :bool: auto_create_db -- If the database given in ``connection_string``
+                                 does not exist, create it automatically.
+                                 Default: False.
         """
         if use_unicode is not None:
             self.use_unicode = bool(use_unicode)
@@ -160,7 +199,7 @@ class Connection(ConnectionBase):
     def tpValues(self):
         """ Support the DTML ``tree`` tag
 
-        Used in the ZMI ``Browse`` tab
+        Used in the Zope ZMI ``Browse`` tab
         """
         r = []
         try:
@@ -197,7 +236,28 @@ mod_security.declareProtected(add_zmysql_database_connections,
 def manage_addZMySQLConnection(self, id, title, connection_string, check=None,
                                use_unicode=None, auto_create_db=None,
                                REQUEST=None):
-    """Add a DB connection to a folder"""
+    """Factory function to add a connection object from the Zope ZMI.
+
+    :string: id -- The id of the ZMySQLDA Connection
+
+    :string: title -- The title of the ZMySQLDA Connection
+
+    :string: connection_string -- The connection string describes how to
+                                  connect to the relational database.
+                                  See the documentation for details.
+
+    :bool: check -- Check if the database connection can be opened after
+                    instantiation. Default: False.
+
+    :bool: use_unicode -- Use unicode internally. Default: False.
+
+    :bool: auto_create_db -- If the database given in ``connection_string``
+                             does not exist, create it automatically.
+                             Default: False.
+
+    :object: REQUEST -- The currently active Zope request object.
+                        Default: None.
+    """
     self._setObject(id,
                     Connection(id, title, connection_string, check,
                                use_unicode=use_unicode,
