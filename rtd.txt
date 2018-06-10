@@ -1,2 +1,0 @@
-Products.ZSQLMethods<3
-Zope2<4
