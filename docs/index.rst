@@ -8,6 +8,8 @@ Narrative documentation
 
    connstring
    usage_zmi
+   development
+   contributors
    changes
 
 
