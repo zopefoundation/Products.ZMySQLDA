@@ -1,0 +1,9 @@
+include *.txt
+include *.rst
+include tox.ini
+
+recursive-include Products *
+recursive-include docs *
+
+global-exclude *.pyc
+global-exclude *.pyo
