@@ -1,6 +1,10 @@
 Products.ZMySQLDA change log
 ============================
 
+4.0b2 (unreleased)
+------------------
+
+
 4.0b1 (2018-06-11)
 ------------------
 - New maintainers: SNTL PUBLISHING / HOFFMANN+LIEBENBERG GMBH and
