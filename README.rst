@@ -8,6 +8,14 @@ Products.ZMySQLDA
    :target: https://zmysqlda.readthedocs.io
    :alt: Documentation Status
 
+.. image:: https://img.shields.io/pypi/v/Products.ZMySQLDA.svg
+   :target: https://pypi.org/project/Products.ZMySQLDA/
+   :alt: Latest stable release on PyPI
+
+.. image:: https://img.shields.io/pypi/pyversions/Products.ZMySQLDA.svg
+   :target: https://pypi.org/project/Products.ZMySQLDA/
+   :alt: Stable release supported Python versions
+
 This is the MySQL database adapter product for Zope.
 
 Compatibility
