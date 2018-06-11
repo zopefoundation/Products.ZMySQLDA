@@ -1,5 +1,10 @@
 Products.ZMySQLDA
 =================
+
+.. image:: https://readthedocs.org/projects/zmysqlda/badge/?version=latest
+   :target: https://zmysqlda.readthedocs.io
+   :alt: Documentation Status
+
 This is the MySQL database adapter product for Zope.
 
 Compatibility
