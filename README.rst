@@ -1,6 +1,9 @@
 Products.ZMySQLDA
 =================
 
+.. image:: https://api.travis-ci.com/zms-publishing/Products.ZMySQLDA.svg?branch=master
+   :target: https://travis-ci.com/zms-publishing/Products.ZMySQLDA
+
 .. image:: https://readthedocs.org/projects/zmysqlda/badge/?version=latest
    :target: https://zmysqlda.readthedocs.io
    :alt: Documentation Status
