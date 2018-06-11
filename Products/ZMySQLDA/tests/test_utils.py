@@ -42,7 +42,7 @@ class TableBrowserTests(BrowserTestsBase):
     def test_instantiation(self):
         browser = self._makeOne()
         self.assertEqual(browser.icon, 'what')
-        self.assertEqual(browser.description, '')
+        self.assertEqual(browser.description(), '')
         self.assertEqual(browser.check, '')
 
     def test_getattr(self):
@@ -108,7 +108,7 @@ class ColumnBrowserTests(BrowserTestsBase):
 
     def test_description(self):
         browser = self._makeOne()
-        self.assertEqual(browser.description(), ' desc1')
+        self.assertEqual(browser.description(), 'desc1')
 
 
 class valuesTests(unittest.TestCase):

@@ -6,7 +6,7 @@
   <dtml-tree header=info>
     <img src="&dtml-SCRIPT_NAME;/misc_/ZMySQLDA/&dtml-icon;"
          alt="&dtml-type;" border="0">
-    <dtml-var name><dtml-var description>
+    <strong><dtml-var name></strong> (<dtml-var description>)
   </dtml-tree>
 
 <dtml-var manage_page_footer>

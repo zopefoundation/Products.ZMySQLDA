@@ -13,10 +13,12 @@
 """ Dummy fixtures for testing
 """
 
-RESULTS = {'show tables': [['table1']],
+RESULTS = {'show table status': [['table1', 'engine1', None, None, 5, None,
+                                  None, None, None, None, None, None, None,
+                                  None, 'my_collation']],
            'show variables': [('var1', 'val1'), ('version', '5.5.5')]}
 
-TABLE = {'table_name': 'table1', 'table_type': 'type1'}
+TABLE = {'table_name': 'table1', 'table_type': 'type1', 'description': ''}
 
 COLUMNS = [{'name': 'col1', 'icon': 'icon1', 'description': 'desc1'},
            {'name': 'col2', 'icon': 'icon2', 'description': 'desc2'}]

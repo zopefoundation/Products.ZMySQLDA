@@ -369,11 +369,13 @@ class DB(TM):
         """ Returns list of tables.
         """
         t_list = []
-        db_result = self._query("SHOW TABLES")
-        row = db_result.fetch_row(1)
-        while row:
-            t_list.append({"table_name": row[0][0], "table_type": "table"})
-            row = db_result.fetch_row(1)
+        db_result = self._query("SHOW TABLE STATUS")
+        for row in db_result.fetch_row(0):
+            description = '%s, %s rows, character set/collation %s' % (
+                            row[1], str(row[4]), row[14])
+            t_list.append({'table_name': row[0],
+                           'table_type': 'table',
+                           'description': description})
         return t_list
 
     def columns(self, table_name):

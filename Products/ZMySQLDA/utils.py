@@ -41,7 +41,7 @@ class values(object):
 
 class TableBrowser(BrowserBase, Implicit):
     icon = "what"
-    description = check = ""
+    check = ""
     info = HTMLFile("www/table_info", globals())
 
     def tpValues(self):
@@ -72,6 +72,9 @@ class TableBrowser(BrowserBase, Implicit):
     def type(self):
         return self._d["table_type"]
 
+    def description(self):
+        return self._d["description"]
+
 
 class ColumnBrowser(BrowserBase):
     icon = "field"
@@ -89,7 +92,7 @@ class ColumnBrowser(BrowserBase):
         return "Column/%s" % self._d["name"]
 
     def description(self):
-        return " %s" % self._d["description"]
+        return self._d["description"]
 
 
 table_icons = {"table": "table", "view": "view", "system_table": "stable"}
