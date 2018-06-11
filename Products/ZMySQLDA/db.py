@@ -278,6 +278,7 @@ class DB(TM):
     del conv[FIELD_TYPE.TIME]
 
     _p_oid = _p_changed = None
+    _sort_key = '1'
     _registered = False
     _finalize = False
 
