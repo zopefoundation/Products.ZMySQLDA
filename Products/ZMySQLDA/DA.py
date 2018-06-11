@@ -112,58 +112,65 @@ class Connection(ConnectionBase):
         """
         return self.getPhysicalPath()
 
+    def _getConnection(self):
+        """ Helper method to retrieve an existing or create a new connection
+        """
+        try:
+            return self._v_database_connection
+        except AttributeError:
+            self.connect(self.connection_string)
+            return self._v_database_connection
+
     security.declareProtected(use_database_methods, 'connect')
 
-    def connect(self, s):
+    def connect(self, conn_string):
         """ Base API. Opens connection to mysql. Raises if problems.
 
-        :string: s -- The database connection string
+        :string: conn_string -- The database connection string
         """
         pool_key = self._pool_key()
-        connection = database_connection_pool.get(pool_key)
+        conn = database_connection_pool.get(pool_key)
 
-        if connection is not None and connection.connection == s:
-            self._v_database_connection = connection
-            self._v_connected = connection.connected_timestamp
+        if conn is not None and conn.connection == conn_string:
+            self._v_database_connection = conn
+            self._v_connected = conn.connected_timestamp
         else:
-            if connection is not None:
-                connection.closeConnection()
-            DB = self.factory()
-            DB = DBPool(DB, create_db=self.auto_create_db,
-                        use_unicode=self.use_unicode)
+            if conn is not None:
+                conn.closeConnection()
+
+            conn_pool = DBPool(self.factory(), create_db=self.auto_create_db,
+                               use_unicode=self.use_unicode)
             database_connection_pool_lock.acquire()
             try:
-                database_connection_pool[pool_key] = connection = DB(s)
+                conn = conn_pool(conn_string)
+                database_connection_pool[pool_key] = conn
             finally:
                 database_connection_pool_lock.release()
-            self._v_database_connection = connection
+
+            self._v_database_connection = conn
             # XXX If date is used as such, it can be wrong because an
             # existing connection may be reused. But this is suposedly
             # only used as a marker to know if connection was successfull.
-            self._v_connected = connection.connected_timestamp
+            self._v_connected = conn.connected_timestamp
 
         return self  # ??? why doesn't this return the connection ???
 
     security.declareProtected(use_database_methods, 'sql_quote__')
 
-    def sql_quote__(self, v, escapes={}):
+    def sql_quote__(self, sql_str, escapes={}):
         """ Base API. Used to massage SQL strings for use in queries.
 
-        :string: v -- The raw SQ string to transform.
+        :string: sql_str -- The raw SQL string to transform.
 
         :dict: escapes -- Additional escape transformations.
                           Default: empty ``dict``.
         """
-        try:
-            connection = self._v_database_connection
-        except AttributeError:
-            self.connect(self.connection_string)
-            connection = self._v_database_connection
+        connection = self._getConnection()
 
-        if self.use_unicode and isinstance(v, six.text_type):
-            return connection.unicode_literal(v)
+        if self.use_unicode and isinstance(sql_str, six.text_type):
+            return connection.unicode_literal(sql_str)
         else:
-            return connection.string_literal(v)
+            return connection.string_literal(sql_str)
 
     security.declareProtected(change_database_methods, 'manage_edit')
 
@@ -201,24 +208,21 @@ class Connection(ConnectionBase):
 
         Used in the Zope ZMI ``Browse`` tab
         """
-        r = []
-        try:
-            c = self._v_database_connection
-        except AttributeError:
-            self.connect(self.connection_string)
-            c = self._v_database_connection
-        for d in c.tables(rdb=0):
+        t_list = []
+        connection = self._getConnection()
+
+        for t_info in connection.tables(rdb=0):
             try:
-                name = d["table_name"]
-                b = TableBrowser()
-                b.__name__ = name
-                b._d = d
-                b._c = c
-                b.icon = table_icons.get(d["table_type"], "text")
-                r.append(b)
+                t_browser = TableBrowser()
+                t_browser.__name__ = t_info["table_name"]
+                t_browser._d = t_info
+                t_browser._c = connection
+                t_browser.icon = table_icons.get(t_info["table_type"], "text")
+                t_list.append(t_browser)
             except Exception:
                 pass
-        return r
+
+        return t_list
 
 
 InitializeClass(Connection)

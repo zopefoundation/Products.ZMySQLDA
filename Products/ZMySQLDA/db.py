@@ -368,31 +368,35 @@ class DB(TM):
     def tables(self, rdb=0, _care=("TABLE", "VIEW")):
         """ Returns list of tables.
         """
-        r = []
-        a = r.append
-        result = self._query("SHOW TABLES")
-        row = result.fetch_row(1)
+        t_list = []
+        db_result = self._query("SHOW TABLES")
+        row = db_result.fetch_row(1)
         while row:
-            table_name = row[0][0]
-            a({"table_name": table_name, "table_type": "table"})
-            row = result.fetch_row(1)
-        return r
+            t_list.append({"table_name": row[0][0], "table_type": "table"})
+            row = db_result.fetch_row(1)
+        return t_list
 
     def columns(self, table_name):
         """ Returns list of column descriptions for ``table_name``.
         """
+        c_list = []
         try:
             # Field, Type, Null, Key, Default, Extra
-            c = self._query("SHOW COLUMNS FROM %s" % table_name)
+            db_result = self._query("SHOW COLUMNS FROM %s" % table_name)
         except Exception:
             return ()
-        r = []
-        for Field, Type, Null, Key, Default, Extra in c.fetch_row(0):
-            info = {}
-            field_default = ""
+
+        for Field, Type, Null, Key, Default, Extra in db_result.fetch_row(0):
+            info = {'name': Field,
+                    'extra': (Extra,),
+                    'nullable': (Null == "YES") and 1 or 0}
+
             if Default is not None:
                 info["default"] = Default
                 field_default = "DEFAULT '%s'" % Default
+            else:
+                field_default = ''
+
             if "(" in Type:
                 end = Type.rfind(")")
                 short_type, size = Type[:end].split("(", 1)
@@ -404,23 +408,18 @@ class DB(TM):
                         info["scale"] = int(size)
             else:
                 short_type = Type
+
             if short_type in field_icons:
                 info["icon"] = short_type
             else:
                 info["icon"] = icon_xlate.get(short_type, "what")
-            info["name"] = Field
+
             info["type"] = short_type
-            info["extra"] = (Extra,)
-            info["description"] = " ".join(
-                [
-                    Type,
-                    field_default,
-                    Extra or "",
-                    key_types.get(Key, Key or ""),
-                    Null == "NO" and "NOT NULL" or "",
-                ]
-            )
-            info["nullable"] = (Null == "YES") and 1 or 0
+            info["description"] = " ".join([Type,
+                                            field_default,
+                                            Extra or "",
+                                            key_types.get(Key, Key or ""),
+                                            Null == "NO" and "NOT NULL" or ""])
             if Key:
                 info["index"] = True
                 info["key"] = Key
@@ -429,8 +428,10 @@ class DB(TM):
                 info["unique"] = True
             elif Key == "UNI":
                 info["unique"] = True
-            r.append(info)
-        return r
+
+            c_list.append(info)
+
+        return c_list
 
     def variables(self):
         """ Return dictionary of current mysql variable/values.
@@ -452,50 +453,56 @@ class DB(TM):
         """
         try:
             self.db.query(query)
-        except OperationalError as m:
-            if m.args[0] in query_syntax_error:
-                raise OperationalError(m.args[0],
-                                       "%s: %s" % (m.args[1], query))
+        except OperationalError as exc:
+            if exc.args[0] in query_syntax_error:
+                raise OperationalError(exc.args[0],
+                                       "%s: %s" % (exc.args[1], query))
 
             if not force_reconnect and \
                (self._mysql_lock or self._transactions) or \
-               m.args[0] not in hosed_connection:
+               exc.args[0] not in hosed_connection:
                 LOG.warning("query failed: %s" % (query,))
                 raise
+
             # Hm. maybe the db is hosed.  Let's restart it.
-            if m.args[0] in hosed_connection:
-                msg = "%s Forcing a reconnect." % hosed_connection[m.args[0]]
+            if exc.args[0] in hosed_connection:
+                msg = "%s Forcing a reconnect." % hosed_connection[exc.args[0]]
                 LOG.error(msg)
             self._forceReconnection()
             self.db.query(query)
-        except ProgrammingError as m:
-            if m.args[0] in hosed_connection:
+        except ProgrammingError as exc:
+            if exc.args[0] in hosed_connection:
                 self._forceReconnection()
-                msg = "%s Forcing a reconnect." % hosed_connection[m.args[0]]
+                msg = "%s Forcing a reconnect." % hosed_connection[exc.args[0]]
                 LOG.error(msg)
             else:
                 LOG.warning("query failed: %s" % (query,))
             raise
+
         return self.db.store_result()
 
-    def query(self, query_string, max_rows=1000):
-        """ Execute ``query_string`` and return at most ``max_rows``.
+    def query(self, sql_string, max_rows=1000):
+        """ Execute ``sql_string`` and return at most ``max_rows``.
         """
         self._use_TM and self._register()
         desc = None
-        result = ()
-        for qs in filter(None, [q.strip() for q in query_string.split("\0")]):
+        rows = ()
+
+        for qs in filter(None, [q.strip() for q in sql_string.split("\0")]):
             qtype = qs.split(None, 1)[0].upper()
             if qtype == "SELECT" and max_rows:
                 qs = "%s LIMIT %d" % (qs, max_rows)
-            c = self._query(qs)
-            if desc is not None:
-                if c and (c.describe() != desc):
-                    msg = "Multiple select schema are not allowed."
-                    raise ProgrammingError(msg)
-            if c:
-                desc = c.describe()
-                result = c.fetch_row(max_rows)
+            db_results = self._query(qs)
+
+            if desc is not None and \
+               db_results and \
+               db_results.describe() != desc:
+                msg = "Multiple select schema are not allowed."
+                raise ProgrammingError(msg)
+
+            if db_results:
+                desc = db_results.describe()
+                rows = db_results.fetch_row(max_rows)
             else:
                 desc = None
 
@@ -507,28 +514,24 @@ class DB(TM):
             return (), ()
 
         items = []
-        func = items.append
-        defs = self.defs
-        for d in desc:
-            item = {
-                "name": d[0],
-                "type": defs.get(d[1], "t"),
-                "width": d[2],
-                "null": d[6],
-            }
-            func(item)
-        return items, result
+        for info in desc:
+            items.append({"name": info[0],
+                          "type": self.defs.get(info[1], "t"),
+                          "width": info[2],
+                          "null": info[6]})
 
-    def string_literal(self, s):
+        return items, rows
+
+    def string_literal(self, sql_str):
         """ Called from zope to quote/escape strings for inclusion
             in a query.
         """
-        return self.db.string_literal(s)
+        return self.db.string_literal(sql_str)
 
-    def unicode_literal(self, s):
+    def unicode_literal(self, sql_str):
         """ Similar to string_literal but encodes it first.
         """
-        return self.db.unicode_literal(s)
+        return self.db.unicode_literal(sql_str)
 
     # Zope 2-phase transaction handling methods
 
@@ -607,12 +610,10 @@ class DB(TM):
 
     def _mysql_version(self):
         """ Return mysql server version.
-            Note instances of this class are not persistent.
         """
-        _version = getattr(self, "_version", None)
-        if not _version:
-            self._version = _version = self.variables().get("version")
-        return _version
+        if getattr(self, "_version", None) is None:
+            self._version = self.variables().get("version")
+        return self._version
 
     def savepoint(self):
         """ Basic savepoint support.
@@ -636,10 +637,10 @@ class _SavePoint(object):
     """ Simple savepoint object
     """
 
-    def __init__(self, dm):
-        self.dm = dm
-        self.ident = ident = str(time.time()).replace(".", "sp")
-        dm._query("SAVEPOINT %s" % ident)
+    def __init__(self, db_conn):
+        self.db_conn = db_conn
+        self.ident = str(time.time()).replace(".", "sp")
+        db_conn._query("SAVEPOINT %s" % self.ident)
 
     def rollback(self):
-        self.dm._query("ROLLBACK TO %s" % self.ident)
+        self.db_conn._query("ROLLBACK TO %s" % self.ident)

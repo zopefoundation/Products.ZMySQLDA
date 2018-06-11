@@ -344,13 +344,13 @@ class _SavePointTests(unittest.TestCase):
 
     def test_initialization(self):
         sp = self._makeOne()
-        self.assertIsInstance(sp.dm, FakeConnection)
-        self.assertEqual(sp.dm.last_query, 'SAVEPOINT %s' % sp.ident)
+        self.assertIsInstance(sp.db_conn, FakeConnection)
+        self.assertEqual(sp.db_conn.last_query, 'SAVEPOINT %s' % sp.ident)
 
     def test_rollback(self):
         sp = self._makeOne()
         sp.rollback()
-        self.assertEqual(sp.dm.last_query, 'ROLLBACK TO %s' % sp.ident)
+        self.assertEqual(sp.db_conn.last_query, 'ROLLBACK TO %s' % sp.ident)
 
 
 def test_suite():
