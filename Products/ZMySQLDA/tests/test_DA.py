@@ -12,6 +12,7 @@
 ##############################################################################
 """ Tests for the DA module
 """
+import os
 import unittest
 
 import six
@@ -164,6 +165,7 @@ class RealConnectionTests(unittest.TestCase):
         self.assertEqual(res[0][TABLE_COL_INT], 1)
         self.assertEqual(res[0][TABLE_COL_VARCHAR], 'testing')
 
+    @unittest.skipIf('TRAVIS' in os.environ, 'Does not work on Travis CI')
     def test_manage_test_nonascii(self):
         self.da = self._makeOne()
         if six.PY3:
@@ -175,9 +177,6 @@ class RealConnectionTests(unittest.TestCase):
         self.da.manage_test(sql)
 
         res = self.da.manage_test('SELECT * FROM %s' % TABLE_NAME)
-        print(self.da._v_database_connection.tables())
-        print(res[0][TABLE_COL_VARCHAR].encode('UTF-8'))
-        print(nonascii.encode('UTF-8'))
         self.assertEqual(len(res), 1)
         self.assertEqual(res[0][TABLE_COL_INT], 1)
         self.assertEqual(res[0][TABLE_COL_VARCHAR], nonascii)
