@@ -11,6 +11,8 @@ before_install:
   - mysql -e "CREATE DATABASE IF NOT EXISTS zmysqldatest;"
   - mysql -e "CREATE USER 'zmysqldatest'@'localhost' IDENTIFIED BY 'zmysqldatest';"
   - mysql -e "GRANT ALL PRIVILEGES ON zmysqldatest.* TO 'zmysqldatest'@'localhost';"
+  - mysql -e "SHOW VARIABLES LIKE 'character_set%';"
+  - mysql -e "SHOW VARIABLES LIKE 'collation%';"
 install:
     - pip install -U setuptools==33.1.1
     - pip install zc.buildout
