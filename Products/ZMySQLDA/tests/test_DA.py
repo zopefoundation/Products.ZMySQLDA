@@ -175,6 +175,9 @@ class RealConnectionTests(unittest.TestCase):
         self.da.manage_test(sql)
 
         res = self.da.manage_test('SELECT * FROM %s' % TABLE_NAME)
+        print(self.da._v_database_connection.tables())
+        print(res[0][TABLE_COL_VARCHAR].encode('UTF-8'))
+        print(nonascii.encode('UTF-8'))
         self.assertEqual(len(res), 1)
         self.assertEqual(res[0][TABLE_COL_INT], 1)
         self.assertEqual(res[0][TABLE_COL_VARCHAR], nonascii)
