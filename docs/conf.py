@@ -15,7 +15,7 @@
 import datetime
 import os
 import sys
-# sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('../'))
 
 parent = os.path.dirname(os.path.dirname(__file__))
 parent_dir = os.path.abspath(parent)
