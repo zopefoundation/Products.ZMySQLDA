@@ -14,8 +14,15 @@
 """
 import unittest
 
+import six
 from six.moves._thread import get_ident
 
+from .base import _mySQLNotAvailable
+from .base import DB_CONN_STRING
+from .base import TABLE_NAME
+from .base import TABLE_COL_INT
+from .base import TABLE_COL_VARCHAR
+from .base import MySQLRequiredLayer
 from .base import PatchedConnectionTestsBase
 
 
@@ -135,6 +142,45 @@ class PatchedConnectionTests(PatchedConnectionTestsBase):
                          b'foo'.decode('ASCII'))
 
 
+skip_msg = 'Please see the documentation for running functional tests.'
+
+
+@unittest.skipIf(_mySQLNotAvailable(), skip_msg)
+class RealConnectionTests(unittest.TestCase):
+
+    layer = MySQLRequiredLayer
+
+    def _makeOne(self, *args, **kw):
+        from Products.ZMySQLDA.DA import Connection
+        return Connection('conn_id', 'Conn Title', DB_CONN_STRING, False)
+
+    def test_manage_test_ascii(self):
+        self.da = self._makeOne()
+        sql = "INSERT INTO %s VALUES (1, 'testing')" % TABLE_NAME
+        self.da.manage_test(sql)
+
+        res = self.da.manage_test('SELECT * FROM %s' % TABLE_NAME)
+        self.assertEqual(len(res), 1)
+        self.assertEqual(res[0][TABLE_COL_INT], 1)
+        self.assertEqual(res[0][TABLE_COL_VARCHAR], 'testing')
+
+    def test_manage_test_nonascii(self):
+        self.da = self._makeOne()
+        if six.PY3:
+            nonascii = '\xfcbrigens'
+            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, nonascii)
+        else:
+            nonascii = u'\xfcbrigens'.encode('UTF-8')
+            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, nonascii)
+        self.da.manage_test(sql)
+
+        res = self.da.manage_test('SELECT * FROM %s' % TABLE_NAME)
+        self.assertEqual(len(res), 1)
+        self.assertEqual(res[0][TABLE_COL_INT], 1)
+        self.assertEqual(res[0][TABLE_COL_VARCHAR], nonascii)
+
+
 def test_suite():
     return unittest.TestSuite((unittest.makeSuite(ConnectionTests),
-                               unittest.makeSuite(PatchedConnectionTests)))
+                               unittest.makeSuite(PatchedConnectionTests),
+                               unittest.makeSuite(RealConnectionTests)))

@@ -14,11 +14,41 @@
 """
 import unittest
 
+import MySQLdb
+
 from .dummy import FakeConnection
+
+DB = 'zmysqldatest'
+DB_USER = 'zmysqldatest'
+DB_PASSWORD = 'zmysqldatest'
+DB_CONN_STRING = '%s %s %s' % (DB, DB_USER, DB_PASSWORD)
+
+TABLE_NAME = 'test_zmysqlda'
+TABLE_COL_INT = 'c_int'
+TABLE_COL_VARCHAR = 'c_varchar'
+
+COL_INT = 'INT(10) UNSIGNED ZEROFILL NOT NULL DEFAULT 0 PRIMARY KEY'
+COL_VARCHAR = 'VARCHAR(20)'
 
 
 def fake_connect(**kw):
     return FakeConnection(**kw)
+
+
+def real_connect():
+    return MySQLdb.connect(user=DB_USER, passwd=DB_PASSWORD, db=DB)
+
+
+def _mySQLNotAvailable():
+    """ Helper method for unittest skipping
+    """
+    try:
+        connection = real_connect()
+        connection.close()
+        return False
+    except MySQLdb.OperationalError as exc:
+        # print('Cannot connect to %s as %s: %s' % (DB, DB_USER, exc.args))
+        return True
 
 
 class PatchedConnectionTestsBase(unittest.TestCase):
@@ -43,3 +73,28 @@ class PatchedConnectionTestsBase(unittest.TestCase):
         MySQLdb.connect = self.old_connect
         from Products.ZMySQLDA.DA import database_connection_pool
         database_connection_pool.clear()
+
+
+class MySQLRequiredLayer:
+
+    @classmethod
+    def setUp(cls):
+        # Called only once for all tests in this layer
+        # Connect to the database and (re-)create a test table,
+        # but only if the test database is available to prevent tracebacks.
+        # Tests classes using this layer should be skipped if the test
+        # database is unavailable: "@unittest.skipIf(__mySQLNotAvailable())"
+        if not _mySQLNotAvailable():
+            dbconn = real_connect()
+            dbconn.query('DROP TABLE IF EXISTS %s' % TABLE_NAME)
+            sql = 'CREATE TABLE %s (%s %s, %s %s) ENGINE MEMORY'
+            dbconn.query(sql % (TABLE_NAME, TABLE_COL_INT, COL_INT,
+                                TABLE_COL_VARCHAR, COL_VARCHAR))
+            dbconn.close()
+
+    @classmethod
+    def testSetUp(cls):
+        # Clean out the test table before every test
+        if not _mySQLNotAvailable():
+            dbconn = real_connect()
+            dbconn.query('DELETE FROM %s' % TABLE_NAME)

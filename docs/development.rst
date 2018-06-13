@@ -68,6 +68,35 @@ buildout step above:
    congratulations :)
 
 
+Running the functional tests
+============================
+Some tests are hard or even impossible to perform without a real running
+database backend. During a normal test run they will be skipped, and
+you will see output like this::
+
+  Total: 62 tests, 0 failures, 0 errors and 5 skipped in 0.090 seconds.
+
+To run those functional tests you need to have a MySQL/MariaDB server
+running and listening on the standard unix socket, normally
+located at ``/tmp/mysl.sock``. This database server must have a database
+named ``zmysqldatest`` that can be accessed by a user ``zmysqldatest``
+with password ``zmysqldatest``. To set this up, log into the running database
+server with an admin user and execute the following statements::
+
+  mysql> CREATE DATABASE IF NOT EXISTS zmysqldatest;
+  mysql> CREATE USER 'zmysqldatest'@'localhost' IDENTIFIED BY 'zmysqldatest';
+  mysql> GRANT ALL PRIVILEGES ON zmysqldatest.* TO 'zmysqldatest'@'localhost';
+
+If everything worked you'll see test output like this::
+
+  Total: 62 tests, 0 failures, 0 errors and 0 skipped in 0.105 seconds.
+
+If the functional tests are still skipped, uncomment the ``print`` call
+in the ``_mySQLNotAvailable`` function in the module
+``Products.ZMySQLDA.tests.base``. It will print any errors emitted by
+the database server.
+
+
 Building the documentation using :mod:`zc.buildout`
 ===================================================
 The :mod:`Products.ZMySQLDA` buildout installs the Sphinx 

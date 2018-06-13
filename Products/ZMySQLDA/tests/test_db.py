@@ -16,7 +16,13 @@ import unittest
 
 from six.moves._thread import get_ident
 
+from .base import _mySQLNotAvailable
+from .base import DB_CONN_STRING
+from .base import MySQLRequiredLayer
 from .base import PatchedConnectionTestsBase
+from .base import TABLE_COL_INT
+from .base import TABLE_COL_VARCHAR
+from .base import TABLE_NAME
 from .dummy import FakeConnection
 
 
@@ -336,6 +342,58 @@ class DBTests(PatchedConnectionTestsBase):
         self.assertEqual(db.db.last_query, 'SAVEPOINT %s' % sp.ident)
 
 
+skip_msg = 'Please see the documentation for running functional tests.'
+
+
+@unittest.skipIf(_mySQLNotAvailable(), skip_msg)
+class RealConnectionDBTests(unittest.TestCase):
+
+    layer = MySQLRequiredLayer
+
+    def tearDown(self):
+        self.db.close()
+
+    def _makeOne(self):
+        from Products.ZMySQLDA.db import DB
+        flags = DB._parse_connection_string(DB_CONN_STRING)
+        if 'try_transactions' in flags:
+            del flags['try_transactions']
+        return DB(**flags)
+
+    def test_tables(self):
+        self.db = self._makeOne()
+
+        tables = self.db.tables()
+        self.assertEqual(len(tables), 1)
+        self.assertEqual(tables[0]['table_name'], TABLE_NAME)
+        self.assertTrue(tables[0].get('description'))  # Details not needed
+
+    def test_columns(self):
+        self.db = self._makeOne()
+
+        cols = self.db.columns(TABLE_NAME)
+        self.assertEqual(len(cols), 2)
+        self.assertEqual(cols[0]['name'], TABLE_COL_INT)
+        self.assertEqual(cols[0]['type'], 'int')
+        self.assertEqual(cols[0]['scale'], 10)
+        self.assertFalse(cols[0]['nullable'])
+        self.assertTrue(cols[0]['index'])
+        self.assertTrue(cols[0]['primary_key'])
+        self.assertTrue(cols[0]['unique'])
+        self.assertEqual(cols[0]['key'], 'PRI')
+        self.assertEqual(cols[0]['default'], '0000000000')
+        self.assertEqual(cols[1]['name'], TABLE_COL_VARCHAR)
+        self.assertEqual(cols[1]['type'], 'varchar')
+        self.assertEqual(cols[1]['scale'], 20)
+
+    def test_query_error(self):
+        from _mysql_exceptions import ProgrammingError
+        self.db = self._makeOne()
+
+        self.assertRaises(ProgrammingError, self.db.query,
+                          'SELECT * from NOTEXISTING')
+
+
 class _SavePointTests(unittest.TestCase):
 
     def _makeOne(self):
@@ -358,4 +416,5 @@ def test_suite():
                                unittest.makeSuite(DBPoolTests),
                                unittest.makeSuite(PatchedDBPoolTests),
                                unittest.makeSuite(DBTests),
+                               unittest.makeSuite(RealConnectionDBTests),
                                unittest.makeSuite(_SavePointTests)))

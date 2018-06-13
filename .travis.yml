@@ -1,10 +1,16 @@
 language: python
 sudo: false
+services:
+    - mysql
 python:
     - 2.7
     - 3.4
     - 3.5
     - 3.6
+before_install:
+  - mysql -e "CREATE DATABASE IF NOT EXISTS zmysqldatest;"
+  - mysql -e "CREATE USER 'zmysqldatest'@'localhost' IDENTIFIED BY 'zmysqldatest';"
+  - mysql -e "GRANT ALL PRIVILEGES ON zmysqldatest.* TO 'zmysqldatest'@'localhost';"
 install:
     - pip install -U setuptools==33.1.1
     - pip install zc.buildout

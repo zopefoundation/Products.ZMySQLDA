@@ -39,19 +39,8 @@ class FakeResults:
         self.results = results
         self.next_index = 0
 
-        for k, v in kw.items():
-            setattr(self, k, v)
-
     def fetch_row(self, count):
-        if count == 0:
-            return self.results
-
-        rows = []
-        max_index = self.next_index + count
-        if self.results and len(self.results) >= max_index:
-            rows = self.results[self.next_index:max_index]
-            self.next_index = max_index
-        return rows
+        return self.results
 
 
 class FakeConnection:
