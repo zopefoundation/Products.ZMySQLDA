@@ -80,7 +80,13 @@ class Connection(ConnectionBase):
         :bool: check -- Check if the database connection can be opened after
                         instantiation.
 
-        :bool: use_unicode -- Use unicode internally. Default: False.
+        :bool: use_unicode -- If set to ``True``, values from columns of type
+                              ``CHAR``, ``VARCHAR`` and ``TEXT`` are returned
+                              as unicode strings by the database backend.
+                              Combined with the hardcoded ``UTF-8`` character
+                              set of this package the setting allows you to
+                              control the character set of database return 
+                              values better. Default: False.
 
         :bool: auto_create_db -- If the database given in ``connection_string``
                                  does not exist, create it automatically.
@@ -253,7 +259,13 @@ def manage_addZMySQLConnection(self, id, title, connection_string, check=None,
     :bool: check -- Check if the database connection can be opened after
                     instantiation. Default: False.
 
-    :bool: use_unicode -- Use unicode internally. Default: False.
+    :bool: use_unicode -- If set to ``True``, values from columns of type
+                          ``CHAR``, ``VARCHAR`` and ``TEXT`` are returned
+                          as unicode strings by the database backend.
+                          Combined with the hardcoded ``UTF-8`` character
+                          set of this package the setting allows you to
+                          control the character set of database return values
+                          better. Default: False.
 
     :bool: auto_create_db -- If the database given in ``connection_string``
                              does not exist, create it automatically.

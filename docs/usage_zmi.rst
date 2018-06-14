@@ -11,7 +11,23 @@ close the connection.
 
 Properties
 ----------
-Edit the database connection attributes and apply any changes.
+Edit the database connection attributes and apply any changes:
+
+* `Title`: An optional title that shows up in the :term:`ZMI`.
+* `Database Connection String`: A string encapsulating how to connect
+  to the database. See :ref:`connection-string` for details.
+* `Connect immediately`: Should the database connection be established
+  immediately or when the first database query is run.
+* `Unicode Support`: If set to ``True``, values from columns of type
+  ``CHAR``, ``VARCHAR`` and ``TEXT`` are returned as unicode strings by the
+  database backend.  Combined with the hardcoded ``UTF-8`` character set of
+  this package the setting allows you to control the character set of
+  database return values better. Try enabling it if you are seeing character
+  set/string encoding issues.
+* `Automatically create database`: If the `Database Connection String`
+  refers to a database that does not yet exist `and` this setting is
+  activated, the ZMySQLDA connector will attempt to create the
+  database.
 
 Test
 ----

@@ -1,6 +1,8 @@
+.. _connection-string:
+
 Connection Strings
 ------------------
-The connection string used for Z MySQL Database Connection
+The connection string used for Z MySQL Database Connection objects
 are of the form::
 
    [*lock_name][+|-]database[@host[:port]] [user [password [unix_socket]]]
