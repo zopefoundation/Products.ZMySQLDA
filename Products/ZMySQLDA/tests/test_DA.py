@@ -153,7 +153,8 @@ class RealConnectionTests(unittest.TestCase):
 
     def _makeOne(self, *args, **kw):
         from Products.ZMySQLDA.DA import Connection
-        return Connection('conn_id', 'Conn Title', DB_CONN_STRING, False)
+        return Connection('conn_id', 'Conn Title', DB_CONN_STRING, False,
+                          use_unicode=True)
 
     def test_manage_test_ascii(self):
         self.da = self._makeOne()
@@ -165,15 +166,20 @@ class RealConnectionTests(unittest.TestCase):
         self.assertEqual(res[0][TABLE_COL_INT], 1)
         self.assertEqual(res[0][TABLE_COL_VARCHAR], 'testing')
 
-    @unittest.skipIf('TRAVIS' in os.environ, 'Does not work on Travis CI')
     def test_manage_test_nonascii(self):
+        # The connection is set up with ``use_unicode``, which means queries
+        # will return unicode data.
         self.da = self._makeOne()
+        nonascii = u'\xfcbrigens'
         if six.PY3:
-            nonascii = '\xfcbrigens'
             sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, nonascii)
         else:
-            nonascii = u'\xfcbrigens'.encode('UTF-8')
-            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, nonascii)
+            # Under Python 2 it is still necessary to INSERT with
+            # an encoded string, unicode breaks here because the ``_mysql``
+            # module will attempt to convert unicode to string with no
+            # character set provided, which will then use ``ascii``.
+            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME,
+                                                       nonascii.encode('UTF8'))
         self.da.manage_test(sql)
 
         res = self.da.manage_test('SELECT * FROM %s' % TABLE_NAME)
