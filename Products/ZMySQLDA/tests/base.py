@@ -30,6 +30,8 @@ TABLE_COL_VARCHAR = 'c_varchar'
 COL_INT = 'INT(10) UNSIGNED ZEROFILL NOT NULL DEFAULT 0 PRIMARY KEY'
 COL_VARCHAR = 'VARCHAR(20)'
 
+NO_MYSQL_MSG = 'Please see the documentation for running functional tests.'
+
 
 def fake_connect(**kw):
     return FakeConnection(**kw)

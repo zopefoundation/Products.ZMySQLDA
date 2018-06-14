@@ -386,7 +386,9 @@ class DB(TM):
         try:
             # Field, Type, Null, Key, Default, Extra
             db_result = self._query("SHOW COLUMNS FROM %s" % table_name)
-        except Exception:
+        except ProgrammingError:
+            # Table does not exist. Any other error should propagate.
+            LOG.warning('columns query for non-existing table %s' % table_name)
             return ()
 
         for Field, Type, Null, Key, Default, Extra in db_result.fetch_row(0):

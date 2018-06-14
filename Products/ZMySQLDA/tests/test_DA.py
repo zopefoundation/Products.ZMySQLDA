@@ -12,7 +12,6 @@
 ##############################################################################
 """ Tests for the DA module
 """
-import os
 import unittest
 
 import six
@@ -20,6 +19,7 @@ from six.moves._thread import get_ident
 
 from .base import _mySQLNotAvailable
 from .base import DB_CONN_STRING
+from .base import NO_MYSQL_MSG
 from .base import TABLE_NAME
 from .base import TABLE_COL_INT
 from .base import TABLE_COL_VARCHAR
@@ -143,10 +143,7 @@ class PatchedConnectionTests(PatchedConnectionTestsBase):
                          b'foo'.decode('ASCII'))
 
 
-skip_msg = 'Please see the documentation for running functional tests.'
-
-
-@unittest.skipIf(_mySQLNotAvailable(), skip_msg)
+@unittest.skipIf(_mySQLNotAvailable(), NO_MYSQL_MSG)
 class RealConnectionTests(unittest.TestCase):
 
     layer = MySQLRequiredLayer

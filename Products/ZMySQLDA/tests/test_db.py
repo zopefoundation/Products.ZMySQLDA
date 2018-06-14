@@ -18,7 +18,10 @@ from six.moves._thread import get_ident
 
 from .base import _mySQLNotAvailable
 from .base import DB_CONN_STRING
+from .base import DB_PASSWORD
+from .base import DB_USER
 from .base import MySQLRequiredLayer
+from .base import NO_MYSQL_MSG
 from .base import PatchedConnectionTestsBase
 from .base import TABLE_COL_INT
 from .base import TABLE_COL_VARCHAR
@@ -108,6 +111,51 @@ class PatchedDBPoolTests(PatchedConnectionTestsBase):
         pool._db_flags = {'kw_args': {}}
         self.assertEqual(pool.variables(),
                          {'var1': 'val1', 'version': '5.5.5'})
+
+
+@unittest.skipIf(_mySQLNotAvailable(), NO_MYSQL_MSG)
+class RealConnectionDBPoolTests(unittest.TestCase):
+
+    layer = MySQLRequiredLayer
+
+    def tearDown(self):
+        if getattr(self, 'dbpool', None) is not None:
+            self.dbpool.close()
+
+    def _makeOne(self, conn_string=DB_CONN_STRING, **kw):
+        from Products.ZMySQLDA.db import DB
+        from Products.ZMySQLDA.db import DBPool
+        dbpool = DBPool(DB, **kw)
+        # Connect to the database. Stupid API.
+        return dbpool(conn_string)
+
+    def test_connect_bad_db(self):
+        from _mysql_exceptions import OperationalError
+
+        # DB doesn't exist and should not be created
+        conn_str = 'notexisting %s %s' % (DB_USER, DB_PASSWORD)
+        self.assertRaises(OperationalError, self._makeOne, conn_str,
+                          use_unicode=True, create_db=False)
+
+        # DB doesn't exist and should be created
+        conn_str = 'notexisting %s %s' % (DB_USER, DB_PASSWORD)
+        self.assertRaises(OperationalError, self._makeOne, conn_str,
+                          use_unicode=True, create_db=True)
+
+    def test_tables(self):
+        self.dbpool = self._makeOne()
+
+        tables = self.dbpool.tables()
+        self.assertEqual(len(tables), 1)
+        self.assertEqual(tables[0]['table_name'], TABLE_NAME)
+        self.assertTrue(tables[0].get('description'))  # Details not needed
+
+    def test_columns(self):
+        self.dbpool = self._makeOne()
+        cols = self.dbpool.columns(TABLE_NAME)
+        self.assertEqual(len(cols), 2)
+        self.assertEqual(cols[0]['name'], TABLE_COL_INT)
+        self.assertEqual(cols[1]['name'], TABLE_COL_VARCHAR)
 
 
 class DBTests(PatchedConnectionTestsBase):
@@ -342,10 +390,7 @@ class DBTests(PatchedConnectionTestsBase):
         self.assertEqual(db.db.last_query, 'SAVEPOINT %s' % sp.ident)
 
 
-skip_msg = 'Please see the documentation for running functional tests.'
-
-
-@unittest.skipIf(_mySQLNotAvailable(), skip_msg)
+@unittest.skipIf(_mySQLNotAvailable(), NO_MYSQL_MSG)
 class RealConnectionDBTests(unittest.TestCase):
 
     layer = MySQLRequiredLayer
@@ -386,6 +431,12 @@ class RealConnectionDBTests(unittest.TestCase):
         self.assertEqual(cols[1]['type'], 'varchar')
         self.assertEqual(cols[1]['scale'], 20)
 
+    def test_columns_badtable(self):
+        self.db = self._makeOne()
+
+        # Asking for columns from a bad table should just return empty results.
+        self.assertFalse(self.db.columns('notexistingtable'))
+
     def test_query_error(self):
         from _mysql_exceptions import ProgrammingError
         self.db = self._makeOne()
@@ -415,6 +466,7 @@ def test_suite():
     return unittest.TestSuite((unittest.makeSuite(DbFunctionsTests),
                                unittest.makeSuite(DBPoolTests),
                                unittest.makeSuite(PatchedDBPoolTests),
+                               unittest.makeSuite(RealConnectionDBPoolTests),
                                unittest.makeSuite(DBTests),
                                unittest.makeSuite(RealConnectionDBTests),
                                unittest.makeSuite(_SavePointTests)))
