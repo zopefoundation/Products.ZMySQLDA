@@ -6,6 +6,8 @@ Products.ZMySQLDA change log
 - add some functional tests that require a running database server,
   see the documentation for how to set it up.
 
+- added missing ``six`` dependency declaration
+
 
 4.0b1 (2018-06-11)
 ------------------
