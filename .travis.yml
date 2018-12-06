@@ -6,11 +6,18 @@ python:
     - 2.7
     - 3.5
     - 3.6
-    - 3.7
+
+matrix:
+    include:
+        - python: "3.7"
+          dist: xenial
+          sudo: true
+
 before_install:
   - mysql -e "CREATE DATABASE IF NOT EXISTS zmysqldatest;"
   - mysql -e "CREATE USER 'zmysqldatest'@'localhost' IDENTIFIED BY 'zmysqldatest';"
   - mysql -e "GRANT ALL PRIVILEGES ON zmysqldatest.* TO 'zmysqldatest'@'localhost';"
+
 install:
     - pip install -U setuptools>=36.2
     - pip install zc.buildout
@@ -18,12 +25,16 @@ install:
     - pip install -U six==$(curl $(awk '$1 ==  "extends" {print $3}' buildout.cfg) 2>/dev/null | awk '$1 == "six" {print $3}')
     - buildout bootstrap
     - buildout
+
 script:
     - coverage run bin/test -v1
+
 after_success:
     - coveralls
+
 notifications:
     email: false
+
 cache:
   pip: true
   directories:
