@@ -3,12 +3,14 @@ Products.ZMySQLDA change log
 
 4.0b2 (unreleased)
 ------------------
-- add some functional tests that require a running database server,
-  see the documentation for how to set it up.
+- declare (and test for) Python 3.7 compatibility
+
+- make the checkboxes on the `Properties` ZMI tab work
 
 - added missing ``six`` dependency declaration
 
-- make the checkboxes on the `Properties` ZMI tab work
+- add some functional tests that require a running database server,
+  see the documentation for how to set it up.
 
 
 4.0b1 (2018-06-11)
