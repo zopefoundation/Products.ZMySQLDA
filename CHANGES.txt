@@ -8,6 +8,8 @@ Products.ZMySQLDA change log
 
 - added missing ``six`` dependency declaration
 
+- make the checkboxes on the `Properties` ZMI tab work
+
 
 4.0b1 (2018-06-11)
 ------------------

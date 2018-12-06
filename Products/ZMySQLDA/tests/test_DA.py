@@ -60,13 +60,30 @@ class ConnectionTests(unittest.TestCase):
         self.assertEqual(conn._pool_key(), (conn.getId(),))
 
     def test_manage_edit(self):
+        from Products.ZMySQLDA.DA import Connection
+        old_connect = Connection.connect
+        def fake_connect(self, conn_str):
+            self._v_connected = True
+        Connection.connect = fake_connect
         conn = self._simpleMakeOne()
+
         conn.manage_edit('New Title', 'new_conn_string', check=False,
                          use_unicode=True, auto_create_db=True)
         self.assertEqual(conn.title, 'New Title')
         self.assertEqual(conn.connection_string, 'new_conn_string')
         self.assertTrue(conn.use_unicode)
         self.assertTrue(conn.auto_create_db)
+        self.assertFalse(conn.connected())
+
+        conn.manage_edit('Another Title', 'another_conn_string', check=True,
+                         use_unicode=None, auto_create_db=None)
+        self.assertEqual(conn.title, 'Another Title')
+        self.assertEqual(conn.connection_string, 'another_conn_string')
+        self.assertFalse(conn.use_unicode)
+        self.assertFalse(conn.auto_create_db)
+        self.assertTrue(conn.connected())
+
+        Connection.connect = old_connect
 
     def test_zope_factory(self):
         from OFS.Folder import Folder
