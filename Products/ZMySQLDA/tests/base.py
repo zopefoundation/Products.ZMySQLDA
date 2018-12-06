@@ -48,7 +48,7 @@ def _mySQLNotAvailable():
         connection = real_connect()
         connection.close()
         return False
-    except MySQLdb.OperationalError as exc:
+    except MySQLdb.OperationalError as exc:  # noqa
         # print('Cannot connect to %s as %s: %s' % (DB, DB_USER, exc.args))
         return True
 

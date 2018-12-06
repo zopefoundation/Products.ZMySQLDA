@@ -85,7 +85,7 @@ class Connection(ConnectionBase):
                               as unicode strings by the database backend.
                               Combined with the hardcoded ``UTF-8`` character
                               set of this package the setting allows you to
-                              control the character set of database return 
+                              control the character set of database return
                               values better. Default: False.
 
         :bool: auto_create_db -- If the database given in ``connection_string``

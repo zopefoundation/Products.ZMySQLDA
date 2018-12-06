@@ -62,8 +62,10 @@ class ConnectionTests(unittest.TestCase):
     def test_manage_edit(self):
         from Products.ZMySQLDA.DA import Connection
         old_connect = Connection.connect
+
         def fake_connect(self, conn_str):
             self._v_connected = True
+
         Connection.connect = fake_connect
         conn = self._simpleMakeOne()
 
