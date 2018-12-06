@@ -50,6 +50,7 @@ setup(
     namespace_packages=["Products"],
     zip_safe=False,
     install_requires=[
+        "setuptools >= 36.2",
         "six",
         "mysqlclient",
         "Products.ZSQLMethods",
