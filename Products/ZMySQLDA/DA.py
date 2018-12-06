@@ -92,11 +92,8 @@ class Connection(ConnectionBase):
                                  does not exist, create it automatically.
                                  Default: False.
         """
-        if use_unicode is not None:
-            self.use_unicode = bool(use_unicode)
-        if auto_create_db is not None:
-            self.auto_create_db = bool(auto_create_db)
-
+        self.use_unicode = bool(use_unicode)
+        self.auto_create_db = bool(auto_create_db)
         return super(Connection, self).__init__(id, title, connection_string,
                                                 check)
 

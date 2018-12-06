@@ -102,6 +102,14 @@ class ConnectionTests(unittest.TestCase):
         self.assertTrue(conn.use_unicode)
         self.assertTrue(conn.auto_create_db)
 
+        # Make sure the defaults for use_unicode and auto_create_db
+        # do the right thing
+        manage_addZMySQLConnection(container, 'conn2', 'Other title',
+                                   'db_conn_string', False)
+        conn = container.conn2
+        self.assertFalse(conn.use_unicode)
+        self.assertFalse(conn.auto_create_db)
+
 
 class PatchedConnectionTests(PatchedConnectionTestsBase):
     """ Tests that require faking out MySQLdb.connect
