@@ -101,8 +101,10 @@ class DBPool(object):
     connected_timestamp = ""
     _create_db = False
     use_unicode = False
+    charset = None
 
-    def __init__(self, db_cls, create_db=False, use_unicode=False):
+    def __init__(self, db_cls, create_db=False, use_unicode=False,
+                 charset=None):
         """ Set transaction managed class for use in pool.
         """
         self._db_cls = db_cls
@@ -113,6 +115,7 @@ class DBPool(object):
         self._create_db = create_db
         # unicode settings
         self.use_unicode = use_unicode
+        self.charset = charset
 
     def __call__(self, connection):
         """ Parse the connection string.
@@ -124,7 +127,8 @@ class DBPool(object):
         """
         self.connection = connection
         db_flags = self._db_cls._parse_connection_string(connection,
-                                                         self.use_unicode)
+                                                         self.use_unicode,
+                                                         charset=self.charset)
         self._db_flags = db_flags
 
         # connect to server to determin tranasactional capabilities
@@ -139,9 +143,11 @@ class DBPool(object):
                     raise
                 connection = MySQLdb.connect(**kw_args)
                 create_query = "create database %s" % db
-                if self.use_unicode:
+                if self.use_unicode and not self.charset:
                     create_query += " default character set %s" % (
                                         self._db_cls.unicode_charset)
+                elif self.charset:
+                    create_query += " default character set %s" % self.charset
                 connection.query(create_query)
                 connection.store_result()
             else:
@@ -315,7 +321,8 @@ class DB(TM):
         self.db.ping(True)
 
     @classmethod
-    def _parse_connection_string(cls, connection, use_unicode=False):
+    def _parse_connection_string(cls, connection, use_unicode=False,
+                                 charset=None):
         """ Done as a class method to both allow access to class attribute
             conv (conversion) settings while allowing for wrapping pool class
             use of this method. The former is important to allow for subclasses
@@ -328,6 +335,8 @@ class DB(TM):
         if use_unicode:
             kw_args["use_unicode"] = use_unicode
             kw_args["charset"] = cls.unicode_charset
+        if charset:
+            kw_args["charset"] = charset
         items = connection.split()
         flags["use_TM"] = None
         if _mysql.get_client_info()[0] >= "5":

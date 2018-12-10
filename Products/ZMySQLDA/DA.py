@@ -52,6 +52,7 @@ class Connection(ConnectionBase):
 
     auto_create_db = True
     use_unicode = False
+    charset = None
     _v_connected = ""
     _isAnSQLConnection = 1
     info = None
@@ -66,7 +67,7 @@ class Connection(ConnectionBase):
         {"label": "Browse", "action": "manage_browse"},)
 
     def __init__(self, id, title, connection_string, check, use_unicode=None,
-                 auto_create_db=None):
+                 charset=None, auto_create_db=None):
         """ Instance setup. Optionally opens the connection.
 
         :string: id -- The id of the ZMySQLDA Connection
@@ -88,11 +89,18 @@ class Connection(ConnectionBase):
                               control the character set of database return
                               values better. Default: False.
 
+        :string: charset -- The character set for the connection. MySQL/MariaDB
+                            will encode query results to this character set.
+                            In previous releases this defaulted to Latin-1
+                            (ISO-8859-1) or, if the ``use_unicode`` flag was
+                            used, UTF-8. Default: None (old behavior)
+
         :bool: auto_create_db -- If the database given in ``connection_string``
                                  does not exist, create it automatically.
                                  Default: False.
         """
         self.use_unicode = bool(use_unicode)
+        self.charset = charset
         self.auto_create_db = bool(auto_create_db)
         return super(Connection, self).__init__(id, title, connection_string,
                                                 check)
@@ -142,7 +150,8 @@ class Connection(ConnectionBase):
                 conn.closeConnection()
 
             conn_pool = DBPool(self.factory(), create_db=self.auto_create_db,
-                               use_unicode=self.use_unicode)
+                               use_unicode=self.use_unicode,
+                               charset=self.charset)
             database_connection_pool_lock.acquire()
             try:
                 conn = conn_pool(conn_string)
@@ -178,7 +187,7 @@ class Connection(ConnectionBase):
     security.declareProtected(change_database_methods, 'manage_edit')
 
     def manage_edit(self, title, connection_string, check=None,
-                    use_unicode=None, auto_create_db=None):
+                    use_unicode=None, charset=None, auto_create_db=None):
         """ Edit the connection attributes through the Zope ZMI.
 
         :string: title -- The title of the ZMySQLDA Connection
@@ -192,11 +201,18 @@ class Connection(ConnectionBase):
 
         :bool: use_unicode -- Use unicode internally. Default: False.
 
+        :string: charset -- The character set for the connection. MySQL/MariaDB
+                            will encode query results to this character set.
+                            In previous releases this defaulted to Latin-1
+                            (ISO-8859-1) or, if the ``use_unicode`` flag was
+                            used, UTF-8. Default: None (old behavior)
+
         :bool: auto_create_db -- If the database given in ``connection_string``
                                  does not exist, create it automatically.
                                  Default: False.
         """
         self.use_unicode = bool(use_unicode)
+        self.charset = charset
         self.auto_create_db = bool(auto_create_db)
 
         return super(Connection, self).manage_edit(title, connection_string,
@@ -240,7 +256,7 @@ mod_security.declareProtected(add_zmysql_database_connections,
 
 def manage_addZMySQLConnection(self, id, title, connection_string, check=None,
                                use_unicode=None, auto_create_db=None,
-                               REQUEST=None):
+                               charset=None, REQUEST=None):
     """Factory function to add a connection object from the Zope ZMI.
 
     :string: id -- The id of the ZMySQLDA Connection
@@ -262,6 +278,12 @@ def manage_addZMySQLConnection(self, id, title, connection_string, check=None,
                           control the character set of database return values
                           better. Default: False.
 
+    :string: charset -- The character set for the connection. MySQL/MariaDB
+                        will encode query results to this character set.
+                        In previous releases this defaulted to Latin-1
+                        (ISO-8859-1) or, if the ``use_unicode`` flag was used,
+                        UTF-8. Default: None (old behavior)
+
     :bool: auto_create_db -- If the database given in ``connection_string``
                              does not exist, create it automatically.
                              Default: False.
@@ -271,7 +293,7 @@ def manage_addZMySQLConnection(self, id, title, connection_string, check=None,
     """
     self._setObject(id,
                     Connection(id, title, connection_string, check,
-                               use_unicode=use_unicode,
+                               use_unicode=use_unicode, charset=charset,
                                auto_create_db=auto_create_db))
 
     if REQUEST is not None:
