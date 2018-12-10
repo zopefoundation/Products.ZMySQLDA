@@ -220,17 +220,10 @@ class RealConnectionTests(unittest.TestCase):
     def test_manage_test_encoded(self):
         # The connection is set up with ``use_unicode``, which means queries
         # will return unicode data.
-        self.da = self._makeOne(charset='latin1')
+        self.da = self._makeOne(use_unicode=False, charset='latin1')
         nonascii = u'\xfcbrigens'
-        if six.PY3:
-            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, nonascii)
-        else:
-            # Under Python 2 it is still necessary to INSERT with
-            # an encoded string, unicode breaks here because the ``_mysql``
-            # module will attempt to convert unicode to string with no
-            # character set provided, which will then use ``ascii``.
-            sql = "INSERT INTO %s VALUES (1, '%s')" % (
-                TABLE_NAME, nonascii.encode('latin1'))
+        sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME,
+                                                   nonascii.encode('latin1'))
         self.da.manage_test(sql)
 
         res = self.da.manage_test('SELECT * FROM %s' % TABLE_NAME)
