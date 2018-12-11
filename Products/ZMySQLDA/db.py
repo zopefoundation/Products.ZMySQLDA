@@ -332,8 +332,8 @@ class DB(TM):
         """
         kw_args = {"conv": cls.conv}
         flags = {"kw_args": kw_args, "connection": connection}
+        kw_args["use_unicode"] = use_unicode
         if use_unicode:
-            kw_args["use_unicode"] = use_unicode
             kw_args["charset"] = cls.unicode_charset
         if charset:
             kw_args["charset"] = charset

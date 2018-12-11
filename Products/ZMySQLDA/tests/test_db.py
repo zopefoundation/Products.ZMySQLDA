@@ -209,7 +209,7 @@ class DBTests(PatchedConnectionTestsBase):
         self.assertFalse('user' in parsed['kw_args'])
         self.assertFalse('passwd' in parsed['kw_args'])
         self.assertFalse('unix_socket' in parsed['kw_args'])
-        self.assertFalse('use_unicode' in parsed['kw_args'])
+        self.assertFalse(parsed['kw_args']['use_unicode'])
         self.assertFalse('charset' in parsed['kw_args'])
 
     def test__parse_connection_string_simple(self):
@@ -227,7 +227,7 @@ class DBTests(PatchedConnectionTestsBase):
         self.assertEqual(parsed['kw_args']['user'], 'foo_user')
         self.assertEqual(parsed['kw_args']['passwd'], 'foo_pw')
         self.assertFalse('unix_socket' in parsed['kw_args'])
-        self.assertFalse('use_unicode' in parsed['kw_args'])
+        self.assertFalse(parsed['kw_args']['use_unicode'])
         self.assertFalse('charset' in parsed['kw_args'])
 
     def test__parse_connection_string_explicit_host(self):
@@ -245,7 +245,7 @@ class DBTests(PatchedConnectionTestsBase):
         self.assertEqual(parsed['kw_args']['user'], 'foo_user')
         self.assertEqual(parsed['kw_args']['passwd'], 'foo_pw')
         self.assertFalse('unix_socket' in parsed['kw_args'])
-        self.assertFalse('use_unicode' in parsed['kw_args'])
+        self.assertFalse(parsed['kw_args']['use_unicode'])
         self.assertFalse('charset' in parsed['kw_args'])
 
     def test__parse_connection_string_unix_socket(self):
@@ -263,7 +263,7 @@ class DBTests(PatchedConnectionTestsBase):
         self.assertEqual(parsed['kw_args']['user'], 'foo_user')
         self.assertEqual(parsed['kw_args']['passwd'], 'foo_pw')
         self.assertEqual(parsed['kw_args']['unix_socket'], '/tmp/mysql.sock')
-        self.assertFalse('use_unicode' in parsed['kw_args'])
+        self.assertFalse(parsed['kw_args']['use_unicode'])
         self.assertFalse('charset' in parsed['kw_args'])
 
     def test__parse_connection_string_mysql_lock(self):
@@ -281,7 +281,7 @@ class DBTests(PatchedConnectionTestsBase):
         self.assertEqual(parsed['kw_args']['user'], 'foo_user')
         self.assertEqual(parsed['kw_args']['passwd'], 'foo_pw')
         self.assertFalse('unix_socket' in parsed['kw_args'])
-        self.assertFalse('use_unicode' in parsed['kw_args'])
+        self.assertFalse(parsed['kw_args']['use_unicode'])
         self.assertFalse('charset' in parsed['kw_args'])
 
     def test__parse_connection_string_transactions(self):
@@ -299,7 +299,7 @@ class DBTests(PatchedConnectionTestsBase):
         self.assertEqual(parsed['kw_args']['user'], 'foo_user')
         self.assertEqual(parsed['kw_args']['passwd'], 'foo_pw')
         self.assertFalse('unix_socket' in parsed['kw_args'])
-        self.assertFalse('use_unicode' in parsed['kw_args'])
+        self.assertFalse(parsed['kw_args']['use_unicode'])
         self.assertFalse('charset' in parsed['kw_args'])
 
     def test__parse_connection_string_use_unicode(self):
@@ -324,7 +324,7 @@ class DBTests(PatchedConnectionTestsBase):
 
         c_str = '+foo_db@127.0.0.1:3306 foo_user foo_pw'
         parsed = db._parse_connection_string(c_str, charset='utf8')
-        self.assertFalse('use_unicode' in parsed['kw_args'])
+        self.assertFalse(parsed['kw_args']['use_unicode'])
         self.assertEqual(parsed['kw_args']['charset'], 'utf8')
 
     def test_variables(self):
