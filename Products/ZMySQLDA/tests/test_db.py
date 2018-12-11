@@ -14,6 +14,7 @@
 """
 import unittest
 
+import six
 from six.moves._thread import get_ident
 
 from .base import _mySQLNotAvailable
@@ -147,15 +148,16 @@ class RealConnectionDBPoolTests(unittest.TestCase):
 
         tables = self.dbpool.tables()
         self.assertEqual(len(tables), 1)
-        self.assertEqual(tables[0]['table_name'], TABLE_NAME)
+        # Need to coerce to bytes for Python 3 compatibility
+        self.assertEqual(tables[0]['table_name'], six.b(TABLE_NAME))
         self.assertTrue(tables[0].get('description'))  # Details not needed
 
     def test_columns(self):
         self.dbpool = self._makeOne()
         cols = self.dbpool.columns(TABLE_NAME)
         self.assertEqual(len(cols), 2)
-        self.assertEqual(cols[0]['name'], TABLE_COL_INT)
-        self.assertEqual(cols[1]['name'], TABLE_COL_VARCHAR)
+        self.assertEqual(cols[0]['name'], six.b(TABLE_COL_INT))
+        self.assertEqual(cols[1]['name'], six.b(TABLE_COL_VARCHAR))
 
 
 class DBTests(PatchedConnectionTestsBase):
@@ -201,6 +203,8 @@ class DBTests(PatchedConnectionTestsBase):
         self.assertFalse('user' in parsed['kw_args'])
         self.assertFalse('passwd' in parsed['kw_args'])
         self.assertFalse('unix_socket' in parsed['kw_args'])
+        self.assertFalse(parsed['kw_args']['use_unicode'])
+        self.assertFalse('charset' in parsed['kw_args'])
 
     def test__parse_connection_string_simple(self):
         db = self._makeOne(kw_args={})
@@ -217,6 +221,8 @@ class DBTests(PatchedConnectionTestsBase):
         self.assertEqual(parsed['kw_args']['user'], 'foo_user')
         self.assertEqual(parsed['kw_args']['passwd'], 'foo_pw')
         self.assertFalse('unix_socket' in parsed['kw_args'])
+        self.assertFalse(parsed['kw_args']['use_unicode'])
+        self.assertFalse('charset' in parsed['kw_args'])
 
     def test__parse_connection_string_explicit_host(self):
         db = self._makeOne(kw_args={})
@@ -233,6 +239,8 @@ class DBTests(PatchedConnectionTestsBase):
         self.assertEqual(parsed['kw_args']['user'], 'foo_user')
         self.assertEqual(parsed['kw_args']['passwd'], 'foo_pw')
         self.assertFalse('unix_socket' in parsed['kw_args'])
+        self.assertFalse(parsed['kw_args']['use_unicode'])
+        self.assertFalse('charset' in parsed['kw_args'])
 
     def test__parse_connection_string_unix_socket(self):
         db = self._makeOne(kw_args={})
@@ -249,6 +257,8 @@ class DBTests(PatchedConnectionTestsBase):
         self.assertEqual(parsed['kw_args']['user'], 'foo_user')
         self.assertEqual(parsed['kw_args']['passwd'], 'foo_pw')
         self.assertEqual(parsed['kw_args']['unix_socket'], '/tmp/mysql.sock')
+        self.assertFalse(parsed['kw_args']['use_unicode'])
+        self.assertFalse('charset' in parsed['kw_args'])
 
     def test__parse_connection_string_mysql_lock(self):
         db = self._makeOne(kw_args={})
@@ -265,6 +275,8 @@ class DBTests(PatchedConnectionTestsBase):
         self.assertEqual(parsed['kw_args']['user'], 'foo_user')
         self.assertEqual(parsed['kw_args']['passwd'], 'foo_pw')
         self.assertFalse('unix_socket' in parsed['kw_args'])
+        self.assertFalse(parsed['kw_args']['use_unicode'])
+        self.assertFalse('charset' in parsed['kw_args'])
 
     def test__parse_connection_string_transactions(self):
         db = self._makeOne(kw_args={})
@@ -281,6 +293,33 @@ class DBTests(PatchedConnectionTestsBase):
         self.assertEqual(parsed['kw_args']['user'], 'foo_user')
         self.assertEqual(parsed['kw_args']['passwd'], 'foo_pw')
         self.assertFalse('unix_socket' in parsed['kw_args'])
+        self.assertFalse(parsed['kw_args']['use_unicode'])
+        self.assertFalse('charset' in parsed['kw_args'])
+
+    def test__parse_connection_string_use_unicode(self):
+        db = self._makeOne(kw_args={})
+
+        c_str = '+foo_db@127.0.0.1:3306 foo_user foo_pw'
+        parsed = db._parse_connection_string(c_str, use_unicode=True)
+        self.assertTrue(parsed['kw_args']['use_unicode'])
+        self.assertEqual(parsed['kw_args']['charset'], 'utf8')
+
+    def test__parse_connection_string_use_unicode_charset(self):
+        db = self._makeOne(kw_args={})
+
+        c_str = '+foo_db@127.0.0.1:3306 foo_user foo_pw'
+        parsed = db._parse_connection_string(c_str, use_unicode=True,
+                                             charset='latin1')
+        self.assertTrue(parsed['kw_args']['use_unicode'])
+        self.assertEqual(parsed['kw_args']['charset'], 'latin1')
+
+    def test__parse_connection_string_charset(self):
+        db = self._makeOne(kw_args={})
+
+        c_str = '+foo_db@127.0.0.1:3306 foo_user foo_pw'
+        parsed = db._parse_connection_string(c_str, charset='utf8')
+        self.assertFalse(parsed['kw_args']['use_unicode'])
+        self.assertEqual(parsed['kw_args']['charset'], 'utf8')
 
     def test_variables(self):
         db = self._makeOne(kw_args={})
@@ -410,7 +449,8 @@ class RealConnectionDBTests(unittest.TestCase):
 
         tables = self.db.tables()
         self.assertEqual(len(tables), 1)
-        self.assertEqual(tables[0]['table_name'], TABLE_NAME)
+        # Need to coerce to bytes for Python 3 compatibility
+        self.assertEqual(tables[0]['table_name'], six.b(TABLE_NAME))
         self.assertTrue(tables[0].get('description'))  # Details not needed
 
     def test_columns(self):
@@ -418,17 +458,17 @@ class RealConnectionDBTests(unittest.TestCase):
 
         cols = self.db.columns(TABLE_NAME)
         self.assertEqual(len(cols), 2)
-        self.assertEqual(cols[0]['name'], TABLE_COL_INT)
-        self.assertEqual(cols[0]['type'], 'int')
+        self.assertEqual(cols[0]['name'], six.b(TABLE_COL_INT))
+        self.assertEqual(cols[0]['type'], b'int')
         self.assertEqual(cols[0]['scale'], 10)
         self.assertFalse(cols[0]['nullable'])
         self.assertTrue(cols[0]['index'])
         self.assertTrue(cols[0]['primary_key'])
         self.assertTrue(cols[0]['unique'])
-        self.assertEqual(cols[0]['key'], 'PRI')
-        self.assertEqual(cols[0]['default'], '0000000000')
-        self.assertEqual(cols[1]['name'], TABLE_COL_VARCHAR)
-        self.assertEqual(cols[1]['type'], 'varchar')
+        self.assertEqual(cols[0]['key'], b'PRI')
+        self.assertEqual(cols[0]['default'], b'0000000000')
+        self.assertEqual(cols[1]['name'], six.b(TABLE_COL_VARCHAR))
+        self.assertEqual(cols[1]['type'], b'varchar')
         self.assertEqual(cols[1]['scale'], 20)
 
     def test_columns_badtable(self):

@@ -83,10 +83,20 @@ class Connection(ConnectionBase):
         :bool: use_unicode -- If set to ``True``, values from columns of type
                               ``CHAR``, ``VARCHAR`` and ``TEXT`` are returned
                               as unicode strings by the database backend.
-                              Combined with the hardcoded ``UTF-8`` character
+                              Combined with the hardcoded ``utf8`` character
                               set of this package the setting allows you to
                               control the character set of database return
                               values better. Default: False.
+
+        :string: charset -- The character set for the connection. MySQL/MariaDB
+                            will encode query results to this character set.
+
+                            On Python 2, both utf8 and Latin1 will work. On
+                            Python 3, only utf8 will work.
+
+                            Default on Python 2: Latin1 when ``use_unicode``
+                            is off, utf8 otherwise
+                            Default on Python 3: utf8
 
         :bool: auto_create_db -- If the database given in ``connection_string``
                                  does not exist, create it automatically.
@@ -192,6 +202,16 @@ class Connection(ConnectionBase):
 
         :bool: use_unicode -- Use unicode internally. Default: False.
 
+        :string: charset -- The character set for the connection. MySQL/MariaDB
+                            will encode query results to this character set.
+
+                            On Python 2, both utf8 and Latin1 will work. On
+                            Python 3, only utf8 will work.
+
+                            Default on Python 2: Latin1 when ``use_unicode``
+                            is off, utf8 otherwise
+                            Default on Python 3: utf8
+
         :bool: auto_create_db -- If the database given in ``connection_string``
                                  does not exist, create it automatically.
                                  Default: False.
@@ -257,10 +277,20 @@ def manage_addZMySQLConnection(self, id, title, connection_string, check=None,
     :bool: use_unicode -- If set to ``True``, values from columns of type
                           ``CHAR``, ``VARCHAR`` and ``TEXT`` are returned
                           as unicode strings by the database backend.
-                          Combined with the hardcoded ``UTF-8`` character
+                          Combined with the hardcoded ``utf8`` character
                           set of this package the setting allows you to
                           control the character set of database return values
                           better. Default: False.
+
+    :string: charset -- The character set for the connection. MySQL/MariaDB
+                        will encode query results to this character set.
+
+                        On Python 2, both utf8 and Latin1 will work. On
+                        Python 3, only utf8 will work.
+
+                        Default on Python 2: Latin1 when ``use_unicode``
+                        is off, utf8 otherwise
+                        Default on Python 3: utf8
 
     :bool: auto_create_db -- If the database given in ``connection_string``
                              does not exist, create it automatically.

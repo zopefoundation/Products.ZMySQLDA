@@ -35,11 +35,33 @@
         </td>
       </tr>
       <tr>
-        <th align="left" valign="top">Unicode Support</th>
+        <th align="left" valign="top">Unicode results</th>
         <td align="left" valign="top">
           <dtml-let checked="use_unicode and ' checked' or ' '">
           <input name="use_unicode" type="checkbox" value="yes" &dtml-checked;>
           </dtml-let>
+        </td>
+      </tr>
+      <tr>
+        <th align="left" valign="top">
+          Character set <a href="#2"><sup>2</sup></a>
+        </th>
+        <td align="left" valign="top">
+        <select name="charset">
+          <option value="" <dtml-if "not charset">selected</dtml-if>>
+            Not set (use previous release defaults)
+          </option>
+          <option value="latin1" <dtml-if "charset == 'latin1'">selected</dtml-if>>
+            Force Latin-1 (Python 2 only)
+          </option>
+          <option value="utf8mb4" <dtml-if "charset == 'utf8mb4'">selected</dtml-if>>
+            Force UTF-8 (utf8mb4, MySQL 5.5.3 and up)
+          </option>
+          <option value="utf8" <dtml-if "charset == 'utf8'">selected</dtml-if>>
+            Force UTF-8 (utf8/utf8mb3, MySQL up to 5.5.2)
+          </option>
+        </select>
+        <small>Character set to use for query results.</small>
         </td>
       </tr>
       <tr>

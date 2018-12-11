@@ -190,26 +190,153 @@ class RealConnectionTests(unittest.TestCase):
         self.assertEqual(res[0][TABLE_COL_INT], 1)
         self.assertEqual(res[0][TABLE_COL_VARCHAR], 'testing')
 
-    def test_manage_test_nonascii(self):
-        # The connection is set up with ``use_unicode``, which means queries
-        # will return unicode data.
-        self.da = self._makeOne()
-        nonascii = u'\xfcbrigens'
+    def test_manage_test_no_use_unicode(self):
+        # If no character set is specified and use_unicode is False,
+        # mysqlclient under Python 2 will connect by default using latin1,
+        # but uses utf8 under Python 3.
+        self.da = self._makeOne(use_unicode=False)
+        unicode_str = u'\xfcbrigens'
+        latin1_str = unicode_str.encode('latin1')
+        utf8_str = unicode_str.encode('utf8')
         if six.PY3:
-            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, nonascii)
+            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, unicode_str)
         else:
             # Under Python 2 it is still necessary to INSERT with
             # an encoded string, unicode breaks here because the ``_mysql``
             # module will attempt to convert unicode to string with no
             # character set provided, which will then use ``ascii``.
-            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME,
-                                                       nonascii.encode('UTF8'))
+            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, latin1_str)
         self.da.manage_test(sql)
 
         res = self.da.manage_test('SELECT * FROM %s' % TABLE_NAME)
         self.assertEqual(len(res), 1)
         self.assertEqual(res[0][TABLE_COL_INT], 1)
-        self.assertEqual(res[0][TABLE_COL_VARCHAR], nonascii)
+        if six.PY3:
+            self.assertEqual(res[0][TABLE_COL_VARCHAR], utf8_str)
+        else:
+            self.assertEqual(res[0][TABLE_COL_VARCHAR], latin1_str)
+
+    def test_manage_test_use_unicode(self):
+        # The connection is set up with ``use_unicode``, which means queries
+        # will return unicode data.
+        self.da = self._makeOne(use_unicode=True)
+        unicode_str = u'\xfcbrigens'
+        utf8_str = unicode_str.encode('UTF8')
+        if six.PY3:
+            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, unicode_str)
+        else:
+            # Under Python 2 it is still necessary to INSERT with
+            # an encoded string, unicode breaks here because the ``_mysql``
+            # module will attempt to convert unicode to string with no
+            # character set provided, which will then use ``ascii``.
+            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, utf8_str)
+        self.da.manage_test(sql)
+
+        res = self.da.manage_test('SELECT * FROM %s' % TABLE_NAME)
+        self.assertEqual(len(res), 1)
+        self.assertEqual(res[0][TABLE_COL_INT], 1)
+        self.assertEqual(res[0][TABLE_COL_VARCHAR], unicode_str)
+
+    def test_manage_test_utf8mb4_use_unicode(self):
+        # The connection is set up with ``use_unicode``, which means queries
+        # will return unicode data.
+        self.da = self._makeOne(use_unicode=True, charset='utf8mb4')
+        unicode_str = u'\xfcbrigens'
+        utf8_str = unicode_str.encode('UTF8')
+        if six.PY3:
+            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, unicode_str)
+        else:
+            # Under Python 2 it is still necessary to INSERT with
+            # an encoded string, unicode breaks here because the ``_mysql``
+            # module will attempt to convert unicode to string with no
+            # character set provided, which will then use ``ascii``.
+            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, utf8_str)
+        self.da.manage_test(sql)
+
+        res = self.da.manage_test('SELECT * FROM %s' % TABLE_NAME)
+        self.assertEqual(len(res), 1)
+        self.assertEqual(res[0][TABLE_COL_INT], 1)
+        self.assertEqual(res[0][TABLE_COL_VARCHAR], unicode_str)
+
+    def test_manage_test_utf8_no_use_unicode(self):
+        self.da = self._makeOne(use_unicode=False, charset='utf8')
+        unicode_str = u'\xfcbrigens'
+        utf8_str = unicode_str.encode('utf8')
+        if six.PY3:
+            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, unicode_str)
+        else:
+            # Under Python 2 it is still necessary to INSERT with
+            # an encoded string, unicode breaks here because the ``_mysql``
+            # module will attempt to convert unicode to string with no
+            # character set provided, which will then use ``ascii``.
+            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, utf8_str)
+        self.da.manage_test(sql)
+
+        res = self.da.manage_test('SELECT * FROM %s' % TABLE_NAME)
+        self.assertEqual(len(res), 1)
+        self.assertEqual(res[0][TABLE_COL_INT], 1)
+        self.assertEqual(res[0][TABLE_COL_VARCHAR], utf8_str)
+
+    def test_manage_test_utf8mb4_no_use_unicode(self):
+        self.da = self._makeOne(use_unicode=False, charset='utf8mb4')
+        unicode_str = u'\xfcbrigens'
+        utf8_str = unicode_str.encode('utf8')
+        if six.PY3:
+            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, unicode_str)
+        else:
+            # Under Python 2 it is still necessary to INSERT with
+            # an encoded string, unicode breaks here because the ``_mysql``
+            # module will attempt to convert unicode to string with no
+            # character set provided, which will then use ``ascii``.
+            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, utf8_str)
+        self.da.manage_test(sql)
+
+        res = self.da.manage_test('SELECT * FROM %s' % TABLE_NAME)
+        self.assertEqual(len(res), 1)
+        self.assertEqual(res[0][TABLE_COL_INT], 1)
+        self.assertEqual(res[0][TABLE_COL_VARCHAR], utf8_str)
+
+    @unittest.skipIf(six.PY3, 'mysqlclient only supports utf8 with Python 3')
+    def test_manage_test_latin1_no_use_unicode(self):
+        self.da = self._makeOne(use_unicode=False, charset='latin1')
+        unicode_str = u'\xfcbrigens'
+        latin1_str = unicode_str.encode('latin1')
+        if six.PY3:
+            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, unicode_str)
+        else:
+            # Under Python 2 it is still necessary to INSERT with
+            # an encoded string, unicode breaks here because the ``_mysql``
+            # module will attempt to convert unicode to string with no
+            # character set provided, which will then use ``ascii``.
+            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, latin1_str)
+        self.da.manage_test(sql)
+
+        res = self.da.manage_test('SELECT * FROM %s' % TABLE_NAME)
+        self.assertEqual(len(res), 1)
+        self.assertEqual(res[0][TABLE_COL_INT], 1)
+        self.assertEqual(res[0][TABLE_COL_VARCHAR], latin1_str)
+
+    @unittest.skipIf(six.PY3, 'mysqlclient only supports utf8 with Python 3')
+    def test_manage_test_latin1_use_unicode(self):
+        # The connection is set up with ``use_unicode``, which means queries
+        # will return unicode data.
+        self.da = self._makeOne(use_unicode=True, charset='latin1')
+        unicode_str = u'\xfcbrigens'
+        latin1_str = unicode_str.encode('latin1')
+        if six.PY3:
+            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, unicode_str)
+        else:
+            # Under Python 2 it is still necessary to INSERT with
+            # an encoded string, unicode breaks here because the ``_mysql``
+            # module will attempt to convert unicode to string with no
+            # character set provided, which will then use ``ascii``.
+            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, latin1_str)
+        self.da.manage_test(sql)
+
+        res = self.da.manage_test('SELECT * FROM %s' % TABLE_NAME)
+        self.assertEqual(len(res), 1)
+        self.assertEqual(res[0][TABLE_COL_INT], 1)
+        self.assertEqual(res[0][TABLE_COL_VARCHAR], unicode_str)
 
 
 def test_suite():
