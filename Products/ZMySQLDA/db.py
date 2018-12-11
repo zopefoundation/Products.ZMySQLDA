@@ -403,21 +403,21 @@ class DB(TM):
         for Field, Type, Null, Key, Default, Extra in db_result.fetch_row(0):
             info = {'name': Field,
                     'extra': (Extra,),
-                    'nullable': (Null == "YES") and 1 or 0}
+                    'nullable': (Null == b"YES") and 1 or 0}
 
             if Default is not None:
                 info["default"] = Default
-                field_default = "DEFAULT '%s'" % Default
+                field_default = b"DEFAULT '%s'" % Default
             else:
-                field_default = ''
+                field_default = b''
 
-            if "(" in Type:
-                end = Type.rfind(")")
-                short_type, size = Type[:end].split("(", 1)
-                if short_type not in ("set", "enum"):
-                    if "," in size:
+            if b"(" in Type:
+                end = Type.rfind(b")")
+                short_type, size = Type[:end].split(b"(", 1)
+                if short_type not in (b"set", b"enum"):
+                    if b"," in size:
                         info["scale"], info["precision"] = map(
-                                int, size.split(",", 1))
+                                int, size.split(b",", 1))
                     else:
                         info["scale"] = int(size)
             else:
@@ -426,21 +426,22 @@ class DB(TM):
             if short_type in field_icons:
                 info["icon"] = short_type
             else:
-                info["icon"] = icon_xlate.get(short_type, "what")
+                info["icon"] = icon_xlate.get(short_type, b"what")
 
             info["type"] = short_type
-            info["description"] = " ".join([Type,
-                                            field_default,
-                                            Extra or "",
-                                            key_types.get(Key, Key or ""),
-                                            Null == "NO" and "NOT NULL" or ""])
+            nul = (Null == b'NO' and b'NOT NULL' or b'')
+            info["description"] = b" ".join([Type,
+                                             field_default,
+                                             Extra or b"",
+                                             key_types.get(Key, Key or b""),
+                                             nul])
             if Key:
                 info["index"] = True
                 info["key"] = Key
-            if Key == "PRI":
+            if Key == b"PRI":
                 info["primary_key"] = True
                 info["unique"] = True
-            elif Key == "UNI":
+            elif Key == b"UNI":
                 info["unique"] = True
 
             c_list.append(info)

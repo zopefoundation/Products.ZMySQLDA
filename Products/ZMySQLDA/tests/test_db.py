@@ -14,6 +14,7 @@
 """
 import unittest
 
+import six
 from six.moves._thread import get_ident
 
 from .base import _mySQLNotAvailable
@@ -155,15 +156,16 @@ class RealConnectionDBPoolTests(unittest.TestCase):
 
         tables = self.dbpool.tables()
         self.assertEqual(len(tables), 1)
-        self.assertEqual(tables[0]['table_name'], TABLE_NAME)
+        # Need to coerce to bytes for Python 3 compatibility
+        self.assertEqual(tables[0]['table_name'], six.b(TABLE_NAME))
         self.assertTrue(tables[0].get('description'))  # Details not needed
 
     def test_columns(self):
         self.dbpool = self._makeOne()
         cols = self.dbpool.columns(TABLE_NAME)
         self.assertEqual(len(cols), 2)
-        self.assertEqual(cols[0]['name'], TABLE_COL_INT)
-        self.assertEqual(cols[1]['name'], TABLE_COL_VARCHAR)
+        self.assertEqual(cols[0]['name'], six.b(TABLE_COL_INT))
+        self.assertEqual(cols[1]['name'], six.b(TABLE_COL_VARCHAR))
 
 
 class DBTests(PatchedConnectionTestsBase):
@@ -455,7 +457,8 @@ class RealConnectionDBTests(unittest.TestCase):
 
         tables = self.db.tables()
         self.assertEqual(len(tables), 1)
-        self.assertEqual(tables[0]['table_name'], TABLE_NAME)
+        # Need to coerce to bytes for Python 3 compatibility
+        self.assertEqual(tables[0]['table_name'], six.b(TABLE_NAME))
         self.assertTrue(tables[0].get('description'))  # Details not needed
 
     def test_columns(self):
@@ -463,17 +466,17 @@ class RealConnectionDBTests(unittest.TestCase):
 
         cols = self.db.columns(TABLE_NAME)
         self.assertEqual(len(cols), 2)
-        self.assertEqual(cols[0]['name'], TABLE_COL_INT)
-        self.assertEqual(cols[0]['type'], 'int')
+        self.assertEqual(cols[0]['name'], six.b(TABLE_COL_INT))
+        self.assertEqual(cols[0]['type'], b'int')
         self.assertEqual(cols[0]['scale'], 10)
         self.assertFalse(cols[0]['nullable'])
         self.assertTrue(cols[0]['index'])
         self.assertTrue(cols[0]['primary_key'])
         self.assertTrue(cols[0]['unique'])
-        self.assertEqual(cols[0]['key'], 'PRI')
-        self.assertEqual(cols[0]['default'], '0000000000')
-        self.assertEqual(cols[1]['name'], TABLE_COL_VARCHAR)
-        self.assertEqual(cols[1]['type'], 'varchar')
+        self.assertEqual(cols[0]['key'], b'PRI')
+        self.assertEqual(cols[0]['default'], b'0000000000')
+        self.assertEqual(cols[1]['name'], six.b(TABLE_COL_VARCHAR))
+        self.assertEqual(cols[1]['type'], b'varchar')
         self.assertEqual(cols[1]['scale'], 20)
 
     def test_columns_badtable(self):

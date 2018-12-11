@@ -20,10 +20,23 @@ Edit the database connection attributes and apply any changes:
   immediately or when the first database query is run.
 * `Unicode Support`: If set to ``True``, values from columns of type
   ``CHAR``, ``VARCHAR`` and ``TEXT`` are returned as unicode strings by the
-  database backend.  Combined with the hardcoded ``UTF-8`` character set of
-  this package the setting allows you to control the character set of
-  database return values better. Try enabling it if you are seeing character
-  set/string encoding issues.
+  database backend.
+* `Character set`: Query results will be encoded in the character set
+  specified here:
+
+  * `Not set` will emulate previous releases' behavior on Python 2, which
+    used Latin-1 (ISO 8859-1), but if `Unicode results` is selected, the
+    connection character set switches to UTF-8 and strings in query results
+    are decoded to Unicode. On Python 3, `not set` always defaults to
+    UTF-8.
+
+  * For Python 2, you can force the character set to Latin-1 or UTF-8,
+    regardless of the `Unicode results` setting. This is useful
+    when your application wants to use UTF-8, but cannot deal with unicode
+    return values.
+
+  * **On Python 3, forcing the character set to Latin1 is not supported.**
+
 * `Automatically create database`: If the `Database Connection String`
   refers to a database that does not yet exist `and` this setting is
   activated, the ZMySQLDA connector will attempt to create the
