@@ -48,6 +48,7 @@ class ConnectionTests(unittest.TestCase):
         self.assertEqual(conn.title, 'Conn Title')
         self.assertEqual(conn.connection_string, 'db_conn_string')
         self.assertTrue(conn.use_unicode)
+        self.assertIsNone(conn.charset)
         self.assertTrue(conn.auto_create_db)
 
     def test_factory(self):
@@ -75,13 +76,15 @@ class ConnectionTests(unittest.TestCase):
         self.assertEqual(conn.connection_string, 'new_conn_string')
         self.assertTrue(conn.use_unicode)
         self.assertTrue(conn.auto_create_db)
+        self.assertIsNone(conn.charset)
         self.assertFalse(conn.connected())
 
         conn.manage_edit('Another Title', 'another_conn_string', check=True,
-                         use_unicode=None, auto_create_db=None)
+                         use_unicode=None, auto_create_db=None, charset='utf8')
         self.assertEqual(conn.title, 'Another Title')
         self.assertEqual(conn.connection_string, 'another_conn_string')
         self.assertFalse(conn.use_unicode)
+        self.assertEqual(conn.charset, 'utf8')
         self.assertFalse(conn.auto_create_db)
         self.assertTrue(conn.connected())
 
@@ -94,12 +97,14 @@ class ConnectionTests(unittest.TestCase):
         container = Folder('root')
         manage_addZMySQLConnection(container, 'conn_id', 'Conn Title',
                                    'db_conn_string', False,
-                                   use_unicode=True, auto_create_db=True)
+                                   use_unicode=True, charset='utf8',
+                                   auto_create_db=True)
         conn = container.conn_id
         self.assertEqual(conn.getId(), 'conn_id')
         self.assertEqual(conn.title, 'Conn Title')
         self.assertEqual(conn.connection_string, 'db_conn_string')
         self.assertTrue(conn.use_unicode)
+        self.assertEqual(conn.charset, 'utf8')
         self.assertTrue(conn.auto_create_db)
 
         # Make sure the defaults for use_unicode and auto_create_db
@@ -108,6 +113,7 @@ class ConnectionTests(unittest.TestCase):
                                    'db_conn_string', False)
         conn = container.conn2
         self.assertFalse(conn.use_unicode)
+        self.assertIsNone(conn.charset)
         self.assertFalse(conn.auto_create_db)
 
 
@@ -175,13 +181,13 @@ class RealConnectionTests(unittest.TestCase):
 
     layer = MySQLRequiredLayer
 
-    def _makeOne(self, *args, **kw):
+    def _makeOne(self, use_unicode=False, charset=None):
         from Products.ZMySQLDA.DA import Connection
         return Connection('conn_id', 'Conn Title', DB_CONN_STRING, False,
-                          use_unicode=True)
+                          use_unicode=use_unicode, charset=charset)
 
     def test_manage_test_ascii(self):
-        self.da = self._makeOne()
+        self.da = self._makeOne(use_unicode=True)
         sql = "INSERT INTO %s VALUES (1, 'testing')" % TABLE_NAME
         self.da.manage_test(sql)
 

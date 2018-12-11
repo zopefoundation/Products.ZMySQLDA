@@ -36,7 +36,7 @@
         </td>
       </tr>
       <tr>
-        <th align="left" valign="top">Unicode support</th>
+        <th align="left" valign="top">Unicode results</th>
         <td align="left" valign="top">
           <input name="use_unicode" type="checkbox" value="yes">
           <small>Should database query results be decoded to Unicode?</small>

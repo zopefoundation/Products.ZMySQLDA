@@ -58,12 +58,20 @@ class DBPoolTests(unittest.TestCase):
         self.assertEqual(pool._db_pool, {})
         self.assertFalse(pool._create_db)
         self.assertFalse(pool.use_unicode)
+        self.assertIsNone(pool.charset)
 
-    def test_instantiate(self):
+    def test_instantiate_use_unicode(self):
         pool = self._makeOne(create_db=True, use_unicode=True)
 
         self.assertTrue(pool._create_db)
         self.assertTrue(pool.use_unicode)
+        self.assertIsNone(pool.charset)
+
+    def test_instantiate_with_charset(self):
+        pool = self._makeOne(charset='latin1')
+
+        self.assertFalse(pool.use_unicode)
+        self.assertEqual(pool.charset, 'latin1')
 
     def test_closeConnection(self):
         pool = self._makeOne()
