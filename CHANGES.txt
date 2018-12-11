@@ -1,6 +1,10 @@
 Products.ZMySQLDA change log
 ============================
 
+4.0 (unreleased)
+----------------
+
+
 4.0b2 (2018-12-11)
 ------------------
 - added the ability to set the MySQL connection character set
