@@ -36,30 +36,10 @@
         </td>
       </tr>
       <tr>
-        <th align="left" valign="top">Unicode results</th>
+        <th align="left" valign="top">Unicode support</th>
         <td align="left" valign="top">
           <input name="use_unicode" type="checkbox" value="yes">
-          <small>Should database query results be decoded to Unicode?</small>
-        </td>
-      </tr>
-      <tr>
-        <th align="left" valign="top">
-          Character set <a href="#2"><sup>2</sup></a>
-        </th>
-        <td align="left" valign="top">
-        <select name="charset">
-          <option value="" selected>
-            Not set (use previous release defaults)
-          </option>
-          <option value="latin1">Latin-1 (ISO 8859-1 West European)</option>
-          <option value="utf8mb4">
-            UTF-8 (utf8mb4, MySQL 5.5.3 and up)
-          </option>
-          <option value="utf8">
-            UTF-8 (utf8/utf8mb3, MySQL up to 5.5.2)
-          </option>
-        </select>
-        <small>Character set to use for query results.</small>
+          <small>UTF-8 hardcoded. MySQL table support required.</small>
         </td>
       </tr>
       <tr>
@@ -125,19 +105,6 @@
     Transactions are highly recommended. Using a named lock in
     conjunctions with transactions is probably pointless.  
   </p>
-</dd>
-
-<dt><a hname="2"><sup>2</sup></a> Character set</dt>
-<dd class="form-help">
-  <p>Query results will be encoded in the character set specified here.</p>
-
-  <p>
-    <em>Not set</em> will emulate previous releases' behavior, which used
-    Latin-1 (ISO 8859-1), but if <em>Unicode results</em> is selected, the
-    connection character set switches to UTF-8 and strings in query results
-    are decoded to Unicode.
-  </p>
-
 </dd>
 
 </main>

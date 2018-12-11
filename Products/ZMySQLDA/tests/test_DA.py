@@ -48,7 +48,6 @@ class ConnectionTests(unittest.TestCase):
         self.assertEqual(conn.title, 'Conn Title')
         self.assertEqual(conn.connection_string, 'db_conn_string')
         self.assertTrue(conn.use_unicode)
-        self.assertIsNone(conn.charset)
         self.assertTrue(conn.auto_create_db)
 
     def test_factory(self):
@@ -76,15 +75,13 @@ class ConnectionTests(unittest.TestCase):
         self.assertEqual(conn.connection_string, 'new_conn_string')
         self.assertTrue(conn.use_unicode)
         self.assertTrue(conn.auto_create_db)
-        self.assertIsNone(conn.charset)
         self.assertFalse(conn.connected())
 
         conn.manage_edit('Another Title', 'another_conn_string', check=True,
-                         use_unicode=None, auto_create_db=None, charset='utf8')
+                         use_unicode=None, auto_create_db=None)
         self.assertEqual(conn.title, 'Another Title')
         self.assertEqual(conn.connection_string, 'another_conn_string')
         self.assertFalse(conn.use_unicode)
-        self.assertEqual(conn.charset, 'utf8')
         self.assertFalse(conn.auto_create_db)
         self.assertTrue(conn.connected())
 
@@ -97,14 +94,12 @@ class ConnectionTests(unittest.TestCase):
         container = Folder('root')
         manage_addZMySQLConnection(container, 'conn_id', 'Conn Title',
                                    'db_conn_string', False,
-                                   use_unicode=True, charset='utf8',
-                                   auto_create_db=True)
+                                   use_unicode=True, auto_create_db=True)
         conn = container.conn_id
         self.assertEqual(conn.getId(), 'conn_id')
         self.assertEqual(conn.title, 'Conn Title')
         self.assertEqual(conn.connection_string, 'db_conn_string')
         self.assertTrue(conn.use_unicode)
-        self.assertEqual(conn.charset, 'utf8')
         self.assertTrue(conn.auto_create_db)
 
         # Make sure the defaults for use_unicode and auto_create_db
@@ -113,7 +108,6 @@ class ConnectionTests(unittest.TestCase):
                                    'db_conn_string', False)
         conn = container.conn2
         self.assertFalse(conn.use_unicode)
-        self.assertIsNone(conn.charset)
         self.assertFalse(conn.auto_create_db)
 
 
@@ -181,13 +175,13 @@ class RealConnectionTests(unittest.TestCase):
 
     layer = MySQLRequiredLayer
 
-    def _makeOne(self, use_unicode=False, charset=None):
+    def _makeOne(self, *args, **kw):
         from Products.ZMySQLDA.DA import Connection
         return Connection('conn_id', 'Conn Title', DB_CONN_STRING, False,
-                          use_unicode=use_unicode, charset=charset)
+                          use_unicode=True)
 
     def test_manage_test_ascii(self):
-        self.da = self._makeOne(use_unicode=True)
+        self.da = self._makeOne()
         sql = "INSERT INTO %s VALUES (1, 'testing')" % TABLE_NAME
         self.da.manage_test(sql)
 
@@ -196,10 +190,10 @@ class RealConnectionTests(unittest.TestCase):
         self.assertEqual(res[0][TABLE_COL_INT], 1)
         self.assertEqual(res[0][TABLE_COL_VARCHAR], 'testing')
 
-    def test_manage_test_unicode(self):
+    def test_manage_test_nonascii(self):
         # The connection is set up with ``use_unicode``, which means queries
         # will return unicode data.
-        self.da = self._makeOne(use_unicode=True)
+        self.da = self._makeOne()
         nonascii = u'\xfcbrigens'
         if six.PY3:
             sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, nonascii)
@@ -216,20 +210,6 @@ class RealConnectionTests(unittest.TestCase):
         self.assertEqual(len(res), 1)
         self.assertEqual(res[0][TABLE_COL_INT], 1)
         self.assertEqual(res[0][TABLE_COL_VARCHAR], nonascii)
-
-    def test_manage_test_encoded(self):
-        # The connection is set up with ``use_unicode``, which means queries
-        # will return unicode data.
-        self.da = self._makeOne(use_unicode=False, charset='latin1')
-        nonascii = u'\xfcbrigens'
-        sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME,
-                                                   nonascii.encode('latin1'))
-        self.da.manage_test(sql)
-
-        res = self.da.manage_test('SELECT * FROM %s' % TABLE_NAME)
-        self.assertEqual(len(res), 1)
-        self.assertEqual(res[0][TABLE_COL_INT], 1)
-        self.assertEqual(res[0][TABLE_COL_VARCHAR], nonascii.encode('latin1'))
 
 
 def test_suite():

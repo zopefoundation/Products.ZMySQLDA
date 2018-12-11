@@ -3,9 +3,6 @@ Products.ZMySQLDA change log
 
 4.0b2 (unreleased)
 ------------------
-- added the ability to set the MySQL connection character set
-  separate from the unicode flag.
-
 - make the checkboxes on the add view work correctly
 
 - declare (and test for) Python 3.7 compatibility
