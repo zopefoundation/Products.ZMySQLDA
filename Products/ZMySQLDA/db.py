@@ -552,7 +552,11 @@ class DB(TM):
     def unicode_literal(self, sql_str):
         """ Similar to string_literal but encodes it first.
         """
-        return self.db.unicode_literal(sql_str)
+        try:
+            return self.db.unicode_literal(sql_str)
+        except AttributeError:
+            return self.db.encoders[unicode](sql_str)
+
 
     # Zope 2-phase transaction handling methods
 

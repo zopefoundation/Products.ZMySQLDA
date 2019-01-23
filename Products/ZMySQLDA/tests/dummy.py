@@ -13,6 +13,8 @@
 """ Dummy fixtures for testing
 """
 
+import sys
+
 RESULTS = {'show table status': [['table1', 'engine1', None, None, 5, None,
                                   None, None, None, None, None, None, None,
                                   None, 'my_collation']],
@@ -52,6 +54,11 @@ class FakeConnection:
         self.string_literal_called = False
         self.unicode_literal_called = False
 
+        if sys.version_info[0] > 2:
+            self.unicode_literal = self._unicode_literal
+        else:
+            self.encoders = { unicode: self._unicode_literal }
+
         for k, v in kw.items():
             setattr(self, k, v)
 
@@ -75,5 +82,5 @@ class FakeConnection:
     def string_literal(self, txt):
         self.string_literal_called = txt
 
-    def unicode_literal(self, txt):
+    def _unicode_literal(self, txt):
         self.unicode_literal_called = txt
