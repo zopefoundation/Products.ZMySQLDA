@@ -139,7 +139,10 @@ class RealConnectionDBPoolTests(unittest.TestCase):
         return dbpool(conn_string)
 
     def test_connect_bad_db(self):
-        from _mysql_exceptions import OperationalError
+        try:
+            from _mysql_exceptions import OperationalError
+        except ImportError:  # mysqlclient > 1.4
+            from MySQLdb import OperationalError
 
         # DB doesn't exist and should not be created
         conn_str = 'notexisting %s %s' % (DB_USER, DB_PASSWORD)
@@ -486,7 +489,10 @@ class RealConnectionDBTests(unittest.TestCase):
         self.assertFalse(self.db.columns('notexistingtable'))
 
     def test_query_error(self):
-        from _mysql_exceptions import ProgrammingError
+        try:
+            from _mysql_exceptions import ProgrammingError
+        except ImportError:  # mysqlclient > 1.4
+            from MySQLdb import ProgrammingError
         self.db = self._makeOne()
 
         self.assertRaises(ProgrammingError, self.db.query,
