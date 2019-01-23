@@ -170,6 +170,20 @@ class RealConnectionDBPoolTests(unittest.TestCase):
         self.assertEqual(cols[0]['name'], six.b(TABLE_COL_INT))
         self.assertEqual(cols[1]['name'], six.b(TABLE_COL_VARCHAR))
 
+    def test_variables(self):
+        self.dbpool = self._makeOne()
+        mysql_vars = self.dbpool.variables()
+        self.assertIsInstance(mysql_vars, dict)
+        self.assertGreater(len(mysql_vars), 0)
+
+    def test_string_literal(self):
+        self.dbpool = self._makeOne()
+        self.assertEqual(self.dbpool.string_literal('foo'), b"'foo'")
+
+    def test_unicode_literal(self):
+        self.dbpool = self._makeOne()
+        self.assertEqual(self.dbpool.unicode_literal('foo'), b"'foo'")
+
 
 class DBTests(PatchedConnectionTestsBase):
 
