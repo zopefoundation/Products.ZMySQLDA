@@ -23,10 +23,16 @@ import transaction
 from ZODB.POSException import ConflictError
 from ZODB.POSException import TransactionFailedError
 
-import _mysql
-from _mysql_exceptions import NotSupportedError
-from _mysql_exceptions import OperationalError
-from _mysql_exceptions import ProgrammingError
+try:
+    import _mysql
+    from _mysql_exceptions import NotSupportedError
+    from _mysql_exceptions import OperationalError
+    from _mysql_exceptions import ProgrammingError
+except ImportError:  # mysqlclient > 1.4
+    import MySQLdb as _mysql
+    from MySQLdb import NotSupportedError
+    from MySQLdb import OperationalError
+    from MySQLdb import ProgrammingError
 import MySQLdb
 from MySQLdb.converters import conversions
 from MySQLdb.constants import CLIENT
