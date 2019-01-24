@@ -1,6 +1,10 @@
 Products.ZMySQLDA change log
 ============================
 
+4.0 (unreleased)
+----------------
+
+
 4.0b4 (2019-01-24)
 ------------------
 - additional compatibility fixes for mysqlclient 14.0 and up
