@@ -4,6 +4,10 @@ Products.ZMySQLDA change log
 4.0 (unreleased)
 ----------------
 
+- Specify supported Python versions using ``python_requires`` in setup.py
+
+- Added support for Python 3.8
+
 
 4.0b4 (2019-01-24)
 ------------------
