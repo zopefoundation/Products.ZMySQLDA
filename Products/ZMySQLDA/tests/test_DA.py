@@ -186,6 +186,36 @@ class RealConnectionTests(unittest.TestCase):
         return Connection('conn_id', 'Conn Title', DB_CONN_STRING, False,
                           use_unicode=use_unicode, charset=charset)
 
+    def _makeRequest(self):
+        class DummyRequest(dict):
+            pass
+
+        class DummyResponse(object):
+            def redirect(self, url):
+                pass
+
+        req = DummyRequest()
+        req.RESPONSE = DummyResponse()
+        return req
+
+    def test_manage_edit_no_zmi_raises(self):
+        conn = self._makeOne()
+        self.assertRaises(Exception, conn.manage_edit,
+                          'New Title', 'xyzinvalid zyxinvalid', check=True)
+
+    def test_manage_edit_zmi_catches(self):
+        # make sure connection issues in the ZMI don't cause blowups
+        conn = self._makeOne()
+        req = self._makeRequest()
+        have_raised = ''
+        try:
+            conn.manage_edit('New Title', 'xyzinvalid zyxinvalid',
+                             check=True, REQUEST=req)
+        except Exception as e:
+            have_raised = str(e)
+
+        self.assertEqual(have_raised, '')
+
     def test_manage_test_ascii(self):
         self.da = self._makeOne(use_unicode=True)
         sql = "INSERT INTO %s VALUES (1, 'testing')" % TABLE_NAME

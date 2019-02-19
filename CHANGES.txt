@@ -4,6 +4,11 @@ Products.ZMySQLDA change log
 4.0 (unreleased)
 ----------------
 
+- When editing a connection in the ZMI, show an error message and not
+  an exception when the connection fails.
+
+- ZMI usability enhanced by providing feedback when editing a connection
+
 - Specify supported Python versions using ``python_requires`` in setup.py
 
 - Added support for Python 3.8

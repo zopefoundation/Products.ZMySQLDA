@@ -191,7 +191,8 @@ class Connection(ConnectionBase):
     security.declareProtected(change_database_methods, 'manage_edit')
 
     def manage_edit(self, title, connection_string, check=None,
-                    use_unicode=None, charset=None, auto_create_db=None):
+                    use_unicode=None, charset=None, auto_create_db=None,
+                    REQUEST=None):
         """ Edit the connection attributes through the Zope ZMI.
 
         :string: title -- The title of the ZMySQLDA Connection
@@ -218,13 +219,28 @@ class Connection(ConnectionBase):
         :bool: auto_create_db -- If the database given in ``connection_string``
                                  does not exist, create it automatically.
                                  Default: False.
+
+        :request: REQUEST -- A Zope REQUEST object
         """
         self.use_unicode = bool(use_unicode)
         self.charset = charset
         self.auto_create_db = bool(auto_create_db)
 
-        return super(Connection, self).manage_edit(title, connection_string,
-                                                   check=check)
+        try:
+            result = super(Connection, self).manage_edit(title,
+                                                         connection_string,
+                                                         check=check)
+            msg = 'Changes applied.'
+        except Exception as exc:
+            msg = 'ERROR: %s' % str(exc)
+            if REQUEST is None:
+                raise
+
+        if REQUEST is None:
+            return result
+        else:
+            url = '%s/manage_properties?manage_tabs_message=%s'
+            REQUEST.RESPONSE.redirect(url % (self.absolute_url(), msg))
 
     security.declareProtected(view_management_screens, 'tpValues')
 
