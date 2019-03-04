@@ -18,6 +18,7 @@ import MySQLdb
 
 from .dummy import FakeConnection
 
+
 DB = 'zmysqldatest'
 DB_USER = 'zmysqldatest'
 DB_PASSWORD = 'zmysqldatest'
@@ -41,16 +42,16 @@ def real_connect():
     return MySQLdb.connect(user=DB_USER, passwd=DB_PASSWORD, db=DB)
 
 
-def _mySQLNotAvailable():
+def have_test_database():
     """ Helper method for unittest skipping
     """
     try:
         connection = real_connect()
         connection.close()
-        return False
+        return True
     except MySQLdb.OperationalError as exc:  # noqa
         # print('Cannot connect to %s as %s: %s' % (DB, DB_USER, exc.args))
-        return True
+        return False
 
 
 class PatchedConnectionTestsBase(unittest.TestCase):
@@ -85,8 +86,8 @@ class MySQLRequiredLayer:
         # Connect to the database and (re-)create a test table,
         # but only if the test database is available to prevent tracebacks.
         # Tests classes using this layer should be skipped if the test
-        # database is unavailable: "@unittest.skipIf(__mySQLNotAvailable())"
-        if not _mySQLNotAvailable():
+        # database is unavailable: "@unittest.skipUnless(have_test_database())"
+        if have_test_database():
             dbconn = real_connect()
             dbconn.query('DROP TABLE IF EXISTS %s' % TABLE_NAME)
             sql = 'CREATE TABLE %s (%s %s, %s %s) ENGINE MEMORY'
@@ -98,7 +99,7 @@ class MySQLRequiredLayer:
     def testSetUp(cls):
         from Products.ZMySQLDA import DA
         # Clean out the test table before every test
-        if not _mySQLNotAvailable():
+        if have_test_database():
             dbconn = real_connect()
             dbconn.query('DELETE FROM %s' % TABLE_NAME)
             dbconn.close()

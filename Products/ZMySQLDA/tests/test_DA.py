@@ -17,14 +17,14 @@ import unittest
 import six
 from six.moves._thread import get_ident
 
-from .base import _mySQLNotAvailable
 from .base import DB_CONN_STRING
 from .base import NO_MYSQL_MSG
-from .base import TABLE_NAME
 from .base import TABLE_COL_INT
 from .base import TABLE_COL_VARCHAR
+from .base import TABLE_NAME
 from .base import MySQLRequiredLayer
 from .base import PatchedConnectionTestsBase
+from .base import have_test_database
 
 
 class ConnectionTests(unittest.TestCase):
@@ -176,7 +176,7 @@ class PatchedConnectionTests(PatchedConnectionTestsBase):
                          b'foo'.decode('ASCII'))
 
 
-@unittest.skipIf(_mySQLNotAvailable(), NO_MYSQL_MSG)
+@unittest.skipUnless(have_test_database(), NO_MYSQL_MSG)
 class RealConnectionTests(unittest.TestCase):
 
     layer = MySQLRequiredLayer

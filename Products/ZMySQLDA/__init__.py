@@ -29,6 +29,6 @@ def initialize(context):
 
 
 misc_ = {}
-for icon in ("table", "view", "stable", "what", "field", "text", "bin",
-             "int", "float", "date", "time", "datetime",):
-    misc_[icon] = ImageFile(os.path.join("www", "%s.gif") % icon, globals())
+for icon in ('table', 'view', 'stable', 'what', 'field', 'text', 'bin',
+             'int', 'float', 'date', 'time', 'datetime'):
+    misc_[icon] = ImageFile(os.path.join('www', '%s.gif') % icon, globals())

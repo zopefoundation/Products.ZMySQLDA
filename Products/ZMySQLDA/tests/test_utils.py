@@ -15,8 +15,8 @@
 import unittest
 
 from .dummy import COLUMNS
-from .dummy import FakeColumns
 from .dummy import TABLE
+from .dummy import FakeColumns
 
 
 class BrowserTestsBase(unittest.TestCase):

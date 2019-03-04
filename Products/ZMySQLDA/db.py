@@ -13,15 +13,22 @@
 import logging
 import time
 
+import MySQLdb
+from MySQLdb.constants import CLIENT
+from MySQLdb.constants import CR
+from MySQLdb.constants import ER
+from MySQLdb.constants import FIELD_TYPE
+from MySQLdb.converters import conversions
 from six.moves._thread import allocate_lock
 from six.moves._thread import get_ident
 
+import transaction
 from DateTime.DateTime import DateTime
 from DateTime.interfaces import DateTimeError
 from Shared.DC.ZRDB.TM import TM
-import transaction
 from ZODB.POSException import ConflictError
 from ZODB.POSException import TransactionFailedError
+
 
 try:
     import _mysql
@@ -33,60 +40,55 @@ except ImportError:  # mysqlclient > 1.4
     from MySQLdb import NotSupportedError
     from MySQLdb import OperationalError
     from MySQLdb import ProgrammingError
-import MySQLdb
-from MySQLdb.converters import conversions
-from MySQLdb.constants import CLIENT
-from MySQLdb.constants import CR
-from MySQLdb.constants import ER
-from MySQLdb.constants import FIELD_TYPE
 
-LOG = logging.getLogger("ZMySQLDA")
+
+LOG = logging.getLogger('ZMySQLDA')
 
 hosed_connection = {
-    CR.SERVER_GONE_ERROR: "Server gone.",
-    CR.SERVER_LOST: "Server lost.",
-    CR.COMMANDS_OUT_OF_SYNC: "Commands out of sync. Possibly a misplaced"
-                             " semicolon (;) in a query."
+    CR.SERVER_GONE_ERROR: 'Server gone.',
+    CR.SERVER_LOST: 'Server lost.',
+    CR.COMMANDS_OUT_OF_SYNC: 'Commands out of sync. Possibly a misplaced'
+                             ' semicolon (;) in a query.',
 }
 
 query_syntax_error = (ER.BAD_FIELD_ERROR,)
 
-key_types = {"PRI": "PRIMARY KEY", "MUL": "INDEX", "UNI": "UNIQUE"}
+key_types = {'PRI': 'PRIMARY KEY', 'MUL': 'INDEX', 'UNI': 'UNIQUE'}
 
-field_icons = "bin", "date", "datetime", "float", "int", "text", "time"
+field_icons = 'bin', 'date', 'datetime', 'float', 'int', 'text', 'time'
 
 icon_xlate = {
-    "varchar": "text",
-    "char": "text",
-    "enum": "what",
-    "set": "what",
-    "double": "float",
-    "numeric": "float",
-    "blob": "bin",
-    "mediumblob": "bin",
-    "longblob": "bin",
-    "tinytext": "text",
-    "mediumtext": "text",
-    "longtext": "text",
-    "timestamp": "datetime",
-    "decimal": "float",
-    "smallint": "int",
-    "mediumint": "int",
-    "bigint": "int",
+    'varchar': 'text',
+    'char': 'text',
+    'enum': 'what',
+    'set': 'what',
+    'double': 'float',
+    'numeric': 'float',
+    'blob': 'bin',
+    'mediumblob': 'bin',
+    'longblob': 'bin',
+    'tinytext': 'text',
+    'mediumtext': 'text',
+    'longtext': 'text',
+    'timestamp': 'datetime',
+    'decimal': 'float',
+    'smallint': 'int',
+    'mediumint': 'int',
+    'bigint': 'int',
 }
 
 type_xlate = {
-    "double": "float",
-    "numeric": "float",
-    "decimal": "float",
-    "smallint": "int",
-    "mediumint": "int",
-    "bigint": "int",
-    "int": "int",
-    "float": "float",
-    "timestamp": "datetime",
-    "datetime": "datetime",
-    "time": "datetime",
+    'double': 'float',
+    'numeric': 'float',
+    'decimal': 'float',
+    'smallint': 'int',
+    'mediumint': 'int',
+    'bigint': 'int',
+    'int': 'int',
+    'float': 'float',
+    'timestamp': 'datetime',
+    'datetime': 'datetime',
+    'time': 'datetime',
 }
 
 
@@ -104,7 +106,7 @@ class DBPool(object):
       instanes of db_cls class, each one being bound to a specific thread.
     """
 
-    connected_timestamp = ""
+    connected_timestamp = ''
     _create_db = False
     use_unicode = False
     charset = None
@@ -140,20 +142,20 @@ class DBPool(object):
         # connect to server to determin tranasactional capabilities
         # can't use db_cls instance as it requires this information to work
         try:
-            connection = MySQLdb.connect(**db_flags["kw_args"])
+            connection = MySQLdb.connect(**db_flags['kw_args'])
         except OperationalError:
             if self._create_db:
-                kw_args = db_flags.get("kw_args", {}).copy()
-                db = kw_args.pop("db", None)
+                kw_args = db_flags.get('kw_args', {}).copy()
+                db = kw_args.pop('db', None)
                 if not db:
                     raise
                 connection = MySQLdb.connect(**kw_args)
-                create_query = "create database %s" % db
+                create_query = 'create database %s' % db
                 if self.use_unicode and not self.charset:
-                    create_query += " default character set %s" % (
+                    create_query += ' default character set %s' % (
                                         self._db_cls.unicode_charset)
                 elif self.charset:
-                    create_query += " default character set %s" % self.charset
+                    create_query += ' default character set %s' % self.charset
                 connection.query(create_query)
                 connection.store_result()
             else:
@@ -162,14 +164,14 @@ class DBPool(object):
         connection.close()
 
         # Some tweaks to transaction/locking db_flags based on server setup
-        if db_flags["try_transactions"] == "-":
+        if db_flags['try_transactions'] == '-':
             transactional = False
-        elif not transactional and db_flags["try_transactions"] == "+":
-            raise NotSupportedError("transactions not supported by the server")
-        db_flags["transactions"] = transactional
-        del db_flags["try_transactions"]
-        if transactional or db_flags["mysql_lock"]:
-            db_flags["use_TM"] = True
+        elif not transactional and db_flags['try_transactions'] == '+':
+            raise NotSupportedError('transactions not supported by the server')
+        db_flags['transactions'] = transactional
+        del db_flags['try_transactions']
+        if transactional or db_flags['mysql_lock']:
+            db_flags['use_TM'] = True
 
         # will not be 100% accurate in regard to per thread connections
         # but as close as we're going to get it.
@@ -225,32 +227,32 @@ class DBPool(object):
     def name(self):
         """ Return name of database connected to.
         """
-        return self._db_flags["kw_args"]["db"]
+        return self._db_flags['kw_args']['db']
 
     # Passthrough aliases for methods on db_cls class.
     def variables(self, *args, **kw):
-        return self._access_db(method_id="variables", args=args, kw=kw)
+        return self._access_db(method_id='variables', args=args, kw=kw)
 
     def tables(self, *args, **kw):
-        return self._access_db(method_id="tables", args=args, kw=kw)
+        return self._access_db(method_id='tables', args=args, kw=kw)
 
     def columns(self, *args, **kw):
-        return self._access_db(method_id="columns", args=args, kw=kw)
+        return self._access_db(method_id='columns', args=args, kw=kw)
 
     def query(self, *args, **kw):
-        return self._access_db(method_id="query", args=args, kw=kw)
+        return self._access_db(method_id='query', args=args, kw=kw)
 
     def string_literal(self, *args, **kw):
-        return self._access_db(method_id="string_literal", args=args, kw=kw)
+        return self._access_db(method_id='string_literal', args=args, kw=kw)
 
     def unicode_literal(self, *args, **kw):
         try:
-            return self._access_db(method_id="unicode_literal",
+            return self._access_db(method_id='unicode_literal',
                                    args=args, kw=kw)
         except AttributeError:  # mysqlclient > 1.3.11
             # This is modeled after code in MySQLdb.connections.__init__
             new_args = (args[0].encode(self.charset or 'latin1'),) + args[1:]
-            return self._access_db(method_id="string_literal",
+            return self._access_db(method_id='string_literal',
                                    args=new_args, kw=kw)
 
     def _access_db(self, method_id, args, kw):
@@ -272,20 +274,20 @@ class DB(TM):
     Database_Error = _mysql.Error
 
     defs = {
-        FIELD_TYPE.CHAR: "i",
-        FIELD_TYPE.DATE: "d",
-        FIELD_TYPE.DATETIME: "d",
-        FIELD_TYPE.DECIMAL: "n",
-        FIELD_TYPE.NEWDECIMAL: "n",
-        FIELD_TYPE.DOUBLE: "n",
-        FIELD_TYPE.FLOAT: "n",
-        FIELD_TYPE.INT24: "i",
-        FIELD_TYPE.LONG: "i",
-        FIELD_TYPE.LONGLONG: "l",
-        FIELD_TYPE.SHORT: "i",
-        FIELD_TYPE.TIMESTAMP: "d",
-        FIELD_TYPE.TINY: "i",
-        FIELD_TYPE.YEAR: "i",
+        FIELD_TYPE.CHAR: 'i',
+        FIELD_TYPE.DATE: 'd',
+        FIELD_TYPE.DATETIME: 'd',
+        FIELD_TYPE.DECIMAL: 'n',
+        FIELD_TYPE.NEWDECIMAL: 'n',
+        FIELD_TYPE.DOUBLE: 'n',
+        FIELD_TYPE.FLOAT: 'n',
+        FIELD_TYPE.INT24: 'i',
+        FIELD_TYPE.LONG: 'i',
+        FIELD_TYPE.LONGLONG: 'l',
+        FIELD_TYPE.SHORT: 'i',
+        FIELD_TYPE.TIMESTAMP: 'd',
+        FIELD_TYPE.TINY: 'i',
+        FIELD_TYPE.YEAR: 'i',
     }
 
     conv = conversions.copy()
@@ -301,7 +303,7 @@ class DB(TM):
     _registered = False
     _finalize = False
 
-    unicode_charset = "utf8"  # hardcoded for now
+    unicode_charset = 'utf8'  # hardcoded for now
 
     def __init__(self, connection=None, kw_args=None, use_TM=None,
                  mysql_lock=None, transactions=None):
@@ -315,7 +317,7 @@ class DB(TM):
     def close(self):
         """ Close connection and dereference.
         """
-        if getattr(self, "db", None):
+        if getattr(self, 'db', None):
             self.db.close()
             self.db = None
 
@@ -343,56 +345,56 @@ class DB(TM):
             the connection string doesn't have to be parsed for each instance
             in the pool.
         """
-        kw_args = {"conv": cls.conv}
-        flags = {"kw_args": kw_args, "connection": connection}
-        kw_args["use_unicode"] = use_unicode
+        kw_args = {'conv': cls.conv}
+        flags = {'kw_args': kw_args, 'connection': connection}
+        kw_args['use_unicode'] = use_unicode
         if use_unicode:
-            kw_args["charset"] = cls.unicode_charset
+            kw_args['charset'] = cls.unicode_charset
         if charset:
-            kw_args["charset"] = charset
+            kw_args['charset'] = charset
         items = connection.split()
-        flags["use_TM"] = None
-        if _mysql.get_client_info()[0] >= "5":
-            kw_args["client_flag"] = CLIENT.MULTI_STATEMENTS
+        flags['use_TM'] = None
+        if _mysql.get_client_info()[0] >= '5':
+            kw_args['client_flag'] = CLIENT.MULTI_STATEMENTS
         if items:
             lockreq, items = items[0], items[1:]
-            if lockreq[0] == "*":
-                flags["mysql_lock"] = lockreq[1:]
+            if lockreq[0] == '*':
+                flags['mysql_lock'] = lockreq[1:]
                 db_host, items = items[0], items[1:]
-                flags["use_TM"] = True  # redundant. eliminate?
+                flags['use_TM'] = True  # redundant. eliminate?
             else:
-                flags["mysql_lock"] = None
+                flags['mysql_lock'] = None
                 db_host = lockreq
-            if "@" in db_host:
-                db, host = db_host.split("@", 1)
-                kw_args["db"] = db
-                if ":" in host:
-                    host, port = host.split(":", 1)
-                    kw_args["port"] = int(port)
-                kw_args["host"] = host
+            if '@' in db_host:
+                db, host = db_host.split('@', 1)
+                kw_args['db'] = db
+                if ':' in host:
+                    host, port = host.split(':', 1)
+                    kw_args['port'] = int(port)
+                kw_args['host'] = host
             else:
-                kw_args["db"] = db_host
-            if kw_args["db"] and kw_args["db"][0] in ("+", "-"):
-                flags["try_transactions"] = kw_args["db"][0]
-                kw_args["db"] = kw_args["db"][1:]
+                kw_args['db'] = db_host
+            if kw_args['db'] and kw_args['db'][0] in ('+', '-'):
+                flags['try_transactions'] = kw_args['db'][0]
+                kw_args['db'] = kw_args['db'][1:]
             else:
-                flags["try_transactions"] = None
-            if not kw_args["db"]:
-                del kw_args["db"]
+                flags['try_transactions'] = None
+            if not kw_args['db']:
+                del kw_args['db']
             if items:
-                kw_args["user"], items = items[0], items[1:]
+                kw_args['user'], items = items[0], items[1:]
             if items:
-                kw_args["passwd"], items = items[0], items[1:]
+                kw_args['passwd'], items = items[0], items[1:]
             if items:
-                kw_args["unix_socket"], items = items[0], items[1:]
+                kw_args['unix_socket'], items = items[0], items[1:]
 
         return flags
 
-    def tables(self, rdb=0, _care=("TABLE", "VIEW")):
+    def tables(self, rdb=0, _care=('TABLE', 'VIEW')):
         """ Returns list of tables.
         """
         t_list = []
-        db_result = self._query("SHOW TABLE STATUS")
+        db_result = self._query('SHOW TABLE STATUS')
         for row in db_result.fetch_row(0):
             description = '%s, %s rows, character set/collation %s' % (
                             row[1], str(row[4]), row[14])
@@ -407,7 +409,7 @@ class DB(TM):
         c_list = []
         try:
             # Field, Type, Null, Key, Default, Extra
-            db_result = self._query("SHOW COLUMNS FROM %s" % table_name)
+            db_result = self._query('SHOW COLUMNS FROM %s' % table_name)
         except ProgrammingError:
             # Table does not exist. Any other error should propagate.
             LOG.warning('columns query for non-existing table %s' % table_name)
@@ -416,46 +418,46 @@ class DB(TM):
         for Field, Type, Null, Key, Default, Extra in db_result.fetch_row(0):
             info = {'name': Field,
                     'extra': (Extra,),
-                    'nullable': (Null == b"YES") and 1 or 0}
+                    'nullable': (Null == b'YES') and 1 or 0}
 
             if Default is not None:
-                info["default"] = Default
+                info['default'] = Default
                 field_default = b"DEFAULT '%s'" % Default
             else:
                 field_default = b''
 
-            if b"(" in Type:
-                end = Type.rfind(b")")
-                short_type, size = Type[:end].split(b"(", 1)
-                if short_type not in (b"set", b"enum"):
-                    if b"," in size:
-                        info["scale"], info["precision"] = map(
-                                int, size.split(b",", 1))
+            if b'(' in Type:
+                end = Type.rfind(b')')
+                short_type, size = Type[:end].split(b'(', 1)
+                if short_type not in (b'set', b'enum'):
+                    if b',' in size:
+                        info['scale'], info['precision'] = map(
+                                int, size.split(b',', 1))
                     else:
-                        info["scale"] = int(size)
+                        info['scale'] = int(size)
             else:
                 short_type = Type
 
             if short_type in field_icons:
-                info["icon"] = short_type
+                info['icon'] = short_type
             else:
-                info["icon"] = icon_xlate.get(short_type, b"what")
+                info['icon'] = icon_xlate.get(short_type, b'what')
 
-            info["type"] = short_type
+            info['type'] = short_type
             nul = (Null == b'NO' and b'NOT NULL' or b'')
-            info["description"] = b" ".join([Type,
+            info['description'] = b' '.join([Type,
                                              field_default,
-                                             Extra or b"",
-                                             key_types.get(Key, Key or b""),
+                                             Extra or b'',
+                                             key_types.get(Key, Key or b''),
                                              nul])
             if Key:
-                info["index"] = True
-                info["key"] = Key
-            if Key == b"PRI":
-                info["primary_key"] = True
-                info["unique"] = True
-            elif Key == b"UNI":
-                info["unique"] = True
+                info['index'] = True
+                info['key'] = Key
+            if Key == b'PRI':
+                info['primary_key'] = True
+                info['unique'] = True
+            elif Key == b'UNI':
+                info['unique'] = True
 
             c_list.append(info)
 
@@ -465,7 +467,7 @@ class DB(TM):
         """ Return dictionary of current mysql variable/values.
         """
         # variable_name, value
-        variables = self._query("SHOW VARIABLES")
+        variables = self._query('SHOW VARIABLES')
         return dict((name, value) for name, value in variables.fetch_row(0))
 
     def _query(self, query, force_reconnect=False):
@@ -484,27 +486,27 @@ class DB(TM):
         except OperationalError as exc:
             if exc.args[0] in query_syntax_error:
                 raise OperationalError(exc.args[0],
-                                       "%s: %s" % (exc.args[1], query))
+                                       '%s: %s' % (exc.args[1], query))
 
             if not force_reconnect and \
                (self._mysql_lock or self._transactions) or \
                exc.args[0] not in hosed_connection:
-                LOG.warning("query failed: %s" % (query,))
+                LOG.warning('query failed: %s' % (query,))
                 raise
 
             # Hm. maybe the db is hosed.  Let's restart it.
             if exc.args[0] in hosed_connection:
-                msg = "%s Forcing a reconnect." % hosed_connection[exc.args[0]]
+                msg = '%s Forcing a reconnect.' % hosed_connection[exc.args[0]]
                 LOG.error(msg)
             self._forceReconnection()
             self.db.query(query)
         except ProgrammingError as exc:
             if exc.args[0] in hosed_connection:
                 self._forceReconnection()
-                msg = "%s Forcing a reconnect." % hosed_connection[exc.args[0]]
+                msg = '%s Forcing a reconnect.' % hosed_connection[exc.args[0]]
                 LOG.error(msg)
             else:
-                LOG.warning("query failed: %s" % (query,))
+                LOG.warning('query failed: %s' % (query,))
             raise
 
         return self.db.store_result()
@@ -516,16 +518,16 @@ class DB(TM):
         desc = None
         rows = ()
 
-        for qs in filter(None, [q.strip() for q in sql_string.split("\0")]):
+        for qs in filter(None, [q.strip() for q in sql_string.split('\0')]):
             qtype = qs.split(None, 1)[0].upper()
-            if qtype == "SELECT" and max_rows:
-                qs = "%s LIMIT %d" % (qs, max_rows)
+            if qtype == 'SELECT' and max_rows:
+                qs = '%s LIMIT %d' % (qs, max_rows)
             db_results = self._query(qs)
 
             if desc is not None and \
                db_results and \
                db_results.describe() != desc:
-                msg = "Multiple select schema are not allowed."
+                msg = 'Multiple select schema are not allowed.'
                 raise ProgrammingError(msg)
 
             if db_results:
@@ -534,7 +536,7 @@ class DB(TM):
             else:
                 desc = None
 
-            if qtype == "CALL":
+            if qtype == 'CALL':
                 # For stored procedures, skip the status result
                 self.db.next_result()
 
@@ -543,10 +545,10 @@ class DB(TM):
 
         items = []
         for info in desc:
-            items.append({"name": info[0],
-                          "type": self.defs.get(info[1], "t"),
-                          "width": info[2],
-                          "null": info[6]})
+            items.append({'name': info[0],
+                          'type': self.defs.get(info[1], 't'),
+                          'width': info[2],
+                          'null': info[6]})
 
         return items, rows
 
@@ -568,7 +570,7 @@ class DB(TM):
 
             The primary reason for this is to eliminate issues in both the
             super's _register() and transaction register(). The former has a
-            bare except: that hides useful errors. The latter deals poorly with
+            bare except that hides useful errors. The latter deals poorly with
             exceptions raised from the join due to state modifications made
             before the join attempt.
 
@@ -579,10 +581,10 @@ class DB(TM):
             try:
                 transaction.get().join(self)
             except TransactionFailedError:
-                msg = "database connection failed to join transaction."
+                msg = 'database connection failed to join transaction.'
                 LOG.error(msg)
             except ValueError:
-                msg = "database connection failed to join transaction."
+                msg = 'database connection failed to join transaction.'
                 LOG.error(msg, exc_info=True)
                 raise
             else:
@@ -599,11 +601,11 @@ class DB(TM):
             self._transaction_begun = True
             self.db.ping()
             if self._transactions:
-                self._query("BEGIN")
+                self._query('BEGIN')
             if self._mysql_lock:
                 self._query("SELECT GET_LOCK('%s',0)" % self._mysql_lock)
         except Exception:
-            LOG.error("exception during _begin", exc_info=True)
+            LOG.error('exception during _begin', exc_info=True)
             raise ConflictError
 
     def _finish(self, *ignored):
@@ -617,9 +619,9 @@ class DB(TM):
             if self._mysql_lock:
                 self._query("SELECT RELEASE_LOCK('%s')" % self._mysql_lock)
             if self._transactions:
-                self._query("COMMIT")
+                self._query('COMMIT')
         except Exception:
-            LOG.error("exception during _finish", exc_info=True)
+            LOG.error('exception during _finish', exc_info=True)
             raise ConflictError
 
     def _abort(self, *ignored):
@@ -632,15 +634,15 @@ class DB(TM):
         if self._mysql_lock:
             self._query("SELECT RELEASE_LOCK('%s')" % self._mysql_lock)
         if self._transactions:
-            self._query("ROLLBACK")
+            self._query('ROLLBACK')
         else:
-            LOG.error("aborting when non-transactional")
+            LOG.error('aborting when non-transactional')
 
     def _mysql_version(self):
         """ Return mysql server version.
         """
-        if getattr(self, "_version", None) is None:
-            self._version = self.variables().get("version")
+        if getattr(self, '_version', None) is None:
+            self._version = self.variables().get('version')
         return self._version
 
     def savepoint(self):
@@ -649,13 +651,13 @@ class DB(TM):
             Raise AttributeErrors to trigger optimistic savepoint handling
             in zope's transaction code.
         """
-        if self._mysql_version() < "5.0.2":
+        if self._mysql_version() < '5.0.2':
             # mysql supports savepoints in versions 5.0.3+
-            LOG.warning("Savepoints unsupported with Mysql < 5.0.3")
+            LOG.warning('Savepoints unsupported with Mysql < 5.0.3')
             raise AttributeError
 
         if not self._transaction_begun:
-            LOG.error("Savepoint used outside of transaction.")
+            LOG.error('Savepoint used outside of transaction.')
             raise AttributeError
 
         return _SavePoint(self)
@@ -667,8 +669,8 @@ class _SavePoint(object):
 
     def __init__(self, db_conn):
         self.db_conn = db_conn
-        self.ident = str(time.time()).replace(".", "sp")
-        db_conn._query("SAVEPOINT %s" % self.ident)
+        self.ident = str(time.time()).replace('.', 'sp')
+        db_conn._query('SAVEPOINT %s' % self.ident)
 
     def rollback(self):
-        self.db_conn._query("ROLLBACK TO %s" % self.ident)
+        self.db_conn._query('ROLLBACK TO %s' % self.ident)

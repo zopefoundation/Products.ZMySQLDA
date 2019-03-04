@@ -1,4 +1,5 @@
 *.egg-info
+*.profraw
 *.pyc
 *.swp
 .coverage*

@@ -31,6 +31,7 @@ from .permissions import add_zmysql_database_connections
 from .utils import TableBrowser
 from .utils import table_icons
 
+
 # Connection Pool for connections to MySQL.
 # Maps one mysql client connection to one DA object instance.
 database_connection_pool_lock = allocate_lock()
@@ -46,25 +47,27 @@ database_connection_pool = {}
 class Connection(ConnectionBase):
     """ Zope database adapter for MySQL/MariaDB
     """
-    meta_type = "Z MySQL Database Connection"
+    meta_type = 'Z MySQL Database Connection'
     security = ClassSecurityInfo()
     zmi_icon = 'fas fa-database'
 
     auto_create_db = True
     use_unicode = False
     charset = None
-    _v_connected = ""
+    _v_connected = ''
     _isAnSQLConnection = 1
     info = None
 
-    security.declareProtected(view_management_screens, 'manage_browse')
-    manage_browse = HTMLFile("www/browse", globals())
+    security.declareProtected(view_management_screens,  # NOQA: flake8: D001
+                              'manage_browse')
+    manage_browse = HTMLFile('www/browse', globals())
 
-    security.declareProtected(change_database_methods, 'manage_properties')
-    manage_properties = HTMLFile("www/connectionEdit", globals())
+    security.declareProtected(change_database_methods,  # NOQA: flake8: D001
+                              'manage_properties')
+    manage_properties = HTMLFile('www/connectionEdit', globals())
 
     manage_options = ConnectionBase.manage_options + (
-        {"label": "Browse", "action": "manage_browse"},)
+        {'label': 'Browse', 'action': 'manage_browse'},)
 
     def __init__(self, id, title, connection_string, check, use_unicode=None,
                  charset=None, auto_create_db=None):
@@ -115,7 +118,8 @@ class Connection(ConnectionBase):
         """
         Persistent.__setstate__(self, state)
 
-    security.declareProtected(use_database_methods, 'factory')
+    security.declareProtected(use_database_methods,  # NOQA: flake8: D001
+                              'factory')
 
     def factory(self):
         """ Base API. Returns factory method for DB connections.
@@ -136,7 +140,8 @@ class Connection(ConnectionBase):
             self.connect(self.connection_string)
             return self._v_database_connection
 
-    security.declareProtected(use_database_methods, 'connect')
+    security.declareProtected(use_database_methods,  # NOQA: flake8: D001
+                              'connect')
 
     def connect(self, conn_string):
         """ Base API. Opens connection to mysql. Raises if problems.
@@ -164,14 +169,15 @@ class Connection(ConnectionBase):
                 database_connection_pool_lock.release()
 
             self._v_database_connection = conn
-            # XXX If date is used as such, it can be wrong because an
+            # If date is used as such, it can be wrong because an
             # existing connection may be reused. But this is suposedly
             # only used as a marker to know if connection was successfull.
             self._v_connected = conn.connected_timestamp
 
         return self  # ??? why doesn't this return the connection ???
 
-    security.declareProtected(use_database_methods, 'sql_quote__')
+    security.declareProtected(use_database_methods,  # NOQA: flake8: D001
+                              'sql_quote__')
 
     def sql_quote__(self, sql_str, escapes={}):
         """ Base API. Used to massage SQL strings for use in queries.
@@ -188,7 +194,8 @@ class Connection(ConnectionBase):
         else:
             return connection.string_literal(sql_str)
 
-    security.declareProtected(change_database_methods, 'manage_edit')
+    security.declareProtected(change_database_methods,  # NOQA: flake8: D001
+                              'manage_edit')
 
     def manage_edit(self, title, connection_string, check=None,
                     use_unicode=None, charset=None, auto_create_db=None,
@@ -242,7 +249,8 @@ class Connection(ConnectionBase):
             url = '%s/manage_properties?manage_tabs_message=%s'
             REQUEST.RESPONSE.redirect(url % (self.absolute_url(), msg))
 
-    security.declareProtected(view_management_screens, 'tpValues')
+    security.declareProtected(view_management_screens,  # NOQA: flake8: D001
+                              'tpValues')
 
     def tpValues(self):
         """ Support the DTML ``tree`` tag
@@ -255,10 +263,10 @@ class Connection(ConnectionBase):
         for t_info in connection.tables(rdb=0):
             try:
                 t_browser = TableBrowser()
-                t_browser.__name__ = t_info["table_name"]
+                t_browser.__name__ = t_info['table_name']
                 t_browser._d = t_info
                 t_browser._c = connection
-                t_browser.icon = table_icons.get(t_info["table_type"], "text")
+                t_browser.icon = table_icons.get(t_info['table_type'], 'text')
                 t_list.append(t_browser)
             except Exception:
                 pass
@@ -270,11 +278,11 @@ InitializeClass(Connection)
 
 
 mod_security = ModuleSecurityInfo('Products.ZMySQLDA.DA')
-mod_security.declareProtected(add_zmysql_database_connections,
+mod_security.declareProtected(add_zmysql_database_connections,  # NOQA
                               'manage_addZMySQLConnectionForm')
-manage_addZMySQLConnectionForm = HTMLFile("www/connectionAdd", globals())
+manage_addZMySQLConnectionForm = HTMLFile('www/connectionAdd', globals())
 
-mod_security.declareProtected(add_zmysql_database_connections,
+mod_security.declareProtected(add_zmysql_database_connections,  # NOQA
                               'manage_addZMySQLConnection')
 
 

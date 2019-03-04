@@ -3,11 +3,15 @@ Products.ZMySQLDA change log
 
 4.0 (unreleased)
 ----------------
+- more strict flake8 code style compliance
+
+- trove classifier cleanup
+
+- buildout configuration cleanup
 
 
 4.0b5 (2019-02-20)
 ------------------
-
 - When editing a connection in the ZMI, show an error message and not
   an exception when the connection fails.
 

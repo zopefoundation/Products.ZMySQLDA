@@ -17,16 +17,16 @@ import unittest
 import six
 from six.moves._thread import get_ident
 
-from .base import _mySQLNotAvailable
 from .base import DB_CONN_STRING
 from .base import DB_PASSWORD
 from .base import DB_USER
-from .base import MySQLRequiredLayer
 from .base import NO_MYSQL_MSG
-from .base import PatchedConnectionTestsBase
 from .base import TABLE_COL_INT
 from .base import TABLE_COL_VARCHAR
 from .base import TABLE_NAME
+from .base import MySQLRequiredLayer
+from .base import PatchedConnectionTestsBase
+from .base import have_test_database
 from .dummy import FakeConnection
 
 
@@ -122,7 +122,7 @@ class PatchedDBPoolTests(PatchedConnectionTestsBase):
                          {'var1': 'val1', 'version': '5.5.5'})
 
 
-@unittest.skipIf(_mySQLNotAvailable(), NO_MYSQL_MSG)
+@unittest.skipUnless(have_test_database(), NO_MYSQL_MSG)
 class RealConnectionDBPoolTests(unittest.TestCase):
 
     layer = MySQLRequiredLayer
@@ -454,7 +454,7 @@ class DBTests(PatchedConnectionTestsBase):
         self.assertEqual(db.db.last_query, 'SAVEPOINT %s' % sp.ident)
 
 
-@unittest.skipIf(_mySQLNotAvailable(), NO_MYSQL_MSG)
+@unittest.skipUnless(have_test_database(), NO_MYSQL_MSG)
 class RealConnectionDBTests(unittest.TestCase):
 
     layer = MySQLRequiredLayer

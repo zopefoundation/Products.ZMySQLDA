@@ -12,4 +12,4 @@
 ##############################################################################
 """ Zope permissions for the ZMySQL database adapter
 """
-add_zmysql_database_connections = "Add Z MySQL Database Connections"
+add_zmysql_database_connections = 'Add Z MySQL Database Connections'

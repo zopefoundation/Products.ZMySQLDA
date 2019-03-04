@@ -40,9 +40,9 @@ class values(object):
 
 
 class TableBrowser(BrowserBase, Implicit):
-    icon = "what"
-    check = ""
-    info = HTMLFile("www/table_info", globals())
+    icon = 'what'
+    check = ''
+    info = HTMLFile('www/table_info', globals())
 
     def tpValues(self):
         v = values()
@@ -51,48 +51,48 @@ class TableBrowser(BrowserBase, Implicit):
 
     def tpValues_(self):
         r = []
-        tname = self._d["table_name"]
+        tname = self._d['table_name']
         for d in self._c.columns(tname):
             b = ColumnBrowser()
             b._d = d
-            b.icon = d["icon"]
+            b.icon = d['icon']
             b.table_name = tname
             r.append(b)
         return r
 
     def tpId(self):
-        return self._d["table_name"]
+        return self._d['table_name']
 
     def tpURL(self):
-        return "Table/%s" % self._d["table_name"]
+        return 'Table/%s' % self._d['table_name']
 
     def name(self):
-        return self._d["table_name"]
+        return self._d['table_name']
 
     def type(self):
-        return self._d["table_type"]
+        return self._d['table_type']
 
     def description(self):
-        return self._d["description"]
+        return self._d['description']
 
 
 class ColumnBrowser(BrowserBase):
-    icon = "field"
+    icon = 'field'
 
     def check(self):
         return '\t<input type="checkbox" name="%s.%s"/>' % (
             self.table_name,
-            self._d["name"],
+            self._d['name'],
         )
 
     def tpId(self):
-        return self._d["name"]
+        return self._d['name']
 
     def tpURL(self):
-        return "Column/%s" % self._d["name"]
+        return 'Column/%s' % self._d['name']
 
     def description(self):
-        return self._d["description"]
+        return self._d['description']
 
 
-table_icons = {"table": "table", "view": "view", "system_table": "stable"}
+table_icons = {'table': 'table', 'view': 'view', 'system_table': 'stable'}
