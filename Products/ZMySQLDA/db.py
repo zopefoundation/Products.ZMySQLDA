@@ -387,6 +387,8 @@ class DB(TM):
                 kw_args['passwd'], items = items[0], items[1:]
             if items:
                 kw_args['unix_socket'], items = items[0], items[1:]
+            # the connection string is fixed, so we cannot define the timeout there, have to use a (more) sensible default
+            kw_args['connect_timeout'] = 3
 
         return flags
 
