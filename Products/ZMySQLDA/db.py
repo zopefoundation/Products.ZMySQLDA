@@ -642,7 +642,17 @@ class DB(TM):
         """ Return mysql server version.
         """
         if getattr(self, '_version', None) is None:
-            self._version = self.variables().get('version')
+            vstring = self.variables().get('version')
+            # convert into tuple of ints
+            vtuple_of_strings = vstring.split('.')
+            vres = []
+            for item in vtuple_of_strings:
+                try:
+                    vres.append(int(item))
+                except:
+                    # fallback for strings (e.g. beta1)
+                    vres.append(item)
+            self._version = tuple(vres)
         return self._version
 
     def savepoint(self):
@@ -651,7 +661,8 @@ class DB(TM):
             Raise AttributeErrors to trigger optimistic savepoint handling
             in zope's transaction code.
         """
-        if self._mysql_version() < '5.0.2':
+        # order of arguments to < is important, saved tuple might contain strings -> needs to come as 1st argument
+        if self._mysql_version() < (5,0,2):
             # mysql supports savepoints in versions 5.0.3+
             LOG.warning('Savepoints unsupported with Mysql < 5.0.3')
             raise AttributeError
