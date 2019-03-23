@@ -241,6 +241,7 @@ class RealConnectionTests(unittest.TestCase):
             # an encoded string, unicode breaks here because the ``_mysql``
             # module will attempt to convert unicode to string with no
             # character set provided, which will then use ``ascii``.
+            self.da.manage_test("SET NAMES 'latin1'")
             sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, latin1_str)
         self.da.manage_test(sql)
 
