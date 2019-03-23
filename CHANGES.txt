@@ -3,6 +3,9 @@ Products.ZMySQLDA change log
 
 4.0 (unreleased)
 ----------------
+- remove explicit ``setuptools`` version pin in ``setup.py``
+  (`#11 <https://github.com/zms-publishing/Products.ZMySQLDA/issues/11>`_)
+
 - more strict flake8 code style compliance
 
 - trove classifier cleanup
