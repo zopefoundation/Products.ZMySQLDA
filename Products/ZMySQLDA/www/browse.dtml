@@ -12,4 +12,6 @@
     <strong><dtml-var name></strong> (<code><dtml-var description></code>)
   </dtml-tree>
 
+</main>
+
 <dtml-var manage_page_footer>
