@@ -3,6 +3,9 @@ Products.ZMySQLDA change log
 
 4.0 (unreleased)
 ----------------
+- fix database version detection for savepoint support
+  (`#7 <https://github.com/zms-publishing/Products.ZMySQLDA/issues/7>`_)
+
 - remove explicit ``setuptools`` version pin in ``setup.py``
   (`#11 <https://github.com/zms-publishing/Products.ZMySQLDA/issues/11>`_)
 
