@@ -438,17 +438,31 @@ class DBTests(PatchedConnectionTestsBase):
         self.assertFalse(db._transaction_begun)
         self.assertEqual(db.db.last_query, "SELECT RELEASE_LOCK('foo_lock')")
 
-    def test_savepoint(self):
+    def test_savepoint_unsupported(self):
         db = self._makeOne(kw_args={})
 
         # Really old MySQL versions don't support savepoints
         db._version = '5.0.1'
         self.assertRaises(AttributeError, db.savepoint)
-        del db._version
+
+    def test_savepoint_outside_transaction(self):
+        db = self._makeOne(kw_args={})
 
         # If a savepoint is used outside of a transaction: AttributeError
         self.assertRaises(AttributeError, db.savepoint)
 
+    def test_savepoint(self):
+        db = self._makeOne(kw_args={})
+
+        db._begin()
+        sp = db.savepoint()
+        self.assertEqual(db.db.last_query, 'SAVEPOINT %s' % sp.ident)
+
+    def test_savepoint_highversion(self):
+        db = self._makeOne(kw_args={})
+
+        # Version parsing used to fail on two-digit major versions
+        db._version = '10.3.1'
         db._begin()
         sp = db.savepoint()
         self.assertEqual(db.db.last_query, 'SAVEPOINT %s' % sp.ident)
