@@ -14,6 +14,7 @@ import logging
 import time
 
 import MySQLdb
+import six
 from MySQLdb.constants import CLIENT
 from MySQLdb.constants import CR
 from MySQLdb.constants import ER
@@ -418,24 +419,45 @@ class DB(TM):
             LOG.warning('columns query for non-existing table %s' % table_name)
             return ()
 
+        charset = self._kw_args.get('charset', 'UTF-8')
+        if charset.startswith('utf8'):
+            charset = 'UTF-8'
+
         for Field, Type, Null, Key, Default, Extra in db_result.fetch_row(0):
+
+            if six.PY3:
+                # Force-decoding to make the Browse ZMI tab work across
+                # all supported Python versions
+                if isinstance(Field, six.binary_type):
+                    Field = Field.decode(charset)
+                if isinstance(Type, six.binary_type):
+                    Type = Type.decode(charset)
+                if isinstance(Null, six.binary_type):
+                    Null = Null.decode(charset)
+                if isinstance(Key, six.binary_type):
+                    Key = Key.decode(charset)
+                if isinstance(Default, six.binary_type):
+                    Default = Default.decode(charset)
+                if isinstance(Extra, six.binary_type):
+                    Extra = Extra.decode(charset)
+
             info = {'name': Field,
                     'extra': (Extra,),
-                    'nullable': (Null == b'YES') and 1 or 0}
+                    'nullable': (Null == 'YES') and 1 or 0}
 
             if Default is not None:
                 info['default'] = Default
-                field_default = b"DEFAULT '%s'" % Default
+                field_default = "DEFAULT '%s'" % Default
             else:
-                field_default = b''
+                field_default = ''
 
-            if b'(' in Type:
-                end = Type.rfind(b')')
-                short_type, size = Type[:end].split(b'(', 1)
-                if short_type not in (b'set', b'enum'):
-                    if b',' in size:
+            if '(' in Type:
+                end = Type.rfind(')')
+                short_type, size = Type[:end].split('(', 1)
+                if short_type not in ('set', 'enum'):
+                    if ',' in size:
                         info['scale'], info['precision'] = map(
-                                int, size.split(b',', 1))
+                                int, size.split(',', 1))
                     else:
                         info['scale'] = int(size)
             else:
@@ -444,22 +466,22 @@ class DB(TM):
             if short_type in field_icons:
                 info['icon'] = short_type
             else:
-                info['icon'] = icon_xlate.get(short_type, b'what')
+                info['icon'] = icon_xlate.get(short_type, 'what')
 
             info['type'] = short_type
-            nul = (Null == b'NO' and b'NOT NULL' or b'')
-            info['description'] = b' '.join([Type,
-                                             field_default,
-                                             Extra or b'',
-                                             key_types.get(Key, Key or b''),
-                                             nul])
+            nul = (Null == 'NO' and 'NOT NULL' or '')
+            info['description'] = ' '.join([Type,
+                                            field_default,
+                                            Extra or '',
+                                            key_types.get(Key, Key or ''),
+                                            nul])
             if Key:
                 info['index'] = True
                 info['key'] = Key
-            if Key == b'PRI':
+            if Key == 'PRI':
                 info['primary_key'] = True
                 info['unique'] = True
-            elif Key == b'UNI':
+            elif Key == 'UNI':
                 info['unique'] = True
 
             c_list.append(info)

@@ -3,6 +3,7 @@ Products.ZMySQLDA change log
 
 4.1 (unreleased)
 ----------------
+- fixes to the Browse ZMI tab
 
 
 4.0 (2019-03-31)

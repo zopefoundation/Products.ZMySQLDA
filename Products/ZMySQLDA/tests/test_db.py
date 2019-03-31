@@ -167,8 +167,8 @@ class RealConnectionDBPoolTests(unittest.TestCase):
         self.dbpool = self._makeOne()
         cols = self.dbpool.columns(TABLE_NAME)
         self.assertEqual(len(cols), 2)
-        self.assertEqual(cols[0]['name'], six.b(TABLE_COL_INT))
-        self.assertEqual(cols[1]['name'], six.b(TABLE_COL_VARCHAR))
+        self.assertEqual(cols[0]['name'], TABLE_COL_INT)
+        self.assertEqual(cols[1]['name'], TABLE_COL_VARCHAR)
 
     def test_variables(self):
         self.dbpool = self._makeOne()
@@ -497,17 +497,17 @@ class RealConnectionDBTests(unittest.TestCase):
 
         cols = self.db.columns(TABLE_NAME)
         self.assertEqual(len(cols), 2)
-        self.assertEqual(cols[0]['name'], six.b(TABLE_COL_INT))
-        self.assertEqual(cols[0]['type'], b'int')
+        self.assertEqual(cols[0]['name'], TABLE_COL_INT)
+        self.assertEqual(cols[0]['type'], 'int')
         self.assertEqual(cols[0]['scale'], 10)
         self.assertFalse(cols[0]['nullable'])
         self.assertTrue(cols[0]['index'])
         self.assertTrue(cols[0]['primary_key'])
         self.assertTrue(cols[0]['unique'])
-        self.assertEqual(cols[0]['key'], b'PRI')
-        self.assertEqual(cols[0]['default'], b'0000000000')
-        self.assertEqual(cols[1]['name'], six.b(TABLE_COL_VARCHAR))
-        self.assertEqual(cols[1]['type'], b'varchar')
+        self.assertEqual(cols[0]['key'], 'PRI')
+        self.assertEqual(cols[0]['default'], '0000000000')
+        self.assertEqual(cols[1]['name'], TABLE_COL_VARCHAR)
+        self.assertEqual(cols[1]['type'], 'varchar')
         self.assertEqual(cols[1]['scale'], 20)
 
     def test_columns_badtable(self):
