@@ -28,7 +28,13 @@ setup(
     author='HOFFMANN+LIEBENBERG in association with '
             'SNTL Publishing, Andy Dustman, John Eikenberry',
     author_email='zms@sntl-publishing.com',
-    url='https://github.com/zms-publishing/Products.ZMySQLDA',
+    url='https://zmysqlda.readthedocs.io',
+    project_urls={
+        'Documentation': 'https://zmysqlda.readthedocs.io',
+        'Issue Tracker': ('https://github.com/zms-publishing'
+                          '/Products.ZMySQLDA/issues'),
+        'Sources': 'https://github.com/zms-publishing/Products.ZMySQLDA',
+    },
     description='MySQL Zope adapter.',
     long_description='MySQL Database Adapter for Zope.',
     classifiers=[
