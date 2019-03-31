@@ -36,7 +36,7 @@ setup(
         'Sources': 'https://github.com/zms-publishing/Products.ZMySQLDA',
     },
     description='MySQL Zope adapter.',
-    long_description='MySQL Database Adapter for Zope.',
+    long_description=read('README.rst'),
     classifiers=[
         'Development Status :: 6 - Mature',
         'Environment :: Web Environment',

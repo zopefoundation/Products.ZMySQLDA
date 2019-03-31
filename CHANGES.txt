@@ -3,6 +3,9 @@ Products.ZMySQLDA change log
 
 4.1 (unreleased)
 ----------------
+- add more content to the long_description metadata
+  (`#13 <https://github.com/zms-publishing/Products.ZMySQLDA/issues/13>`_)
+
 - fixes to the Browse ZMI tab
 
 
