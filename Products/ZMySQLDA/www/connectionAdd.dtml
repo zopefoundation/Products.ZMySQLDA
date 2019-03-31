@@ -48,24 +48,23 @@
         </th>
         <td align="left" valign="top">
         <select name="charset">
-          <option value="" selected>
-            Not set (use defaults)
+          <option value="">
+            Not set (use previous release defaults)
           </option>
-          <option value="latin1">Force Latin-1 (Python 2 only)</option>
-          <option value="utf8mb4">
-            Force UTF-8 (utf8mb4, MySQL 5.5.3 and up)
+          <option value="latin1">Latin-1 (Python 2 only)</option>
+          <option value="utf8mb4" selected>
+            UTF-8 (MySQL 5.5.3 and higher, uses utf8mb4)
           </option>
           <option value="utf8">
-            Force UTF-8 (utf8/utf8mb3, MySQL up to 5.5.2)
+            UTF-8 (MySQL up to 5.5.2, uses utf8mb3)
           </option>
         </select>
-        <small>Character set to use for query results.</small>
         </td>
       </tr>
       <tr>
         <th align="left" valign="top">Automatically create database</th>
         <td align="left" valign="top">
-          <input name="auto_create_db" type="checkbox" value="yes" checked>
+          <input name="auto_create_db" type="checkbox" value="yes">
           <small>
             Create database from connection string if it does not exist yet.
           </small>
@@ -78,79 +77,91 @@
     </table>
   </form>
 
-<dt><a hname="1"><sup>1</sup></a> Connection Strings</dt>
-<dd class="form-help">
-  <p>
-    The connection string used for Z MySQL Database Connection
-    is of the form:
-    <pre>
-        [*lock] [+/-][database][@host[:port]] [user [password [unix_socket]]]
-    </pre>
-    or typically:
-    <pre>
-        database user password
-    </pre>
-    to use a MySQL server on localhost via the standard UNIX socket.
-    Only specify host if the server is on a remote system. You can
-    use a non-standard port, if necessary. Hint: To use a non-standard
-    port on the local system, use 127.0.0.1 for the host instead of
-    localhost.
-  </p>
-  <p>
-    Either a database or a host or both must be specified.
-    If the UNIX socket is in a non-standard location, you can specify
-    the full path to it after the password.
-  </p>
-  <p>
-    A '-' in front of the database tells ZMySQLDA to not use Zope's
-    Transaction Manager, even if the server supports transactions. A
-    '+' in front of the database tells ZMySQLDA that it must use
-    transactions; an exception will be raised if they are not
-    supported by the server. If neither '-' or '+' are present, then
-    transactions will be enabled if the server supports them.  If you
-    are using non-transaction safe tables (TSTs) on a server that
-    supports TSTs, use '-'. If you require transactions, use '+'. If
-    you aren't sure, don't use either.
-  </p>
-  <p>
-    *<em>lock</em> at the begining of the connection string means to
-    pseudo-transactional. When the transaction begins, it will acquire
-    a lock on the server named <em>lock</em> (i.e. MYLOCK). When the
-    transaction commits, the lock will be released. If the transaction
-    is aborted and restarted, which can happen due to a ConflictError,
-    you'll get an error in the logs, and inconsistent data. In this
-    respect, it's equivalent to transactions turned off.
-  </p>
-  <p>
-    Transactions are highly recommended. Using a named lock in
-    conjunctions with transactions is probably pointless.  
-  </p>
-</dd>
+  <dt><a hname="1"><sup>1</sup></a> Connection Strings</dt>
+  <dd class="form-help">
+    <p>
+      The connection string used for Z MySQL Database Connection
+      is of the form:
+      <pre>
+          [*lock] [+/-][database][@host[:port]] [user [password [unix_socket]]]
+      </pre>
+      or typically:
+      <pre>
+          database user password
+      </pre>
+      to use a MySQL server on localhost via the standard UNIX socket.
+      Only specify host if the server is on a remote system. You can
+      use a non-standard port, if necessary. Hint: To use a non-standard
+      port on the local system, use 127.0.0.1 for the host instead of
+      localhost.
+    </p>
+    <p>
+      Either a database or a host or both must be specified.
+      If the UNIX socket is in a non-standard location, you can specify
+      the full path to it after the password.
+    </p>
+    <p>
+      A '-' in front of the database tells ZMySQLDA to not use Zope's
+      Transaction Manager, even if the server supports transactions. A
+      '+' in front of the database tells ZMySQLDA that it must use
+      transactions; an exception will be raised if they are not
+      supported by the server. If neither '-' or '+' are present, then
+      transactions will be enabled if the server supports them.  If you
+      are using non-transaction safe tables (TSTs) on a server that
+      supports TSTs, use '-'. If you require transactions, use '+'. If
+      you aren't sure, don't use either.
+    </p>
+    <p>
+      *<em>lock</em> at the begining of the connection string means to
+      pseudo-transactional. When the transaction begins, it will acquire
+      a lock on the server named <em>lock</em> (i.e. MYLOCK). When the
+      transaction commits, the lock will be released. If the transaction
+      is aborted and restarted, which can happen due to a ConflictError,
+      you'll get an error in the logs, and inconsistent data. In this
+      respect, it's equivalent to transactions turned off.
+    </p>
+    <p>
+      Transactions are highly recommended. Using a named lock in
+      conjunctions with transactions is probably pointless.  
+    </p>
+  </dd>
 
-<dt><a hname="2"><sup>2</sup></a> Character set</dt>
-<dd class="form-help">
-  <p>Query results will be encoded in the character set specified here.</p>
+  <dt><a hname="2"><sup>2</sup></a> Character set</dt>
+  <dd class="form-help">
+    <p>
+      The character set the database adapter will use to communicate with
+      the database. You should choose a character set matching the Zope
+      application character set, which defaulted to <em>Latin-1</em> for
+      Zope 2 and now defaults to <em>UTF-8</em> for Zope 4.
+    </p>
 
-  <p>
-    <em>Not set</em> will emulate previous releases' behavior on Python 2, which
-    used Latin-1 (ISO 8859-1), but if <em>Unicode results</em> is selected, the
-    connection character set switches to UTF-8 and strings in query results
-    are decoded to Unicode. On Python 3, <em>not set</em> always defaults to
-    UTF-8.
-  </p>
+    <p>
+      The database will expect all incoming
+      data to be encoded in this character set, and query results from the
+      database will be encoded in the same character set unless you check
+      <em>Unicode results</em>.
+    </p>
 
-  <p>
-    For Python 2, you can force the character set to Latin-1 or UTF-8,
-    regardless of the <em>Unicode results</em> setting. This is useful
-    when your application wants to use UTF-8, but cannot deal with unicode
-    return values.
-  </p>
+    <p>
+      <em>Not set</em> will emulate previous releases' behavior on Python 2, which
+      used Latin-1 (ISO 8859-1), but if <em>Unicode results</em> is selected, the
+      connection character set switches to UTF-8 and strings in query results
+      are decoded to Unicode. On Python 3, <em>Not set</em> always defaults to
+      UTF-8.
+    </p>
 
-  </p>
-    <b>On Python 3, forcing the character set to Latin1 is not supported.</b>
-  </p>
+    <p>
+      For Python 2, you can force the character set to Latin-1 or UTF-8,
+      regardless of the <em>Unicode results</em> setting. This is useful
+      when your application wants to use UTF-8, but cannot deal with unicode
+      return values.
+    </p>
 
-</dd>
+    </p>
+      <b>Python 3 only supports the UTF-8 options!</b>
+    </p>
+
+  </dd>
 
 </main>
 

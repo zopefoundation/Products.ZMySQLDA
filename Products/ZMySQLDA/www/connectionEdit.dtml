@@ -44,24 +44,23 @@
       </tr>
       <tr>
         <th align="left" valign="top">
-          Character set <a href="#2"><sup>2</sup></a>
+          Connection character set <a href="#1"><sup>1</sup></a>
         </th>
         <td align="left" valign="top">
-        <select name="charset">
-          <option value="" <dtml-if "not charset">selected</dtml-if>>
-            Not set (use previous release defaults)
-          </option>
-          <option value="latin1" <dtml-if "charset == 'latin1'">selected</dtml-if>>
-            Force Latin-1 (Python 2 only)
-          </option>
-          <option value="utf8mb4" <dtml-if "charset == 'utf8mb4'">selected</dtml-if>>
-            Force UTF-8 (utf8mb4, MySQL 5.5.3 and up)
-          </option>
-          <option value="utf8" <dtml-if "charset == 'utf8'">selected</dtml-if>>
-            Force UTF-8 (utf8/utf8mb3, MySQL up to 5.5.2)
-          </option>
-        </select>
-        <small>Character set to use for query results.</small>
+          <select name="charset">
+            <option value="" <dtml-if "not charset">selected</dtml-if>>
+              Not set (use previous release defaults)
+            </option>
+            <option value="latin1" <dtml-if "charset == 'latin1'">selected</dtml-if>>
+              Latin-1 (Python 2 only)
+            </option>
+            <option value="utf8mb4" <dtml-if "charset == 'utf8mb4'">selected</dtml-if>>
+              UTF-8 (MySQL 5.5.3 and higher, uses utf8mb4)
+            </option>
+            <option value="utf8" <dtml-if "charset == 'utf8'">selected</dtml-if>>
+              UTF-8 (MySQL up to 5.5.2, uses utf8mb3)
+            </option>
+          </select>
         </td>
       </tr>
       <tr>
@@ -78,6 +77,43 @@
 
     </table>
   </form>
+
+  <dt><a hname="1"><sup>1</sup></a> Connection character set</dt>
+  <dd class="form-help">
+    <p>
+      The character set the database adapter will use to communicate with
+      the database. You should choose a character set matching the Zope
+      application character set, which defaulted to <em>Latin-1</em> for
+      Zope 2 and now defaults to <em>UTF-8</em> for Zope 4.
+    </p>
+
+    <p>
+      The database will expect all incoming
+      data to be encoded in this character set, and query results from the
+      database will be encoded in the same character set unless you check
+      <em>Unicode results</em>.
+    </p>
+
+    <p>
+      <em>Not set</em> will emulate previous releases' behavior on Python 2, which
+      used Latin-1 (ISO 8859-1), but if <em>Unicode results</em> is selected, the
+      connection character set switches to UTF-8 and strings in query results
+      are decoded to Unicode. On Python 3, <em>Not set</em> always defaults to
+      UTF-8.
+    </p>
+  
+    <p>
+      For Python 2, you can force the character set to Latin-1 or UTF-8,
+      regardless of the <em>Unicode results</em> setting. This is useful
+      when your application wants to use UTF-8, but cannot deal with unicode
+      return values.
+    </p>
+  
+    </p>
+      <b>Python 3 only supports the UTF-8 options!</b>
+    </p>
+  
+  </dd>
 
 </main>
 
