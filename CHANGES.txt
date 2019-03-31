@@ -1,7 +1,7 @@
 Products.ZMySQLDA change log
 ============================
 
-4.0 (unreleased)
+4.0 (2019-03-31)
 ----------------
 - fix database version detection for savepoint support
   (`#7 <https://github.com/zms-publishing/Products.ZMySQLDA/issues/7>`_)
