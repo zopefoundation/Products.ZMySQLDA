@@ -1,6 +1,10 @@
 Products.ZMySQLDA change log
 ============================
 
+4.2 (unreleased)
+----------------
+
+
 4.1 (2019-04-26)
 ----------------
 - fix the Browse tab under Python 3
