@@ -14,7 +14,6 @@
 """
 import unittest
 
-import six
 from six.moves._thread import get_ident
 
 from .base import DB_CONN_STRING
@@ -159,8 +158,7 @@ class RealConnectionDBPoolTests(unittest.TestCase):
 
         tables = self.dbpool.tables()
         self.assertEqual(len(tables), 1)
-        # Need to coerce to bytes for Python 3 compatibility
-        self.assertEqual(tables[0]['table_name'], six.b(TABLE_NAME))
+        self.assertEqual(tables[0]['table_name'], TABLE_NAME)
         self.assertTrue(tables[0].get('description'))  # Details not needed
 
     def test_columns(self):
@@ -488,8 +486,7 @@ class RealConnectionDBTests(unittest.TestCase):
 
         tables = self.db.tables()
         self.assertEqual(len(tables), 1)
-        # Need to coerce to bytes for Python 3 compatibility
-        self.assertEqual(tables[0]['table_name'], six.b(TABLE_NAME))
+        self.assertEqual(tables[0]['table_name'], TABLE_NAME)
         self.assertTrue(tables[0].get('description'))  # Details not needed
 
     def test_columns(self):
