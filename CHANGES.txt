@@ -3,6 +3,9 @@ Products.ZMySQLDA change log
 
 4.1 (unreleased)
 ----------------
+- fix the Browse tab under Python 3
+  (`#14 <https://github.com/zms-publishing/Products.ZMySQLDA/issues/14>`_)
+
 - add more content to the long_description metadata
   (`#13 <https://github.com/zms-publishing/Products.ZMySQLDA/issues/13>`_)
 

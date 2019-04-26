@@ -399,10 +399,22 @@ class DB(TM):
         """
         t_list = []
         db_result = self._query('SHOW TABLE STATUS')
+        charset = self._kw_args.get('charset', 'UTF-8')
+        if charset.startswith('utf8'):
+            charset = 'UTF-8'
+
         for row in db_result.fetch_row(0):
-            description = '%s, %s rows, character set/collation %s' % (
-                            row[1], str(row[4]), row[14])
-            t_list.append({'table_name': row[0],
+            variables = {}
+            for index, key in ((0, 't_name'), (1, 't_engine'), (4, 't_size'),
+                               (14, 't_cs')):
+                value = row[index]
+                if isinstance(value, six.binary_type):
+                    value = value.decode(charset)
+                variables[key] = value
+
+            description = ('%(t_engine)s, %(t_size)s rows, '
+                           'character set/collation %(t_cs)s' % variables)
+            t_list.append({'table_name': variables['t_name'],
                            'table_type': 'table',
                            'description': description})
         return t_list
