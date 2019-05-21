@@ -3,6 +3,7 @@ Products.ZMySQLDA change log
 
 4.2 (unreleased)
 ----------------
+- fix wrong use of ``charset`` for ``unicode_literal``
 
 
 4.1 (2019-04-26)

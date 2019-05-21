@@ -254,8 +254,12 @@ class DBPool(object):
             return self._access_db(method_id='unicode_literal',
                                    args=args, kw=kw)
         except AttributeError:  # mysqlclient > 1.3.11
+            if self.charset and self.charset.startswith('utf8'):
+                charset = 'UTF-8'
+            else:
+                charset = self.charset
             # This is modeled after code in MySQLdb.connections.__init__
-            new_args = (args[0].encode(self.charset or 'latin1'),) + args[1:]
+            new_args = (args[0].encode(charset or 'latin1'),) + args[1:]
             return self._access_db(method_id='string_literal',
                                    args=new_args, kw=kw)
 

@@ -182,6 +182,9 @@ class RealConnectionDBPoolTests(unittest.TestCase):
         self.dbpool = self._makeOne()
         self.assertEqual(self.dbpool.unicode_literal(u'foo'), b"'foo'")
 
+        self.dbpool = self._makeOne(charset='utf8mb4')
+        self.assertEqual(self.dbpool.unicode_literal(u'foo'), b"'foo'")
+
 
 class DBTests(PatchedConnectionTestsBase):
 
