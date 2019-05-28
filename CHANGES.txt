@@ -3,6 +3,7 @@ Products.ZMySQLDA change log
 
 4.3 (unreleased)
 ----------------
+- make sure SQL quoting an unencoded string does not change the string type
 
 
 4.2 (2019-05-21)

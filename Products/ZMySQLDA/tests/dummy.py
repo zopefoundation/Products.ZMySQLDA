@@ -13,6 +13,9 @@
 """ Dummy fixtures for testing
 """
 
+import six
+
+
 RESULTS = {'show table status': [['table1', 'engine1', None, None, 5, None,
                                   None, None, None, None, None, None, None,
                                   None, 'my_collation']],
@@ -74,6 +77,10 @@ class FakeConnection:
 
     def string_literal(self, txt):
         self.string_literal_called = txt
+        return txt
 
     def unicode_literal(self, txt):
         self.unicode_literal_called = txt
+        if isinstance(txt, six.text_type):
+            txt = txt.encode('UTF-8')
+        return txt

@@ -164,16 +164,14 @@ class PatchedConnectionTests(PatchedConnectionTestsBase):
         self.assertFalse(internal_conn.unicode_literal_called)
 
     def test_sql_quote__unicode(self):
+        unencoded = u'foo'
         self.conn = self._makeOne('conn_id', 'Conn Title', 'db_conn_string',
                                   False, use_unicode=True)
 
-        self.conn.sql_quote__(b'foo'.decode('ASCII'))
-
-        db_pool = self.conn._v_database_connection._db_pool
-        internal_conn = db_pool.get(get_ident()).db
-        self.assertFalse(internal_conn.string_literal_called)
-        self.assertEqual(internal_conn.unicode_literal_called,
-                         b'foo'.decode('ASCII'))
+        # The point of this test is not the quoting, which happens at
+        # the MySQL library level, but the processing on our end, which
+        # should return the same type of string.
+        self.assertEqual(self.conn.sql_quote__(unencoded), unencoded)
 
 
 @unittest.skipUnless(have_test_database(), NO_MYSQL_MSG)

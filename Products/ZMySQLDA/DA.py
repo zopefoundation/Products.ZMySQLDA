@@ -190,7 +190,16 @@ class Connection(ConnectionBase):
         connection = self._getConnection()
 
         if self.use_unicode and isinstance(sql_str, six.text_type):
-            return connection.unicode_literal(sql_str)
+            # Confusing naming: unicode_literal does not return an unencoded
+            # ("unicode") string, but an encoded bytes string.
+            encoded = connection.unicode_literal(sql_str)
+
+            # If the SQL string was unencoded to begin with we want to make
+            # sure to return the same thing, so decode it here.
+            charset = self.charset or 'latin1'
+            if charset.startswith('utf8'):
+                charset = 'utf-8'
+            return encoded.decode(charset)
         else:
             return connection.string_literal(sql_str)
 
