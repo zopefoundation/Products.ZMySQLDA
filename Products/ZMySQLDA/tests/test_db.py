@@ -58,6 +58,7 @@ class DBPoolTests(unittest.TestCase):
         self.assertFalse(pool._create_db)
         self.assertFalse(pool.use_unicode)
         self.assertIsNone(pool.charset)
+        self.assertIsNone(pool.timeout)
 
     def test_instantiate_use_unicode(self):
         pool = self._makeOne(create_db=True, use_unicode=True)

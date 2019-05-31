@@ -114,9 +114,10 @@ class DBPool(object):
     _create_db = False
     use_unicode = False
     charset = None
+    timeout = None
 
     def __init__(self, db_cls, create_db=False, use_unicode=False,
-                 charset=None):
+                 charset=None, timeout=None):
         """ Set transaction managed class for use in pool.
         """
         self._db_cls = db_cls
@@ -128,6 +129,8 @@ class DBPool(object):
         # unicode settings
         self.use_unicode = use_unicode
         self.charset = charset
+        # timeout setting
+        self.timeout = int(timeout) if timeout else None
 
     def __call__(self, connection):
         """ Parse the connection string.
@@ -140,7 +143,8 @@ class DBPool(object):
         self.connection = connection
         db_flags = self._db_cls._parse_connection_string(connection,
                                                          self.use_unicode,
-                                                         charset=self.charset)
+                                                         charset=self.charset,
+                                                         timeout=self.timeout)
         self._db_flags = db_flags
 
         # connect to server to determin tranasactional capabilities
@@ -345,7 +349,7 @@ class DB(TM):
 
     @classmethod
     def _parse_connection_string(cls, connection, use_unicode=False,
-                                 charset=None):
+                                 charset=None, timeout=None):
         """ Done as a class method to both allow access to class attribute
             conv (conversion) settings while allowing for wrapping pool class
             use of this method. The former is important to allow for subclasses
@@ -395,6 +399,8 @@ class DB(TM):
                 kw_args['passwd'], items = items[0], items[1:]
             if items:
                 kw_args['unix_socket'], items = items[0], items[1:]
+        if timeout:
+            kw_args['connect_timeout'] = timeout
 
         return flags
 

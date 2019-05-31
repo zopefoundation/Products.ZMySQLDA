@@ -54,6 +54,7 @@ class Connection(ConnectionBase):
     auto_create_db = True
     use_unicode = False
     charset = None
+    timeout = None
     _v_connected = ''
     _isAnSQLConnection = 1
     info = None
@@ -70,7 +71,7 @@ class Connection(ConnectionBase):
         {'label': 'Browse', 'action': 'manage_browse'},)
 
     def __init__(self, id, title, connection_string, check, use_unicode=None,
-                 charset=None, auto_create_db=None):
+                 charset=None, auto_create_db=None, timeout=None):
         """ Instance setup. Optionally opens the connection.
 
         :string: id -- The id of the ZMySQLDA Connection
@@ -105,10 +106,13 @@ class Connection(ConnectionBase):
         :bool: auto_create_db -- If the database given in ``connection_string``
                                  does not exist, create it automatically.
                                  Default: False.
+        :int: timeout -- The connect timeout for the connection in seconds.
+                                 Default: None
         """
         self.use_unicode = bool(use_unicode)
         self.charset = charset
         self.auto_create_db = bool(auto_create_db)
+        self.timeout = int(timeout) if timeout else None
         return super(Connection, self).__init__(id, title, connection_string,
                                                 check)
 
@@ -160,7 +164,8 @@ class Connection(ConnectionBase):
 
             conn_pool = DBPool(self.factory(), create_db=self.auto_create_db,
                                use_unicode=self.use_unicode,
-                               charset=self.charset)
+                               charset=self.charset,
+                               timeout=self.timeout)
             database_connection_pool_lock.acquire()
             try:
                 conn = conn_pool(conn_string)
@@ -208,7 +213,7 @@ class Connection(ConnectionBase):
 
     def manage_edit(self, title, connection_string, check=None,
                     use_unicode=None, charset=None, auto_create_db=None,
-                    REQUEST=None):
+                    timeout=None, REQUEST=None):
         """ Edit the connection attributes through the Zope ZMI.
 
         :string: title -- The title of the ZMySQLDA Connection
@@ -236,11 +241,15 @@ class Connection(ConnectionBase):
                                  does not exist, create it automatically.
                                  Default: False.
 
+        :int: timeout -- The connect timeout for the connection in seconds.
+                                 Default: None
+
         :request: REQUEST -- A Zope REQUEST object
         """
         self.use_unicode = bool(use_unicode)
         self.charset = charset
         self.auto_create_db = bool(auto_create_db)
+        self.timeout = int(timeout) if timeout else None
 
         try:
             result = super(Connection, self).manage_edit(title,
@@ -297,7 +306,7 @@ mod_security.declareProtected(add_zmysql_database_connections,  # NOQA
 
 def manage_addZMySQLConnection(self, id, title, connection_string, check=None,
                                use_unicode=None, auto_create_db=None,
-                               charset=None, REQUEST=None):
+                               charset=None, timeout=None, REQUEST=None):
     """Factory function to add a connection object from the Zope ZMI.
 
     :string: id -- The id of the ZMySQLDA Connection
@@ -333,13 +342,16 @@ def manage_addZMySQLConnection(self, id, title, connection_string, check=None,
                              does not exist, create it automatically.
                              Default: False.
 
+    :int: timeout -- The connect timeout for the connection in seconds.
+                             Default: None
+
     :object: REQUEST -- The currently active Zope request object.
                         Default: None.
     """
     self._setObject(id,
                     Connection(id, title, connection_string, check,
                                use_unicode=use_unicode, charset=charset,
-                               auto_create_db=auto_create_db))
+                               auto_create_db=auto_create_db, timeout=timeout))
 
     if REQUEST is not None:
         return self.manage_main(self, REQUEST)
