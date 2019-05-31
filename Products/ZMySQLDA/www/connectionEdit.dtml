@@ -72,6 +72,18 @@
           </dtml-let>
         </td>
       </tr>
+      <tr>
+        <th align="left" valign="top">
+          Connect timeout
+        </th>
+        <td align="left" valign="top">
+          <dtml-let preptimeout="timeout and str(timeout) or ''">
+            <input type="text" name="timeout" size="3" value="&dtml-preptimeout;" />
+          </dtml-let>
+          <small>in seconds</small>
+        </td>
+      </tr>
+      
         <td></td>
         <td><br><input type="submit" value="Change"></td>
       </tr>
