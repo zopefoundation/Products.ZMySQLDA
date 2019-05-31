@@ -43,7 +43,7 @@ class ConnectionTests(unittest.TestCase):
 
     def test_initialization(self):
         conn = self._makeOne('conn_id', 'Conn Title', 'db_conn_string', False,
-                             use_unicode=True, auto_create_db=True, timeout = 3)
+                             use_unicode=True, auto_create_db=True, timeout=3)
         self.assertEqual(conn.getId(), 'conn_id')
         self.assertEqual(conn.title, 'Conn Title')
         self.assertEqual(conn.connection_string, 'db_conn_string')
@@ -190,7 +190,8 @@ class RealConnectionTests(unittest.TestCase):
     def _makeOne(self, use_unicode=False, charset=None, timeout=None):
         from Products.ZMySQLDA.DA import Connection
         return Connection('conn_id', 'Conn Title', DB_CONN_STRING, False,
-                          use_unicode=use_unicode, charset=charset, timeout=timeout)
+                          use_unicode=use_unicode, charset=charset,
+                          timeout=timeout)
 
     def _makeRequest(self):
         class DummyRequest(dict):
