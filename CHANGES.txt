@@ -1,6 +1,8 @@
 Products.ZMySQLDA change log
 ============================
 
+4.5 (unreleased)
+
 4.4 (2019-06-17)
 ----------------
 - add timeout parameter for DatabaseAdapter and database pool classes
