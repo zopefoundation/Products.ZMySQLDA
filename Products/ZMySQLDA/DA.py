@@ -59,11 +59,11 @@ class Connection(ConnectionBase):
     _isAnSQLConnection = 1
     info = None
 
-    security.declareProtected(view_management_screens,  # NOQA: flake8: D001
+    security.declareProtected(view_management_screens,  # NOQA: D001
                               'manage_browse')
     manage_browse = HTMLFile('www/browse', globals())
 
-    security.declareProtected(change_database_methods,  # NOQA: flake8: D001
+    security.declareProtected(change_database_methods,  # NOQA: D001
                               'manage_properties')
     manage_properties = HTMLFile('www/connectionEdit', globals())
 
@@ -122,8 +122,7 @@ class Connection(ConnectionBase):
         """
         Persistent.__setstate__(self, state)
 
-    security.declareProtected(use_database_methods,  # NOQA: flake8: D001
-                              'factory')
+    security.declareProtected(use_database_methods, 'factory')  # NOQA: D001
 
     def factory(self):
         """ Base API. Returns factory method for DB connections.
@@ -144,8 +143,7 @@ class Connection(ConnectionBase):
             self.connect(self.connection_string)
             return self._v_database_connection
 
-    security.declareProtected(use_database_methods,  # NOQA: flake8: D001
-                              'connect')
+    security.declareProtected(use_database_methods,  'connect')  # NOQA: D001
 
     def connect(self, conn_string):
         """ Base API. Opens connection to mysql. Raises if problems.
@@ -181,7 +179,7 @@ class Connection(ConnectionBase):
 
         return self  # ??? why doesn't this return the connection ???
 
-    security.declareProtected(use_database_methods,  # NOQA: flake8: D001
+    security.declareProtected(use_database_methods,  # NOQA: D001
                               'sql_quote__')
 
     def sql_quote__(self, sql_str, escapes={}):
@@ -208,7 +206,7 @@ class Connection(ConnectionBase):
         else:
             return connection.string_literal(sql_str)
 
-    security.declareProtected(change_database_methods,  # NOQA: flake8: D001
+    security.declareProtected(change_database_methods,  # NOQA: D001
                               'manage_edit')
 
     def manage_edit(self, title, connection_string, check=None,
@@ -267,7 +265,7 @@ class Connection(ConnectionBase):
             url = '%s/manage_properties?manage_tabs_message=%s'
             REQUEST.RESPONSE.redirect(url % (self.absolute_url(), msg))
 
-    security.declareProtected(view_management_screens,  # NOQA: flake8: D001
+    security.declareProtected(view_management_screens,  # NOQA: D001
                               'tpValues')
 
     def tpValues(self):
