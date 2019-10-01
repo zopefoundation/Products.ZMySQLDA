@@ -22,7 +22,9 @@
       </tr>
 
       <tr>
-        <th align="left" valign="top">Database Connection String</th>
+        <th align="left" valign="top">
+          Database Connection String <a href="#1"><sup>1</sup></a>
+        </th>
         <td align="left" valign="top">
           <input type="text" name="connection_string" size="40"
                  value="<dtml-var connection_string html_quote>">
@@ -44,7 +46,7 @@
       </tr>
       <tr>
         <th align="left" valign="top">
-          Connection character set <a href="#1"><sup>1</sup></a>
+          Connection character set <a href="#2"><sup>2</sup></a>
         </th>
         <td align="left" valign="top">
           <select name="charset">
@@ -90,7 +92,16 @@
     </table>
   </form>
 
-  <dt><a hname="1"><sup>1</sup></a> Connection character set</dt>
+  <dt><a hname="1"><sup>1</sup></a> Database Connection String</dt>
+  <dd class="form-help">
+    <p>
+      Information about how to format the connection string can be found
+      in the <a href="https://zmysqlda.readthedocs.io/en/latest/connstring.html">
+      documentation</a>.
+    </p>
+  </dd>
+
+  <dt><a hname="2"><sup>2</sup></a> Connection character set</dt>
   <dd class="form-help">
     <p>
       The character set the database adapter will use to communicate with
