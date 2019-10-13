@@ -3,6 +3,7 @@ Products.ZMySQLDA change log
 
 4.5 (unreleased)
 ----------------
+- rely on the Zope 4 branch for tests so we don't lose Python 2 compatibility
 
 
 4.4 (2019-06-17)
