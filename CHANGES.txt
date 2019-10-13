@@ -5,6 +5,8 @@ Products.ZMySQLDA change log
 ----------------
 - rely on the Zope 4 branch for tests so we don't lose Python 2 compatibility
 
+- combine Status and Properties ZMI tabs to improve usability
+
 
 4.4 (2019-06-17)
 ----------------

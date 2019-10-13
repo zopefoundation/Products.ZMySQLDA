@@ -3,6 +3,33 @@
 
 <main class="container-fluid">
 
+  <table>
+    <tr>
+      <td>
+        The database connection is
+        <dtml-if connected>
+          <b style="color: green">OPEN</b>
+        <dtml-else>
+          <b style="color: red">CLOSED</b>
+        </dtml-if>.
+      </td>
+      <td>&nbsp;</td>
+      <td>
+        <dtml-if connected>
+          <form action="manage_close_connection" method="get">
+          <input class="btn btn-primary" type="submit" name="submit"
+           value="Close Connection">
+          </form>
+        <dtml-else>
+          <form action="manage_open_connection" method="get">
+          <input class="btn btn-primary" type="submit" name="submit"
+           value="Open Connection">
+          </form>
+        </dtml-if>
+      </td>
+    </tr>
+  </table>
+
   <h2>Edit <dtml-var title_or_id></h2>
   
   <form action="manage_edit" method="POST">

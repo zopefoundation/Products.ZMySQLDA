@@ -66,9 +66,13 @@ class Connection(ConnectionBase):
     security.declareProtected(change_database_methods,  # NOQA: D001
                               'manage_properties')
     manage_properties = HTMLFile('www/connectionEdit', globals())
+    manage_properties._setName('manage_main')
+    manage_main = manage_properties
 
-    manage_options = ConnectionBase.manage_options + (
-        {'label': 'Browse', 'action': 'manage_browse'},)
+    manage_options = (
+        ConnectionBase.manage_options[1:] +
+        ({'label': 'Browse', 'action': 'manage_browse'},)
+        )
 
     def __init__(self, id, title, connection_string, check, use_unicode=None,
                  charset=None, auto_create_db=None, timeout=None):
