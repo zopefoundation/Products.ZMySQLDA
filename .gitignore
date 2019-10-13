@@ -12,4 +12,6 @@ develop-eggs/
 dist/
 docs/_build/
 htmlcov/
+lib/
 parts/
+pyvenv.cfg
