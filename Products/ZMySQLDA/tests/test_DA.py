@@ -380,6 +380,96 @@ class RealConnectionTests(unittest.TestCase):
         self.assertEqual(res[0][TABLE_COL_INT], 1)
         self.assertEqual(res[0][TABLE_COL_VARCHAR], unicode_str)
 
+    def test_sql_quote___miss(self):
+        TO_QUOTE = u'no quoting required'
+        conn = self._makeOne(use_unicode=True)
+        self.assertEqual(conn.sql_quote__(TO_QUOTE), u"'%s'" % TO_QUOTE)
+
+    def test_sql_quote___embedded_apostrophe(self):
+        TO_QUOTE = u"w'embedded apostrophe"
+        conn = self._makeOne(use_unicode=True)
+        self.assertEqual(conn.sql_quote__(TO_QUOTE),
+                         u"'w\\'embedded apostrophe'")
+
+    def test_sql_quote___embedded_backslash(self):
+        TO_QUOTE = u'embedded \\backslash'
+        conn = self._makeOne(use_unicode=True)
+        self.assertEqual(conn.sql_quote__(TO_QUOTE),
+                         u"'embedded \\\\backslash'")
+
+    def test_sql_quote___embedded_double_quote(self):
+        # As it turns out, escaping double quotes will break
+        # some servers, notably PostgreSQL, so we no longer do that.
+        TO_QUOTE = u'embedded "double quote'
+        conn = self._makeOne(use_unicode=True)
+        self.assertEqual(conn.sql_quote__(TO_QUOTE),
+                         u'\'embedded \\"double quote\'')
+
+    def test_sql_quote___embedded_null(self):
+        TO_QUOTE = u"w'embedded apostrophe and \x00null"
+        conn = self._makeOne(use_unicode=True)
+        self.assertEqual(conn.sql_quote__(TO_QUOTE),
+                         u"'w\\'embedded apostrophe and \\0null'")
+
+        # This is another version of a nul character.
+        TO_QUOTE = u'embedded other \x1anull'
+        conn = self._makeOne(use_unicode=True)
+        self.assertEqual(conn.sql_quote__(TO_QUOTE),
+                         u"'embedded other \\Znull'")
+
+    def test_sql_quote___embedded_carriage_return(self):
+        TO_QUOTE = u"w'embedded carriage\rreturn"
+        conn = self._makeOne(use_unicode=True)
+        self.assertEqual(conn.sql_quote__(TO_QUOTE),
+                         u"'w\\'embedded carriage\\rreturn'")
+
+    def test_sql_quote___miss_bytes(self):
+        TO_QUOTE = b'no quoting required'
+        conn = self._makeOne()
+        self.assertEqual(conn.sql_quote__(TO_QUOTE), b"'%s'" % TO_QUOTE)
+
+    def test_sql_quote___embedded_apostrophe_bytes(self):
+        TO_QUOTE = b"w'embedded apostrophe"
+        conn = self._makeOne()
+        self.assertEqual(conn.sql_quote__(TO_QUOTE),
+                         b"'w\\'embedded apostrophe'")
+
+    def test_sql_quote___embedded_backslash_bytes(self):
+        TO_QUOTE = b'embedded \\backslash'
+        conn = self._makeOne()
+        self.assertEqual(conn.sql_quote__(TO_QUOTE),
+                         b"'embedded \\\\backslash'")
+        # Show for good measure that the seeming two backslashes
+        # are really one, when you look at the raw string.
+        self.assertEqual(conn.sql_quote__(TO_QUOTE),
+                         br"'embedded \\backslash'")
+
+    def test_sql_quote___embedded_double_quote_bytes(self):
+        # As it turns out, escaping double quotes will break
+        # some servers, notably PostgreSQL, so we no longer do that.
+        TO_QUOTE = b'embedded "double quote'
+        conn = self._makeOne()
+        self.assertEqual(conn.sql_quote__(TO_QUOTE),
+                         b'\'embedded \\"double quote\'')
+
+    def test_sql_quote___embedded_null_bytes(self):
+        TO_QUOTE = b"w'embedded apostrophe and \x00null"
+        conn = self._makeOne()
+        self.assertEqual(conn.sql_quote__(TO_QUOTE),
+                         b"'w\\'embedded apostrophe and \\0null'")
+
+        # This is another version of a nul character.
+        TO_QUOTE = b'embedded other \x1anull'
+        conn = self._makeOne()
+        self.assertEqual(conn.sql_quote__(TO_QUOTE),
+                         b"'embedded other \\Znull'")
+
+    def test_sql_quote___embedded_carriage_return_bytes(self):
+        TO_QUOTE = b"w'embedded carriage\rreturn"
+        conn = self._makeOne()
+        self.assertEqual(conn.sql_quote__(TO_QUOTE),
+                         b"'w\\'embedded carriage\\rreturn'")
+
 
 def test_suite():
     return unittest.TestSuite((unittest.makeSuite(ConnectionTests),

@@ -3,6 +3,7 @@ Products.ZMySQLDA change log
 
 4.6 (unreleased)
 ----------------
+- added aditional unit tests for SQL quoting
 
 
 4.5 (2019-10-13)
