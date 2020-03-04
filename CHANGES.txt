@@ -1,6 +1,10 @@
 Products.ZMySQLDA change log
 ============================
 
+4.7 (unreleased)
+----------------
+
+
 4.6 (2020-03-03)
 ----------------
 - removed error-prone server version check for savepoint support
