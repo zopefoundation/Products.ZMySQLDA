@@ -20,7 +20,6 @@ from MySQLdb.constants import CR
 from MySQLdb.constants import ER
 from MySQLdb.constants import FIELD_TYPE
 from MySQLdb.converters import conversions
-from pkg_resources import parse_version
 from six.moves._thread import allocate_lock
 from six.moves._thread import get_ident
 
@@ -45,8 +44,6 @@ except ImportError:  # mysqlclient > 1.4
 
 
 LOG = logging.getLogger('ZMySQLDA')
-
-SAVEPOINT_SUPPORT_START = parse_version('5.0.3')
 
 hosed_connection = {
     CR.SERVER_GONE_ERROR: 'Server gone.',
@@ -694,16 +691,7 @@ class DB(TM):
 
     def savepoint(self):
         """ Basic savepoint support.
-
-            Raise AttributeErrors to trigger optimistic savepoint handling
-            in zope's transaction code.
         """
-        if parse_version(self._mysql_version()) < SAVEPOINT_SUPPORT_START:
-            # mysql supports savepoints in versions 5.0.3+
-            msg = 'Savepoint support starts with MySQL %s'
-            LOG.warning(msg % str(SAVEPOINT_SUPPORT_START))
-            raise AttributeError
-
         if not self._transaction_begun:
             LOG.error('Savepoint used outside of transaction.')
             raise AttributeError

@@ -3,6 +3,9 @@ Products.ZMySQLDA change log
 
 4.6 (unreleased)
 ----------------
+- removed error-prone server version check for savepoint support
+  (`#18 <https://github.com/zms-publishing/Products.ZMySQLDA/issues/18>`_)
+
 - added aditional unit tests for SQL quoting
 
 
