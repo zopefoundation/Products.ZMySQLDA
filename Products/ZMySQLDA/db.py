@@ -535,7 +535,11 @@ class DB(TM):
             if not force_reconnect and \
                (self._mysql_lock or self._transactions) or \
                exc.args[0] not in hosed_connection:
-                LOG.warning('query failed: %s' % (query,))
+                if len(query) > 2000:
+                    msg = '%s... (truncated at 2000 chars)' % query[:2000]
+                else:
+                    msg = query
+                LOG.warning('query failed:\n%s' % msg)
                 raise
 
             # Hm. maybe the db is hosed.  Let's restart it.
@@ -550,7 +554,11 @@ class DB(TM):
                 msg = '%s Forcing a reconnect.' % hosed_connection[exc.args[0]]
                 LOG.error(msg)
             else:
-                LOG.warning('query failed: %s' % (query,))
+                if len(query) > 2000:
+                    msg = '%s... (truncated at 2000 chars)' % query[:2000]
+                else:
+                    msg = query
+                LOG.warning('query failed:\n%s' % msg)
             raise
 
         return self.db.store_result()
