@@ -1,6 +1,10 @@
 Products.ZMySQLDA change log
 ============================
 
+4.8 (unreleased)
+----------------
+
+
 4.7 (2020-05-04)
 ----------------
 - truncate failed query logging if the query is too long
