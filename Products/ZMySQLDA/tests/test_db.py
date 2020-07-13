@@ -45,8 +45,8 @@ class DbFunctionsTests(unittest.TestCase):
 class DBPoolTests(unittest.TestCase):
 
     def _makeOne(self, *args, **kw):
-        from Products.ZMySQLDA.db import DBPool
         from Products.ZMySQLDA.db import DB
+        from Products.ZMySQLDA.db import DBPool
         return DBPool(DB, **kw)
 
     def test_instantiate_defaults(self):
@@ -111,8 +111,8 @@ class DBPoolTests(unittest.TestCase):
 class PatchedDBPoolTests(PatchedConnectionTestsBase):
 
     def _makeOne(self, *args, **kw):
-        from Products.ZMySQLDA.db import DBPool
         from Products.ZMySQLDA.db import DB
+        from Products.ZMySQLDA.db import DBPool
         return DBPool(DB, **kw)
 
     def test_variables(self):
