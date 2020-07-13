@@ -66,8 +66,9 @@ setup(
     install_requires=[
         'setuptools',
         'six',
-        'mysqlclient',
         'Products.ZSQLMethods',
+        'mysqlclient < 2;python_version < "3"',
+        'mysqlclient;python_version >= "3"',
     ],
     extras_require={
       'docs': ['Sphinx', 'repoze.sphinx.autointerface'],
