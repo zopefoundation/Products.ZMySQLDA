@@ -31,7 +31,6 @@
   </div>
 </div>
 
-<!-- <p class="form-help">Edit <dtml-var title_or_id></p>  -->
 
 <form action="manage_edit" method="post" title="">
 
@@ -53,7 +52,6 @@
         value="<dtml-var title html_quote>" />
     </div>
   </div>
-
 
   <div class="form-group row">
     <label for="connection_string" class="col-sm-4 col-md-3">
