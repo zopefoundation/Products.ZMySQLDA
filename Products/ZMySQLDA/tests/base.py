@@ -98,6 +98,7 @@ class MySQLRequiredLayer:
     @classmethod
     def testSetUp(cls):
         from Products.ZMySQLDA import DA
+
         # Clean out the test table before every test
         if have_test_database():
             dbconn = real_connect()

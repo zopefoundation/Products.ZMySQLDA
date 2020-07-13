@@ -2,175 +2,185 @@
 
 <main class="container-fluid">
 
-<dtml-var "manage_form_title(this(), _,
-           form_title='Add Z MySQL Database Connection'
-           )">
+<dtml-var "manage_form_title(this(), _, form_title='Add Z MySQL Database Connection')">
 
-  <form action="manage_addZMySQLConnection" method="post">
-    <table cellspacing="2">
-      <tr>
-        <th align="left" valign="top">Id</th>
-        <td align="left" valign="top">
-          <input type="text" name="id" size="40"/>
-        </td>
-      </tr>
-      <tr>
-        <th align="left" valign="top"><em>Title</em></th>
-        <td align="left" valign="top">
-          <input type="text" name="title" size="40"/>
-        </td>
-      </tr>
-      <tr>
-        <th align="left" valign="top">
-           Database Connection String
-           <a href="#1"><sup>1</sup></a></th>
-        <td align="left" valign="top">
-          <input type="text" name="connection_string" size="40">
-        </td>
-      </tr>
-      <tr>
-        <th align="left" valign="top">Connect immediately</th>
-        <td align="left" valign="top">
-          <input name="check" type="checkbox" value="yes" checked>
-          <small>Open the database connection after instantiation.</small>
-        </td>
-      </tr>
-      <tr>
-        <th align="left" valign="top">Unicode results</th>
-        <td align="left" valign="top">
-          <input name="use_unicode" type="checkbox" value="yes">
-          <small>Should database query results be decoded to Unicode?</small>
-        </td>
-      </tr>
-      <tr>
-        <th align="left" valign="top">
-          Character set <a href="#2"><sup>2</sup></a>
-        </th>
-        <td align="left" valign="top">
-        <select name="charset">
-          <option value="">
-            Not set (use previous release defaults)
-          </option>
-          <option value="latin1">Latin-1 (Python 2 only)</option>
-          <option value="utf8mb4" selected>
-            UTF-8 (MySQL 5.5.3 and higher, uses utf8mb4)
-          </option>
-          <option value="utf8">
-            UTF-8 (MySQL up to 5.5.2, uses utf8mb3)
-          </option>
-        </select>
-        </td>
-      </tr>
-      <tr>
-        <th align="left" valign="top">Automatically create database</th>
-        <td align="left" valign="top">
-          <input name="auto_create_db" type="checkbox" value="yes">
-          <small>
-            Create database from connection string if it does not exist yet.
-          </small>
-        </td>
-      </tr>
-      <tr>
-        <th align="left" valign="top">
-          Connect timeout
-        </th>
-        <td align="left" valign="top">
-          <input type="text" name="timeout" size="3" />
-          <small>in seconds</small>
-        </td>
-      </tr>
-      <tr>
-        <td></td>
-        <td><br><input type="submit" value="Add"></td>
-      </tr>
-    </table>
-  </form>
+<form action="manage_addZMySQLConnection" method="post">
+  <div class="form-group row">
+    <label for="id" class="col-sm-4 col-md-3">
+      Id
+    </label>
+    <div class="col-sm-8 col-md-9">
+      <input id="id" name="id" class="form-control" value="" />
+    </div>
+  </div>
 
-  <dt><a hname="1"><sup>1</sup></a> Connection Strings</dt>
-  <dd class="form-help">
-    <p>
-      The connection string used for Z MySQL Database Connection
-      is of the form:
-      <pre>
-          [*lock] [+/-][database][@host[:port]] [user [password [unix_socket]]]
-      </pre>
-      or typically:
-      <pre>
-          database user password
-      </pre>
-      to use a MySQL server on localhost via the standard UNIX socket.
-      Only specify host if the server is on a remote system. You can
-      use a non-standard port, if necessary. Hint: To use a non-standard
-      port on the local system, use 127.0.0.1 for the host instead of
-      localhost.
-    </p>
-    <p>
-      Either a database or a host or both must be specified.
-      If the UNIX socket is in a non-standard location, you can specify
-      the full path to it after the password.
-    </p>
-    <p>
-      A '-' in front of the database tells ZMySQLDA to not use Zope's
-      Transaction Manager, even if the server supports transactions. A
-      '+' in front of the database tells ZMySQLDA that it must use
-      transactions; an exception will be raised if they are not
-      supported by the server. If neither '-' or '+' are present, then
-      transactions will be enabled if the server supports them.  If you
-      are using non-transaction safe tables (TSTs) on a server that
-      supports TSTs, use '-'. If you require transactions, use '+'. If
-      you aren't sure, don't use either.
-    </p>
-    <p>
-      *<em>lock</em> at the begining of the connection string means to
-      pseudo-transactional. When the transaction begins, it will acquire
-      a lock on the server named <em>lock</em> (i.e. MYLOCK). When the
-      transaction commits, the lock will be released. If the transaction
-      is aborted and restarted, which can happen due to a ConflictError,
-      you'll get an error in the logs, and inconsistent data. In this
-      respect, it's equivalent to transactions turned off.
-    </p>
-    <p>
-      Transactions are highly recommended. Using a named lock in
-      conjunctions with transactions is probably pointless.  
-    </p>
+  <div class="form-group row">
+    <label for="title" class="col-sm-4 col-md-3">
+      Title
+    </label>
+    <div class="col-sm-8 col-md-9">
+      <input id="title" name="title" type="text" class="form-control" value="" />
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label for="connection_string" class="col-sm-4 col-md-3">
+      Database Connection String&nbsp;<a href="#1"><sup>1</sup></a>
+    </label>
+    <div class="col-sm-8 col-md-9">
+      <input id="connection_string" name="connection_string" type="text" class="form-control" value="" />
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label for="check" class="col-sm-4 col-md-3">
+      Connect immediately
+    </label>
+    <div class="col-sm-8 col-md-9">
+      <input name="check" type="checkbox" value="yes" checked="checked" class="mr-1" />
+      <small>Open the database connection after instantiation.</small>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label for="use_unicode" class="col-sm-4 col-md-3">
+      Unicode results
+    </label>
+    <div class="col-sm-8 col-md-9">
+      <input id="use_unicode" name="use_unicode" type="checkbox" value="yes" class="mr-1" />
+      <small>Should database query results be decoded to Unicode?</small>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label for="charset" class="col-sm-4 col-md-3">
+      Connection character set&nbsp;<a href="#2"><sup>2</sup></a>
+    </label>
+    <div class="col-sm-8 col-md-9">
+      <select id="charset" name="charset" class="form-control">
+        <option value="">
+          Not set (use previous release defaults)
+        </option>
+        <option value="latin1">
+          Latin-1 (Python 2 only)
+        </option>
+        <option value="utf8mb4" selected="selected">
+          UTF-8 (MySQL 5.5.3 and higher, uses utf8mb4)
+        </option>
+        <option value="utf8">
+          UTF-8 (MySQL up to 5.5.2, uses utf8mb3)
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label for="auto_create_db" class="col-sm-4 col-md-3">
+      Automatically create database
+    </label>
+    <div class="col-sm-8 col-md-9">
+      <input id="auto_create_db" name="auto_create_db" type="checkbox" value="yes" class="mr-1" />
+      <small>Create database from connection string if it does not exist yet.</small>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label for="timeout" class="col-sm-4 col-md-3">
+      Connect timeout
+    </label>
+    <div class="col-sm-8 col-md-9">
+      <input id="timeout" type="text" name="timeout" class="form-control" value="" />
+      <small>in seconds</small>
+    </div>
+  </div>
+
+  <div class="zmi-controls">
+    <input type="submit" class="btn btn-primary" value="Add" />
+  </div>
+</form>
+
+<hr class="my-5" />
+
+<dl>
+  <dt><a name="1"><sup>1</sup></a> 
+    Database Connection String
+  </dt>
+  <dd>
+    The connection string used for Z MySQL Database Connection is of the form:
+    <br />
+    <code>[*lock] [+/-][database][@host[:port]] [user [password [unix_socket]]]</code>
+    <br />
+    or typically:
+    <br />
+    <code>database user password</code>
+    <br />
+    to use a MySQL server on localhost via the standard UNIX socket.
+    Only specify host if the server is on a remote system. You can
+    use a non-standard port, if necessary. Hint: To use a non-standard
+    port on the local system, use 127.0.0.1 for the host instead of
+    localhost.
+  </dd>
+  <dd>
+    Either a database or a host or both must be specified.
+    If the UNIX socket is in a non-standard location, you can specify
+    the full path to it after the password.
+  </dd>
+  <dd>
+    A '-' in front of the database tells ZMySQLDA to not use Zope's
+    Transaction Manager, even if the server supports transactions. A
+    '+' in front of the database tells ZMySQLDA that it must use
+    transactions; an exception will be raised if they are not
+    supported by the server. If neither '-' or '+' are present, then
+    transactions will be enabled if the server supports them.  If you
+    are using non-transaction safe tables (TSTs) on a server that
+    supports TSTs, use '-'. If you require transactions, use '+'. If
+    you aren't sure, don't use either.
+    </dd>
+  <dd>
+    *<em>lock</em> at the begining of the connection string means to
+    pseudo-transactional. When the transaction begins, it will acquire
+    a lock on the server named <em>lock</em> (i.e. MYLOCK). When the
+    transaction commits, the lock will be released. If the transaction
+    is aborted and restarted, which can happen due to a ConflictError,
+    you'll get an error in the logs, and inconsistent data. In this
+    respect, it's equivalent to transactions turned off.
+  </dd>
+  <dd>
+    Transactions are highly recommended. Using a named lock in
+    conjunctions with transactions is probably pointless.  
   </dd>
 
-  <dt><a hname="2"><sup>2</sup></a> Character set</dt>
-  <dd class="form-help">
-    <p>
-      The character set the database adapter will use to communicate with
-      the database. You should choose a character set matching the Zope
-      application character set, which defaulted to <em>Latin-1</em> for
-      Zope 2 and now defaults to <em>UTF-8</em> for Zope 4.
-    </p>
-
-    <p>
-      The database will expect all incoming
-      data to be encoded in this character set, and query results from the
-      database will be encoded in the same character set unless you check
-      <em>Unicode results</em>.
-    </p>
-
-    <p>
-      <em>Not set</em> will emulate previous releases' behavior on Python 2, which
-      used Latin-1 (ISO 8859-1), but if <em>Unicode results</em> is selected, the
-      connection character set switches to UTF-8 and strings in query results
-      are decoded to Unicode. On Python 3, <em>Not set</em> always defaults to
-      UTF-8.
-    </p>
-
-    <p>
-      For Python 2, you can force the character set to Latin-1 or UTF-8,
-      regardless of the <em>Unicode results</em> setting. This is useful
-      when your application wants to use UTF-8, but cannot deal with unicode
-      return values.
-    </p>
-
-    </p>
-      <b>Python 3 only supports the UTF-8 options!</b>
-    </p>
-
+  <dt><a name="2"><sup>2</sup></a> 
+    Connection character set
+  </dt>
+  <dd>
+    The character set the database adapter will use to communicate with
+    the database. You should choose a character set matching the Zope
+    application character set, which defaulted to <em>Latin-1</em> for
+    Zope 2 and now defaults to <em>UTF-8</em> for Zope 4.
   </dd>
+  <dd>
+    The database will expect all incoming data to be encoded in this 
+    character set, and query results from the database will be encoded 
+    in the same character set unless you check <em>Unicode results</em>.
+  </dd>
+  <dd>
+    <em>Not set</em> will emulate previous releases' behavior on Python 2, 
+    which used Latin-1 (ISO 8859-1), but if <em>Unicode results</em> is 
+    selected, the connection character set switches to UTF-8 and strings in 
+    query results are decoded to Unicode. On Python 3, <em>Not set</em> 
+    always defaults to UTF-8.
+  </dd>
+  <dd>
+    For Python 2, you can force the character set to Latin-1 or UTF-8,
+    regardless of the <em>Unicode results</em> setting. This is useful
+    when your application wants to use UTF-8, but cannot deal with unicode
+    return values.
+  </dd>
+  <dd>
+    <b>Hint:</b> <en>Python 3 only supports the UTF-8 options!</em>
+  </dd>
+<dl>
 
 </main>
 
