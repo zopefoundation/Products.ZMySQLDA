@@ -3,6 +3,8 @@ Products.ZMySQLDA change log
 
 4.8 (unreleased)
 ----------------
+- ZMI refresh for Zope 4 with svg icons
+  (`#20 <https://github.com/zms-publishing/Products.ZMySQLDA/pull/20>`_)
 
 
 4.7 (2020-05-04)
