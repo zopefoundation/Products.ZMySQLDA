@@ -25,10 +25,10 @@ def initialize(context):
         permission=add_zmysql_database_connections,
         constructors=(DA.manage_addZMySQLConnectionForm,
                       DA.manage_addZMySQLConnection),
-        icon='www/da.gif')
+        icon='www/da.svg')
 
 
 misc_ = {}
 for icon in ('table', 'view', 'stable', 'what', 'field', 'text', 'bin',
              'int', 'float', 'date', 'time', 'datetime'):
-    misc_[icon] = ImageFile(os.path.join('www', '%s.gif') % icon, globals())
+    misc_[icon] = ImageFile(os.path.join('www', '%s.svg') % icon, globals())
