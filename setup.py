@@ -17,16 +17,16 @@ from setuptools import find_packages
 from setuptools import setup
 
 
-install_requires=[
+install_requires = [
     'setuptools',
     'six',
     'Products.ZSQLMethods',
 ]
 if not os.environ.get('READTHEDOCS') == 'True':
     install_requires += [
-    'mysqlclient < 2;python_version < "3"',
-    'mysqlclient;python_version >= "3"',
-],
+        'mysqlclient < 2;python_version < "3"',
+        'mysqlclient;python_version >= "3"',
+    ]
 
 
 def read(*rnames):
@@ -72,7 +72,8 @@ setup(
         'Topic :: Database',
         'Topic :: Database :: Front-Ends',
     ],
-    packages=find_packages(),
+    packages=find_packages('src'),
+    package_dir={'': 'src'},
     include_package_data=True,
     namespace_packages=['Products'],
     zip_safe=False,
