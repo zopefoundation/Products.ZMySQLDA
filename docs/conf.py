@@ -15,6 +15,7 @@
 import datetime
 import os
 import sys
+from unittest.mock import MagicMock
 from unittest.mock import Mock
 sys.path.insert(0, os.path.abspath('../'))
 sys.modules['MySQLdb'] = Mock()
