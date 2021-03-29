@@ -48,9 +48,9 @@ jobs:
     - name: Start and prepare MySQL service
       run: |
         sudo systemctl start mysql.service
-        echo mysql -uroot < 'CREATE DATABASE IF NOT EXISTS zmysqldatest;'
-        echo mysql -uroot < "CREATE USER 'zmysqldatest'@'localhost' IDENTIFIED BY 'zmysqldatest';"
-        echo mysql -uroot < "GRANT ALL PRIVILEGES ON zmysqldatest.* TO 'zmysqldatest'@'localhost';"
+        mysql -uroot < 'CREATE DATABASE IF NOT EXISTS zmysqldatest;'
+        mysql -uroot < "CREATE USER 'zmysqldatest'@'localhost' IDENTIFIED BY 'zmysqldatest';"
+        mysql -uroot < "GRANT ALL PRIVILEGES ON zmysqldatest.* TO 'zmysqldatest'@'localhost';"
     - name: Test
       run: tox -e ${{ matrix.config[1] }}
     - name: Coverage
