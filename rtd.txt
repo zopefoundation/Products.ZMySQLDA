@@ -1,3 +1,1 @@
-setuptools < 52
-Products.ZSQLMethods
-repoze.sphinx.autointerface
+.[docs]
