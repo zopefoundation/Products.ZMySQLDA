@@ -33,6 +33,7 @@ class DbFunctionsTests(unittest.TestCase):
 
     def test_DateTime_or_None(self):
         from DateTime.DateTime import DateTime
+
         from Products.ZMySQLDA.db import DateTime_or_None
 
         self.assertIsInstance(DateTime_or_None(None), DateTime)

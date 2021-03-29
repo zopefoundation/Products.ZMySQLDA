@@ -39,7 +39,8 @@ def fake_connect(**kw):
 
 
 def real_connect():
-    return MySQLdb.connect(user=DB_USER, passwd=DB_PASSWORD, db=DB)
+    return MySQLdb.connect(host='127.0.0.1', port=3306, user=DB_USER,
+                           passwd=DB_PASSWORD, db=DB)
 
 
 def have_test_database():

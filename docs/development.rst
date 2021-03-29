@@ -24,14 +24,15 @@ https://github.com/zms-publishing/Products.ZMySQLDA/issues.
 
 Running the tests using  :mod:`zc.buildout`
 ===========================================
-:mod:`Products.ZMySQLDA` ships with its own :file:`buildout.cfg` file and
-:file:`bootstrap.py` for setting up a development buildout:
+:mod:`Products.ZMySQLDA` ships with its own :file:`buildout.cfg` file
+for setting up a development buildout:
 
 .. code-block:: sh
 
-  $ python bootstrap.py
-  ...
-  Generated script '.../bin/buildout'
+  $ cd Products.ZMySQLDA
+  $ python3 -m venv .
+  $ bin/pip install -U pip wheel
+  $ bin/pip install "setuptools<52" zc.buildout tox twine
   $ bin/buildout
   ...
 
@@ -60,10 +61,13 @@ buildout step above:
    ...
    ____________________________________ summary _____________________________________
    py27: commands succeeded
-   py27_zope213: commands succeeded
+   py27-zope2: commands succeeded
    py35: commands succeeded
    py36: commands succeeded
-   flake8: commands succeeded
+   py37: commands succeeded
+   py38: commands succeeded
+   py39: commands succeeded
+   lint: commands succeeded
    coverage: commands succeeded
    congratulations :)
 
@@ -122,7 +126,8 @@ by the buildout.
 .. code-block:: sh
 
   $ bin/buildout -N
-  $ python setup.py sdist bdist_wheel upload --sign
+  $ bin/buildout setup setup.py sdist bdist_wheel
+  $ bin/twine upload -s dist/Products.ZMySQLDA-X.X.X*
 
 The ``bin/buildout`` step will make sure the correct package information 
 is used.

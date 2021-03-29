@@ -96,6 +96,7 @@ class ConnectionTests(unittest.TestCase):
 
     def test_zope_factory(self):
         from OFS.Folder import Folder
+
         from Products.ZMySQLDA.DA import manage_addZMySQLConnection
 
         container = Folder('root')
@@ -141,6 +142,7 @@ class PatchedConnectionTests(PatchedConnectionTestsBase):
 
     def test_connect(self):
         from DateTime.DateTime import DateTime
+
         from Products.ZMySQLDA.db import DBPool
 
         self.conn = self._simpleMakeOne()
