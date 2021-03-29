@@ -4,9 +4,6 @@ Products.ZMySQLDA
 .. image:: https://github.com/zms-publishing/Products.ZMySQLDA/actions/workflows/tests.yml/badge.svg
    :target: https://github.com/zms-publishing/Products.ZMySQLDA/actions/workflows/tests.yml
 
-.. image:: https://api.travis-ci.com/zms-publishing/Products.ZMySQLDA.svg?branch=master
-   :target: https://travis-ci.com/zms-publishing/Products.ZMySQLDA
-
 .. image:: https://readthedocs.org/projects/zmysqlda/badge/?version=latest
    :target: https://zmysqlda.readthedocs.io
    :alt: Documentation Status
