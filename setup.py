@@ -44,6 +44,7 @@ setup(
         'Framework :: Zope2',
         'Framework :: Zope :: 2',
         'Framework :: Zope :: 4',
+        'Framework :: Zope :: 5',
         'License :: OSI Approved :: Zope Public License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
@@ -54,6 +55,7 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: Implementation :: CPython',
         'Topic :: Database',
         'Topic :: Database :: Front-Ends',
@@ -71,6 +73,6 @@ setup(
         'mysqlclient;python_version >= "3"',
     ],
     extras_require={
-      'docs': ['Sphinx', 'repoze.sphinx.autointerface'],
-      },
+        'docs': ['Sphinx', 'repoze.sphinx.autointerface'],
+    },
 )

@@ -3,6 +3,7 @@ Products.ZMySQLDA change log
 
 4.9 (unreleased)
 ----------------
+- add support for Python 3.9 and Zope 5
 
 
 4.8 (2020-07-13)

@@ -16,6 +16,8 @@ matrix:
           env: TOXENV=py37
         - python: "3.8"
           env: TOXENV=py38
+        - python: "3.9"
+          env: TOXENV=py39
 
 before_install:
   - mysql -e "CREATE DATABASE IF NOT EXISTS zmysqldatest;"
@@ -23,10 +25,10 @@ before_install:
   - mysql -e "GRANT ALL PRIVILEGES ON zmysqldatest.* TO 'zmysqldatest'@'localhost';"
 
 install:
-    - travis_retry pip install -U pip setuptools tox
+    - pip install -U pip tox
 
 script:
-    - travis_retry tox
+    - tox
 
 notifications:
     email: false

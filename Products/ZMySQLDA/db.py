@@ -158,7 +158,7 @@ class DBPool(object):
                 create_query = 'create database %s' % db
                 if self.use_unicode and not self.charset:
                     create_query += ' default character set %s' % (
-                                        self._db_cls.unicode_charset)
+                                    self._db_cls.unicode_charset)
                 elif self.charset:
                     create_query += ' default character set %s' % self.charset
                 connection.query(create_query)
@@ -476,7 +476,7 @@ class DB(TM):
                 if short_type not in ('set', 'enum'):
                     if ',' in size:
                         info['scale'], info['precision'] = map(
-                                int, size.split(',', 1))
+                            int, size.split(',', 1))
                     else:
                         info['scale'] = int(size)
             else:

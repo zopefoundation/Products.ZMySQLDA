@@ -69,10 +69,8 @@ class Connection(ConnectionBase):
     manage_properties._setName('manage_main')
     manage_main = manage_properties
 
-    manage_options = (
-        ConnectionBase.manage_options[1:] +
-        ({'label': 'Browse', 'action': 'manage_browse'},)
-        )
+    manage_options = (ConnectionBase.manage_options[1:] +
+                      ({'label': 'Browse', 'action': 'manage_browse'},))
 
     def __init__(self, id, title, connection_string, check, use_unicode=None,
                  charset=None, auto_create_db=None, timeout=None):
@@ -147,7 +145,7 @@ class Connection(ConnectionBase):
             self.connect(self.connection_string)
             return self._v_database_connection
 
-    security.declareProtected(use_database_methods,  'connect')  # NOQA: D001
+    security.declareProtected(use_database_methods, 'connect')  # NOQA: D001
 
     def connect(self, conn_string):
         """ Base API. Opens connection to mysql. Raises if problems.
