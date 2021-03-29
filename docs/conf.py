@@ -15,7 +15,11 @@
 import datetime
 import os
 import sys
+from unittest.mock import Mock
 sys.path.insert(0, os.path.abspath('../'))
+sys.modules['MySQLdb'] = Mock()
+sys.modules['MySQLdb.constants'] = Mock()
+sys.modules['MySQLdb.converters'] = Mock()
 
 parent = os.path.dirname(os.path.dirname(__file__))
 parent_dir = os.path.abspath(parent)
