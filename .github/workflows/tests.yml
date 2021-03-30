@@ -45,8 +45,6 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install tox
-    - name: Start and prepare MySQL service
-      run: |
         sudo systemctl start mysql.service
         echo 'CREATE DATABASE IF NOT EXISTS zmysqldatest;' | mysql -uroot -proot
         echo "CREATE USER 'zmysqldatest'@'localhost' IDENTIFIED BY 'zmysqldatest';" | mysql -uroot -proot

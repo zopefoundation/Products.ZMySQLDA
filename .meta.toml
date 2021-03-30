@@ -49,3 +49,9 @@ use-flake8 = true
 additional-config = [
     "- [\"2.7\",   \"py27-zope2\"]",
     ]
+additional-install = [
+    "sudo systemctl start mysql.service",
+    "echo 'CREATE DATABASE IF NOT EXISTS zmysqldatest;' | mysql -uroot -proot",
+    "echo \"CREATE USER 'zmysqldatest'@'localhost' IDENTIFIED BY 'zmysqldatest';\" | mysql -uroot -proot",
+    "echo \"GRANT ALL PRIVILEGES ON zmysqldatest.* TO 'zmysqldatest'@'localhost';\" | mysql -uroot -proot",
+    ]
