@@ -1,8 +1,8 @@
 Products.ZMySQLDA
 =================
 
-.. image:: https://github.com/zms-publishing/Products.ZMySQLDA/actions/workflows/tests.yml/badge.svg
-   :target: https://github.com/zms-publishing/Products.ZMySQLDA/actions/workflows/tests.yml
+.. image:: https://github.com/zopefoundation/Products.ZMySQLDA/actions/workflows/tests.yml/badge.svg
+   :target: https://github.com/zopefoundation/Products.ZMySQLDA/actions/workflows/tests.yml
 
 .. image:: https://readthedocs.org/projects/zmysqlda/badge/?version=latest
    :target: https://zmysqlda.readthedocs.io

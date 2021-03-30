@@ -9,17 +9,17 @@ The source code is maintained on GitHub. To check out the trunk:
 
 .. code-block:: sh
 
-  $ git clone https://github.com/zms-publishing/Products.ZMySQLDA.git
+  $ git clone https://github.com/zopefoundation/Products.ZMySQLDA.git
 
 You can also browse the code online at
-https://github.com/zms-publishing/Products.ZMySQLDA
+https://github.com/zopefoundation/Products.ZMySQLDA
 
 
 Bug tracker
 ===========
 For bug reports, suggestions or questions please use the 
 GitHub issue tracker at
-https://github.com/zms-publishing/Products.ZMySQLDA/issues.
+https://github.com/zopefoundation/Products.ZMySQLDA/issues.
 
 
 Running the tests using  :mod:`zc.buildout`

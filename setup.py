@@ -37,15 +37,14 @@ setup(
     name='Products.ZMySQLDA',
     version=read('version.txt').strip(),
     license='ZPL 2.1',
-    author='HOFFMANN+LIEBENBERG in association with '
-            'SNTL Publishing, Andy Dustman, John Eikenberry',
-    author_email='zms@sntl-publishing.com',
+    author='Zope Foundation and Contributors',
+    author_email='zope-dev@zope.org',
     url='https://zmysqlda.readthedocs.io',
     project_urls={
         'Documentation': 'https://zmysqlda.readthedocs.io',
-        'Issue Tracker': ('https://github.com/zms-publishing'
+        'Issue Tracker': ('https://github.com/zopefoundation'
                           '/Products.ZMySQLDA/issues'),
-        'Sources': 'https://github.com/zms-publishing/Products.ZMySQLDA',
+        'Sources': 'https://github.com/zopefoundation/Products.ZMySQLDA',
     },
     description='MySQL Zope adapter.',
     long_description=read('README.rst'),

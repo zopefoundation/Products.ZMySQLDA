@@ -11,4 +11,8 @@ makes no claims about completeness.
 * Brett Carter
 * Mark Van den Borre
 * Robert Buchholz
+* Peter Seifert
+* Martin Häcker
+* Dr. Frank Hoffmann
+* Jürgen Gmach
 * Jens Vagelpohl

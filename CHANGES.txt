@@ -3,6 +3,7 @@ Products.ZMySQLDA change log
 
 4.10 (unreleased)
 -----------------
+- moved the project to the zopefoundation GitHub organization
 
 
 4.9 (2021-03-29)
@@ -13,19 +14,19 @@ Products.ZMySQLDA change log
 4.8 (2020-07-13)
 ----------------
 - ZMI refresh for Zope 4 with svg icons
-  (`#20 <https://github.com/zms-publishing/Products.ZMySQLDA/pull/20>`_)
+  (`#20 <https://github.com/zopefoundation/Products.ZMySQLDA/pull/20>`_)
 
 
 4.7 (2020-05-04)
 ----------------
 - truncate failed query logging if the query is too long
-  (`#19 <https://github.com/zms-publishing/Products.ZMySQLDA/issues/19>`_)
+  (`#19 <https://github.com/zopefoundation/Products.ZMySQLDA/issues/19>`_)
 
 
 4.6 (2020-03-03)
 ----------------
 - removed error-prone server version check for savepoint support
-  (`#18 <https://github.com/zms-publishing/Products.ZMySQLDA/issues/18>`_)
+  (`#18 <https://github.com/zopefoundation/Products.ZMySQLDA/issues/18>`_)
 
 - added aditional unit tests for SQL quoting
 
@@ -44,7 +45,7 @@ Products.ZMySQLDA change log
 - add timeout parameter to Add and Edit Forms
 
 - make sure timeout is None or int
-  (`#10 <https://github.com/zms-publishing/Products.ZMySQLDA/pull/10/files>`_)
+  (`#10 <https://github.com/zopefoundation/Products.ZMySQLDA/pull/10/files>`_)
 
 
 4.3 (2019-05-28)
@@ -60,10 +61,10 @@ Products.ZMySQLDA change log
 4.1 (2019-04-26)
 ----------------
 - fix the Browse tab under Python 3
-  (`#14 <https://github.com/zms-publishing/Products.ZMySQLDA/issues/14>`_)
+  (`#14 <https://github.com/zopefoundation/Products.ZMySQLDA/issues/14>`_)
 
 - add more content to the long_description metadata
-  (`#13 <https://github.com/zms-publishing/Products.ZMySQLDA/issues/13>`_)
+  (`#13 <https://github.com/zopefoundation/Products.ZMySQLDA/issues/13>`_)
 
 - fixes to the Browse ZMI tab
 
@@ -71,10 +72,10 @@ Products.ZMySQLDA change log
 4.0 (2019-03-31)
 ----------------
 - fix database version detection for savepoint support
-  (`#7 <https://github.com/zms-publishing/Products.ZMySQLDA/issues/7>`_)
+  (`#7 <https://github.com/zopefoundation/Products.ZMySQLDA/issues/7>`_)
 
 - remove explicit ``setuptools`` version pin in ``setup.py``
-  (`#11 <https://github.com/zms-publishing/Products.ZMySQLDA/issues/11>`_)
+  (`#11 <https://github.com/zopefoundation/Products.ZMySQLDA/issues/11>`_)
 
 - more strict flake8 code style compliance
 
