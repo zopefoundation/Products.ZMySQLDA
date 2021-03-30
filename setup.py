@@ -35,7 +35,7 @@ def read(*rnames):
 
 setup(
     name='Products.ZMySQLDA',
-    version=read('version.txt').strip(),
+    version='4.11.dev0',
     license='ZPL 2.1',
     author='Zope Foundation and Contributors',
     author_email='zope-dev@zope.org',

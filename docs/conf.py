@@ -14,18 +14,16 @@
 #
 import datetime
 import os
+import pkg_resources
 import sys
 from unittest.mock import MagicMock
 from unittest.mock import Mock
 sys.path.insert(0, os.path.abspath('../'))
+rqmt = pkg_resources.require('Products.ZMySQLDA')[0]
 sys.modules['MySQLdb'] = Mock()
 sys.modules['MySQLdb.constants'] = Mock()
 sys.modules['MySQLdb.converters'] = MagicMock()
 
-parent = os.path.dirname(os.path.dirname(__file__))
-parent_dir = os.path.abspath(parent)
-with open(os.path.join(parent_dir, 'version.txt'), 'r') as version_file:
-    pkg_version = version_file.read().strip()
 
 # -- Project information -----------------------------------------------------
 year = datetime.datetime.now().year
@@ -34,9 +32,9 @@ copyright = '2001-%s, Zope Foundation and Contributors' % year
 author = 'Zope Foundation and Contributors'
 
 # The short X.Y version
-version = pkg_version.replace('.dev0', '')
+version = '%s.%s' % tuple(rqmt.version.split('.')[:2])
 # The full version, including alpha/beta/rc tags
-release = pkg_version
+release = rqmt.version
 
 
 # -- General configuration ---------------------------------------------------
@@ -175,7 +173,7 @@ texinfo_documents = [
 # -- Options for intersphinx extension ---------------------------------------
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None}
+intersphinx_mapping = {'https://docs.python.org/3/': None}
 
 # -- Options for todo extension ----------------------------------------------
 
