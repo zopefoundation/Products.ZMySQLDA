@@ -13,6 +13,7 @@
 """ Base classes for unit tests
 """
 import unittest
+import uuid
 
 import MySQLdb
 
@@ -24,7 +25,8 @@ DB_USER = 'zmysqldatest'
 DB_PASSWORD = 'zmysqldatest'
 DB_CONN_STRING = '%s %s %s' % (DB, DB_USER, DB_PASSWORD)
 
-TABLE_NAME = 'test_zmysqlda'
+random_value = uuid.uuid4().hex
+TABLE_NAME = 'test_zmysqlda_%s' % str(random_value)
 TABLE_COL_INT = 'c_int'
 TABLE_COL_VARCHAR = 'c_varchar'
 

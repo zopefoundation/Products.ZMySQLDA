@@ -159,9 +159,9 @@ class RealConnectionDBPoolTests(unittest.TestCase):
         self.dbpool = self._makeOne()
 
         tables = self.dbpool.tables()
-        self.assertEqual(len(tables), 1)
-        self.assertEqual(tables[0]['table_name'], TABLE_NAME)
-        self.assertTrue(tables[0].get('description'))  # Details not needed
+        test_table = [x for x in tables if x['table_name'] == TABLE_NAME][0]
+        self.assertEqual(test_table['table_name'], TABLE_NAME)
+        self.assertTrue(test_table.get('description'))  # Details not needed
 
     def test_columns(self):
         self.dbpool = self._makeOne()
@@ -474,9 +474,9 @@ class RealConnectionDBTests(unittest.TestCase):
         self.db = self._makeOne()
 
         tables = self.db.tables()
-        self.assertEqual(len(tables), 1)
-        self.assertEqual(tables[0]['table_name'], TABLE_NAME)
-        self.assertTrue(tables[0].get('description'))  # Details not needed
+        test_table = [x for x in tables if x['table_name'] == TABLE_NAME][0]
+        self.assertEqual(test_table['table_name'], TABLE_NAME)
+        self.assertTrue(test_table.get('description'))  # Details not needed
 
     def test_columns(self):
         self.db = self._makeOne()
