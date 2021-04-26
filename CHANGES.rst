@@ -32,7 +32,7 @@ Products.ZMySQLDA change log
 - removed error-prone server version check for savepoint support
   (`#18 <https://github.com/zopefoundation/Products.ZMySQLDA/issues/18>`_)
 
-- added aditional unit tests for SQL quoting
+- added additional unit tests for SQL quoting
 
 
 4.5 (2019-10-13)
@@ -163,7 +163,7 @@ Products.ZMySQLDA change log
 
 3.0
 ---
-- Added :term:`Setuptools` support to create an egg package thanks to
+- Added ``Setuptools`` support to create an egg package thanks to
   Brett Carter.
 
 - Added condition to handle connection getting "out of sync". This can occur
@@ -216,7 +216,7 @@ Products.ZMySQLDA change log
 - Moved DBPool instantiation from factory() to connect() to better facilitate
   API backwards compatibility.
 
-- Changed all default values on keyword aruments for the auto create db
+- Changed all default values on keyword arguments for the auto create db
   feature. They all now default to True.
 
 - Left in a bit of debugging code that disabled the new create_db
