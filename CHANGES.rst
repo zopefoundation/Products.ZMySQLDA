@@ -199,7 +199,7 @@ Products.ZMySQLDA change log
 ---------
 - Unicode support now works!
 
-- Unicode support reworked to use MySQL db's unicode support instead of its
+- Unicode support reworked to use MySQLdb's unicode support instead of its
   own half-baked layer.
 
 - Minor cleanups and extensions to database introspection methods.
