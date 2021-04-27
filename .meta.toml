@@ -35,6 +35,8 @@ additional-rules = [
 additional-envlist = [
     "py27-zope2",
     ]
+testenv-deps = [
+    ]
 testenv-additional = [
     "",
     "[testenv:py27-zope2]",
