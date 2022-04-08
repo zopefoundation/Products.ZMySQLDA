@@ -4,15 +4,18 @@ Products.ZMySQLDA change log
 4.11 (unreleased)
 -----------------
 
+- Add support for Python 3.10.
 
 4.10 (2021-03-30)
 -----------------
-- moved the project to the zopefoundation GitHub organization
+
+- Move the project to the zopefoundation GitHub organization.
 
 
 4.9 (2021-03-29)
 ----------------
-- add support for Python 3.9 and Zope 5
+
+- Add support for Python 3.9 and Zope 5
 
 
 4.8 (2020-07-13)
@@ -209,7 +212,7 @@ Products.ZMySQLDA change log
 - Removed a few unnecessary thread locks.
 
 - Changed failed query logging entries from errors to warnings.
-  
+
 
 3.0alpha2
 ---------
@@ -240,7 +243,7 @@ Features:
   connection string. The mysql ``user`` used for the connection must have
   CREATE permission. It defaults to on to encourage more testing.
 
-- Database connection not created until first use instead of when the 
+- Database connection not created until first use instead of when the
   object is first loaded. Ie. connection created at ``connect()`` call instead
   of ``__setstate__()`` call. This helps conserve system resources and makes
   debugging connection issues a bit easier. It is also needed for the new
@@ -250,8 +253,8 @@ Bugs:
 ~~~~~
 - Automatically reopens connections closed by client timeouts.
 
-- Fixed major deadlock causing bug that can occur with versions of Zope 
-  greater than 2.8. It was caused by the use of the volatile attribute 
+- Fixed major deadlock causing bug that can occur with versions of Zope
+  greater than 2.8. It was caused by the use of the volatile attribute
   ``_v_`` to keep the reference to the existing connection. Volatile
   attributes can go away mid-transaction which would cause a deadlock when
   used with a transactional engine (eg. innodb). The fix involves a fixed
