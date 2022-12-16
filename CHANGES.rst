@@ -1,10 +1,13 @@
 Products.ZMySQLDA change log
 ============================
 
-4.11 (unreleased)
+4.11 (2022-12-16)
 -----------------
 
-- Add support for Python 3.10.
+- Fix insidious buildout configuration bug for tests against Zope 4.
+
+- Add support for Python 3.10 and 3.11.
+
 
 4.10 (2021-03-30)
 -----------------

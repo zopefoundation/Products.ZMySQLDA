@@ -35,7 +35,7 @@ def read(*rnames):
 
 setup(
     name='Products.ZMySQLDA',
-    version='4.11.dev0',
+    version='4.11',
     license='ZPL 2.1',
     author='Zope Foundation and Contributors',
     author_email='zope-dev@zope.org',
@@ -68,6 +68,7 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: Implementation :: CPython',
         'Topic :: Database',
         'Topic :: Database :: Front-Ends',
