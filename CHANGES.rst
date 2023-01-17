@@ -5,6 +5,8 @@ Products.ZMySQLDA change log
 ----------------
 
 
+- Drop support for Python 2.7, 3.5, 3.6.
+
 4.11 (2022-12-16)
 -----------------
 
