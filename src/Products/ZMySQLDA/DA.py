@@ -12,8 +12,7 @@
 ##############################################################################
 """ The ZODB-based MySQL Database Connection object
 """
-import six
-from six.moves._thread import allocate_lock
+from _thread import allocate_lock
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import change_database_methods
@@ -98,12 +97,8 @@ class Connection(ConnectionBase):
         :string: charset -- The character set for the connection. MySQL/MariaDB
                             will encode query results to this character set.
 
-                            On Python 2, both utf8 and Latin1 will work. On
-                            Python 3, only utf8 will work.
-
-                            Default on Python 2: Latin1 when ``use_unicode``
-                            is off, utf8 otherwise
-                            Default on Python 3: utf8
+                            Only utf8 will work.
+                            Default: utf8
 
         :bool: auto_create_db -- If the database given in ``connection_string``
                                  does not exist, create it automatically.
@@ -115,8 +110,7 @@ class Connection(ConnectionBase):
         self.charset = charset
         self.auto_create_db = bool(auto_create_db)
         self.timeout = int(timeout) if timeout else None
-        return super(Connection, self).__init__(id, title, connection_string,
-                                                check)
+        return super().__init__(id, title, connection_string, check)
 
     def __setstate__(self, state):
         """ Skip super's __setstate__ as it connects which we don't want
@@ -194,7 +188,7 @@ class Connection(ConnectionBase):
         """
         connection = self._getConnection()
 
-        if self.use_unicode and isinstance(sql_str, six.text_type):
+        if self.use_unicode and isinstance(sql_str, str):
             # Confusing naming: unicode_literal does not return an unencoded
             # ("unicode") string, but an encoded bytes string.
             encoded = connection.unicode_literal(sql_str)
@@ -230,12 +224,8 @@ class Connection(ConnectionBase):
         :string: charset -- The character set for the connection. MySQL/MariaDB
                             will encode query results to this character set.
 
-                            On Python 2, both utf8 and Latin1 will work. On
-                            Python 3, only utf8 will work.
-
-                            Default on Python 2: Latin1 when ``use_unicode``
-                            is off, utf8 otherwise
-                            Default on Python 3: utf8
+                            Only utf8 will work.
+                            Default: utf8
 
         :bool: auto_create_db -- If the database given in ``connection_string``
                                  does not exist, create it automatically.
@@ -252,9 +242,7 @@ class Connection(ConnectionBase):
         self.timeout = int(timeout) if timeout else None
 
         try:
-            result = super(Connection, self).manage_edit(title,
-                                                         connection_string,
-                                                         check=check)
+            result = super().manage_edit(title, connection_string, check=check)
             msg = 'Changes applied.'
         except Exception as exc:
             msg = 'ERROR: %s' % str(exc)
@@ -331,12 +319,8 @@ def manage_addZMySQLConnection(self, id, title, connection_string, check=None,
     :string: charset -- The character set for the connection. MySQL/MariaDB
                         will encode query results to this character set.
 
-                        On Python 2, both utf8 and Latin1 will work. On
-                        Python 3, only utf8 will work.
-
-                        Default on Python 2: Latin1 when ``use_unicode``
-                        is off, utf8 otherwise
-                        Default on Python 3: utf8
+                        Only utf8 will work.
+                        Default: utf8
 
     :bool: auto_create_db -- If the database given in ``connection_string``
                              does not exist, create it automatically.

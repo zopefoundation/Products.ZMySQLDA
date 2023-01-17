@@ -136,6 +136,7 @@ class valuesTests(unittest.TestCase):
 
 
 def test_suite():
-    return unittest.TestSuite((unittest.makeSuite(TableBrowserTests),
-                               unittest.makeSuite(ColumnBrowserTests),
-                               unittest.makeSuite(valuesTests)))
+    return unittest.TestSuite((
+        unittest.defaultTestLoader.loadTestsFromTestCase(TableBrowserTests),
+        unittest.defaultTestLoader.loadTestsFromTestCase(ColumnBrowserTests),
+        unittest.defaultTestLoader.loadTestsFromTestCase(valuesTests)))

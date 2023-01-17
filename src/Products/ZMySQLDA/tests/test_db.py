@@ -13,8 +13,7 @@
 """ Tests for the db module
 """
 import unittest
-
-from six.moves._thread import get_ident
+from _thread import get_ident
 
 from .base import DB_CONN_STRING
 from .base import DB_PASSWORD
@@ -140,18 +139,15 @@ class RealConnectionDBPoolTests(unittest.TestCase):
         return dbpool(conn_string)
 
     def test_connect_bad_db(self):
-        try:
-            from _mysql_exceptions import OperationalError
-        except ImportError:  # mysqlclient > 1.4
-            from MySQLdb import OperationalError
+        from MySQLdb import OperationalError
 
         # DB doesn't exist and should not be created
-        conn_str = 'notexisting %s %s' % (DB_USER, DB_PASSWORD)
+        conn_str = 'notexisting {} {}'.format(DB_USER, DB_PASSWORD)
         self.assertRaises(OperationalError, self._makeOne, conn_str,
                           use_unicode=True, create_db=False)
 
         # DB doesn't exist and should be created
-        conn_str = 'notexisting %s %s' % (DB_USER, DB_PASSWORD)
+        conn_str = 'notexisting {} {}'.format(DB_USER, DB_PASSWORD)
         self.assertRaises(OperationalError, self._makeOne, conn_str,
                           use_unicode=True, create_db=True)
 
@@ -182,10 +178,10 @@ class RealConnectionDBPoolTests(unittest.TestCase):
 
     def test_unicode_literal(self):
         self.dbpool = self._makeOne()
-        self.assertEqual(self.dbpool.unicode_literal(u'foo'), b"'foo'")
+        self.assertEqual(self.dbpool.unicode_literal('foo'), b"'foo'")
 
         self.dbpool = self._makeOne(charset='utf8mb4')
-        self.assertEqual(self.dbpool.unicode_literal(u'foo'), b"'foo'")
+        self.assertEqual(self.dbpool.unicode_literal('foo'), b"'foo'")
 
 
 class DBTests(PatchedConnectionTestsBase):
@@ -503,10 +499,7 @@ class RealConnectionDBTests(unittest.TestCase):
         self.assertFalse(self.db.columns('notexistingtable'))
 
     def test_query_error(self):
-        try:
-            from _mysql_exceptions import ProgrammingError
-        except ImportError:  # mysqlclient > 1.4
-            from MySQLdb import ProgrammingError
+        from MySQLdb import ProgrammingError
         self.db = self._makeOne()
 
         self.assertRaises(ProgrammingError, self.db.query,
@@ -531,10 +524,13 @@ class _SavePointTests(unittest.TestCase):
 
 
 def test_suite():
-    return unittest.TestSuite((unittest.makeSuite(DbFunctionsTests),
-                               unittest.makeSuite(DBPoolTests),
-                               unittest.makeSuite(PatchedDBPoolTests),
-                               unittest.makeSuite(RealConnectionDBPoolTests),
-                               unittest.makeSuite(DBTests),
-                               unittest.makeSuite(RealConnectionDBTests),
-                               unittest.makeSuite(_SavePointTests)))
+    return unittest.TestSuite((
+        unittest.defaultTestLoader.loadTestsFromTestCase(DbFunctionsTests),
+        unittest.defaultTestLoader.loadTestsFromTestCase(DBPoolTests),
+        unittest.defaultTestLoader.loadTestsFromTestCase(PatchedDBPoolTests),
+        unittest.defaultTestLoader.loadTestsFromTestCase(
+            RealConnectionDBPoolTests),
+        unittest.defaultTestLoader.loadTestsFromTestCase(DBTests),
+        unittest.defaultTestLoader.loadTestsFromTestCase(
+            RealConnectionDBTests),
+        unittest.defaultTestLoader.loadTestsFromTestCase(_SavePointTests)))
