@@ -16,3 +16,4 @@ makes no claims about completeness.
 * Dr. Frank Hoffmann
 * Jürgen Gmach
 * Jens Vagelpohl
+* Michael Howitz
