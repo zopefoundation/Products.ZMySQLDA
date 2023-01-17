@@ -13,7 +13,7 @@ with-future-python = false
 with-macos = false
 
 [coverage]
-fail-under = 90
+fail-under = 93
 
 [isort]
 known_third_party = "six, MySQLdb, pkg_resources"
