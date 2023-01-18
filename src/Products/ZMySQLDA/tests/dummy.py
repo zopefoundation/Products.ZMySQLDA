@@ -12,10 +12,6 @@
 ##############################################################################
 """ Dummy fixtures for testing
 """
-
-import six
-
-
 RESULTS = {'show table status': [['table1', 'engine1', None, None, 5, None,
                                   None, None, None, None, None, None, None,
                                   None, 'my_collation']],
@@ -27,7 +23,7 @@ COLUMNS = [{'name': 'col1', 'icon': 'icon1', 'description': 'desc1'},
            {'name': 'col2', 'icon': 'icon2', 'description': 'desc2'}]
 
 
-class FakeColumns(object):
+class FakeColumns:
 
     def __init__(self, table_name):
         self.cols = {table_name: COLUMNS}
@@ -81,6 +77,6 @@ class FakeConnection:
 
     def unicode_literal(self, txt):
         self.unicode_literal_called = txt
-        if isinstance(txt, six.text_type):
+        if isinstance(txt, str):
             txt = txt.encode('UTF-8')
         return txt

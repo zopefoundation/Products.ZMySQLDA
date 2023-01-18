@@ -17,7 +17,7 @@ https://github.com/zopefoundation/Products.ZMySQLDA
 
 Bug tracker
 ===========
-For bug reports, suggestions or questions please use the 
+For bug reports, suggestions or questions please use the
 GitHub issue tracker at
 https://github.com/zopefoundation/Products.ZMySQLDA/issues.
 
@@ -32,7 +32,7 @@ for setting up a development buildout:
   $ cd Products.ZMySQLDA
   $ python3 -m venv .
   $ bin/pip install -U pip wheel
-  $ bin/pip install "setuptools<52" zc.buildout tox twine
+  $ bin/pip install zc.buildout tox twine
   $ bin/buildout
   ...
 
@@ -40,7 +40,7 @@ Once you have a buildout, the tests can be run as follows:
 
 .. code-block:: sh
 
-   $ bin/test 
+   $ bin/test
    Running tests at level 1
    Running zope.testrunner.layer.UnitTests tests:
      Set up zope.testrunner.layer.UnitTests in 0.000 seconds.
@@ -60,13 +60,11 @@ buildout step above:
    GLOB sdist-make: ...
    ...
    ____________________________________ summary _____________________________________
-   py27: commands succeeded
-   py27-zope2: commands succeeded
-   py35: commands succeeded
-   py36: commands succeeded
    py37: commands succeeded
    py38: commands succeeded
    py39: commands succeeded
+   py310: commands succeeded
+   py311: commands succeeded
    lint: commands succeeded
    coverage: commands succeeded
    congratulations :)
@@ -103,8 +101,8 @@ the database server.
 
 Building the documentation using :mod:`zc.buildout`
 ===================================================
-The :mod:`Products.ZMySQLDA` buildout installs the Sphinx 
-scripts required to build the documentation, including testing 
+The :mod:`Products.ZMySQLDA` buildout installs the Sphinx
+scripts required to build the documentation, including testing
 its code snippets:
 
 .. code-block:: sh
@@ -119,8 +117,8 @@ its code snippets:
 
 Making a release
 ================
-These instructions assume that you have a development sandbox set 
-up using :mod:`zc.buildout` as the scripts used here are generated 
+These instructions assume that you have a development sandbox set
+up using :mod:`zc.buildout` as the scripts used here are generated
 by the buildout.
 
 .. code-block:: sh
@@ -129,5 +127,5 @@ by the buildout.
   $ bin/buildout setup setup.py sdist bdist_wheel
   $ bin/twine upload -s dist/Products.ZMySQLDA-X.X.X*
 
-The ``bin/buildout`` step will make sure the correct package information 
+The ``bin/buildout`` step will make sure the correct package information
 is used.

@@ -92,9 +92,6 @@
         <option value="" <dtml-if "not charset">selected</dtml-if>>
           Not set (use previous release defaults)
         </option>
-        <option value="latin1" <dtml-if "charset == 'latin1'">selected</dtml-if>>
-          Latin-1 (Python 2 only)
-        </option>
         <option value="utf8mb4" <dtml-if "charset == 'utf8mb4'">selected</dtml-if>>
           UTF-8 (MySQL 5.5.3 and higher, uses utf8mb4)
         </option>
@@ -137,7 +134,7 @@
 <hr class="my-5" />
 
 <dl>
-  <dt><a name="1"><sup>1</sup></a> 
+  <dt><a name="1"><sup>1</sup></a>
     Database Connection String
   </dt>
   <dd>
@@ -146,35 +143,24 @@
     documentation</a>.
   </dd>
 
-  <dt><a name="2"><sup>2</sup></a> 
+  <dt><a name="2"><sup>2</sup></a>
     Connection character set
   </dt>
   <dd>
     The character set the database adapter will use to communicate with
     the database. You should choose a character set matching the Zope
-    application character set, which defaulted to <em>Latin-1</em> for
-    Zope 2 and now defaults to <em>UTF-8</em> for Zope 4.
+    application character set: <em>UTF-8</em>.
   </dd>
   <dd>
-    The database will expect all incoming data to be encoded in this 
-    character set, and query results from the database will be encoded 
+    The database will expect all incoming data to be encoded in this
+    character set, and query results from the database will be encoded
     in the same character set unless you check <em>Unicode results</em>.
   </dd>
   <dd>
-    <em>Not set</em> will emulate previous releases' behavior on Python 2, 
-    which used Latin-1 (ISO 8859-1), but if <em>Unicode results</em> is 
-    selected, the connection character set switches to UTF-8 and strings in 
-    query results are decoded to Unicode. On Python 3, <em>Not set</em> 
-    always defaults to UTF-8.
+    <em>Not set</em> always defaults to UTF-8.
   </dd>
   <dd>
-    For Python 2, you can force the character set to Latin-1 or UTF-8,
-    regardless of the <em>Unicode results</em> setting. This is useful
-    when your application wants to use UTF-8, but cannot deal with unicode
-    return values.
-  </dd>
-  <dd>
-    <b>Hint:</b> <en>Python 3 only supports the UTF-8 options!</em>
+    <b>Hint:</b> <en>Only the UTF-8 options are supported!</em>
   </dd>
 <dl>
 

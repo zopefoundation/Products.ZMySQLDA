@@ -24,18 +24,7 @@ Edit the database connection attributes and apply any changes:
 * `Character set`: Query results will be encoded in the character set
   specified here:
 
-  * `Not set` will emulate previous releases' behavior on Python 2, which
-    used Latin-1 (ISO 8859-1), but if `Unicode results` is selected, the
-    connection character set switches to UTF-8 and strings in query results
-    are decoded to Unicode. On Python 3, `not set` always defaults to
-    UTF-8.
-
-  * For Python 2, you can force the character set to Latin-1 or UTF-8,
-    regardless of the `Unicode results` setting. This is useful
-    when your application wants to use UTF-8, but cannot deal with unicode
-    return values.
-
-  * **On Python 3, forcing the character set to Latin1 is not supported.**
+  * `Not set` always defaults to UTF-8.
 
 * `Automatically create database`: If the `Database Connection String`
   refers to a database that does not yet exist `and` this setting is

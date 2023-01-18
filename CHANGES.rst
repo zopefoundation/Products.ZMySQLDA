@@ -1,8 +1,14 @@
 Products.ZMySQLDA change log
 ============================
 
-4.12 (unreleased)
------------------
+5.0 (unreleased)
+----------------
+
+- Drop support for Python 2.7, 3.5, 3.6.
+
+- Drop support for Zope 2 and Zope 4.
+
+- Drop support for ``mysqlclient < 1.4``.
 
 
 4.11 (2022-12-16)

@@ -26,7 +26,7 @@ class BrowserBase(Base):
             raise AttributeError(name)
 
 
-class values(object):
+class values:
     def len(self):
         return 1
 
@@ -80,7 +80,7 @@ class ColumnBrowser(BrowserBase):
     icon = 'field'
 
     def check(self):
-        return '\t<input type="checkbox" name="%s.%s"/>' % (
+        return '\t<input type="checkbox" name="{}.{}"/>'.format(
             self.table_name,
             self._d['name'],
         )

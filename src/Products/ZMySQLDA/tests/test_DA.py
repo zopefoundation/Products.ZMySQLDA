@@ -13,9 +13,7 @@
 """ Tests for the DA module
 """
 import unittest
-
-import six
-from six.moves._thread import get_ident
+from _thread import get_ident
 
 from .base import DB_CONN_STRING
 from .base import NO_MYSQL_MSG
@@ -172,7 +170,7 @@ class PatchedConnectionTests(PatchedConnectionTestsBase):
         self.assertFalse(internal_conn.unicode_literal_called)
 
     def test_sql_quote__unicode(self):
-        unencoded = u'foo'
+        unencoded = 'foo'
         self.conn = self._makeOne('conn_id', 'Conn Title', 'db_conn_string',
                                   False, use_unicode=True)
 
@@ -197,7 +195,7 @@ class RealConnectionTests(unittest.TestCase):
         class DummyRequest(dict):
             pass
 
-        class DummyResponse(object):
+        class DummyResponse:
             def redirect(self, url):
                 pass
 
@@ -235,45 +233,24 @@ class RealConnectionTests(unittest.TestCase):
 
     def test_manage_test_no_use_unicode(self):
         # If no character set is specified and use_unicode is False,
-        # mysqlclient under Python 2 will connect by default using latin1,
-        # but uses utf8 under Python 3.
+        # mysqlclient uses utf8.
         self.da = self._makeOne(use_unicode=False)
-        unicode_str = u'\xfcbrigens'
-        latin1_str = unicode_str.encode('latin1')
+        unicode_str = '\xfcbrigens'
         utf8_str = unicode_str.encode('utf8')
-        if six.PY3:
-            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, unicode_str)
-        else:
-            # Under Python 2 it is still necessary to INSERT with
-            # an encoded string, unicode breaks here because the ``_mysql``
-            # module will attempt to convert unicode to string with no
-            # character set provided, which will then use ``ascii``.
-            self.da.manage_test("SET NAMES 'latin1'")
-            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, latin1_str)
+        sql = "INSERT INTO {} VALUES (1, '{}')".format(TABLE_NAME, unicode_str)
         self.da.manage_test(sql)
 
         res = self.da.manage_test('SELECT * FROM %s' % TABLE_NAME)
         self.assertEqual(len(res), 1)
         self.assertEqual(res[0][TABLE_COL_INT], 1)
-        if six.PY3:
-            self.assertEqual(res[0][TABLE_COL_VARCHAR], utf8_str)
-        else:
-            self.assertEqual(res[0][TABLE_COL_VARCHAR], latin1_str)
+        self.assertEqual(res[0][TABLE_COL_VARCHAR], utf8_str)
 
     def test_manage_test_use_unicode(self):
         # The connection is set up with ``use_unicode``, which means queries
         # will return unicode data.
         self.da = self._makeOne(use_unicode=True)
-        unicode_str = u'\xfcbrigens'
-        utf8_str = unicode_str.encode('UTF8')
-        if six.PY3:
-            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, unicode_str)
-        else:
-            # Under Python 2 it is still necessary to INSERT with
-            # an encoded string, unicode breaks here because the ``_mysql``
-            # module will attempt to convert unicode to string with no
-            # character set provided, which will then use ``ascii``.
-            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, utf8_str)
+        unicode_str = '\xfcbrigens'
+        sql = "INSERT INTO {} VALUES (1, '{}')".format(TABLE_NAME, unicode_str)
         self.da.manage_test(sql)
 
         res = self.da.manage_test('SELECT * FROM %s' % TABLE_NAME)
@@ -285,16 +262,8 @@ class RealConnectionTests(unittest.TestCase):
         # The connection is set up with ``use_unicode``, which means queries
         # will return unicode data.
         self.da = self._makeOne(use_unicode=True, charset='utf8mb4')
-        unicode_str = u'\xfcbrigens'
-        utf8_str = unicode_str.encode('UTF8')
-        if six.PY3:
-            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, unicode_str)
-        else:
-            # Under Python 2 it is still necessary to INSERT with
-            # an encoded string, unicode breaks here because the ``_mysql``
-            # module will attempt to convert unicode to string with no
-            # character set provided, which will then use ``ascii``.
-            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, utf8_str)
+        unicode_str = '\xfcbrigens'
+        sql = "INSERT INTO {} VALUES (1, '{}')".format(TABLE_NAME, unicode_str)
         self.da.manage_test(sql)
 
         res = self.da.manage_test('SELECT * FROM %s' % TABLE_NAME)
@@ -304,16 +273,9 @@ class RealConnectionTests(unittest.TestCase):
 
     def test_manage_test_utf8_no_use_unicode(self):
         self.da = self._makeOne(use_unicode=False, charset='utf8')
-        unicode_str = u'\xfcbrigens'
+        unicode_str = '\xfcbrigens'
         utf8_str = unicode_str.encode('utf8')
-        if six.PY3:
-            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, unicode_str)
-        else:
-            # Under Python 2 it is still necessary to INSERT with
-            # an encoded string, unicode breaks here because the ``_mysql``
-            # module will attempt to convert unicode to string with no
-            # character set provided, which will then use ``ascii``.
-            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, utf8_str)
+        sql = "INSERT INTO {} VALUES (1, '{}')".format(TABLE_NAME, unicode_str)
         self.da.manage_test(sql)
 
         res = self.da.manage_test('SELECT * FROM %s' % TABLE_NAME)
@@ -323,16 +285,9 @@ class RealConnectionTests(unittest.TestCase):
 
     def test_manage_test_utf8mb4_no_use_unicode(self):
         self.da = self._makeOne(use_unicode=False, charset='utf8mb4')
-        unicode_str = u'\xfcbrigens'
+        unicode_str = '\xfcbrigens'
         utf8_str = unicode_str.encode('utf8')
-        if six.PY3:
-            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, unicode_str)
-        else:
-            # Under Python 2 it is still necessary to INSERT with
-            # an encoded string, unicode breaks here because the ``_mysql``
-            # module will attempt to convert unicode to string with no
-            # character set provided, which will then use ``ascii``.
-            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, utf8_str)
+        sql = "INSERT INTO {} VALUES (1, '{}')".format(TABLE_NAME, unicode_str)
         self.da.manage_test(sql)
 
         res = self.da.manage_test('SELECT * FROM %s' % TABLE_NAME)
@@ -340,90 +295,48 @@ class RealConnectionTests(unittest.TestCase):
         self.assertEqual(res[0][TABLE_COL_INT], 1)
         self.assertEqual(res[0][TABLE_COL_VARCHAR], utf8_str)
 
-    @unittest.skipIf(six.PY3, 'mysqlclient only supports utf8 with Python 3')
-    def test_manage_test_latin1_no_use_unicode(self):
-        self.da = self._makeOne(use_unicode=False, charset='latin1')
-        unicode_str = u'\xfcbrigens'
-        latin1_str = unicode_str.encode('latin1')
-        if six.PY3:
-            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, unicode_str)
-        else:
-            # Under Python 2 it is still necessary to INSERT with
-            # an encoded string, unicode breaks here because the ``_mysql``
-            # module will attempt to convert unicode to string with no
-            # character set provided, which will then use ``ascii``.
-            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, latin1_str)
-        self.da.manage_test(sql)
-
-        res = self.da.manage_test('SELECT * FROM %s' % TABLE_NAME)
-        self.assertEqual(len(res), 1)
-        self.assertEqual(res[0][TABLE_COL_INT], 1)
-        self.assertEqual(res[0][TABLE_COL_VARCHAR], latin1_str)
-
-    @unittest.skipIf(six.PY3, 'mysqlclient only supports utf8 with Python 3')
-    def test_manage_test_latin1_use_unicode(self):
-        # The connection is set up with ``use_unicode``, which means queries
-        # will return unicode data.
-        self.da = self._makeOne(use_unicode=True, charset='latin1')
-        unicode_str = u'\xfcbrigens'
-        latin1_str = unicode_str.encode('latin1')
-        if six.PY3:
-            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, unicode_str)
-        else:
-            # Under Python 2 it is still necessary to INSERT with
-            # an encoded string, unicode breaks here because the ``_mysql``
-            # module will attempt to convert unicode to string with no
-            # character set provided, which will then use ``ascii``.
-            sql = "INSERT INTO %s VALUES (1, '%s')" % (TABLE_NAME, latin1_str)
-        self.da.manage_test(sql)
-
-        res = self.da.manage_test('SELECT * FROM %s' % TABLE_NAME)
-        self.assertEqual(len(res), 1)
-        self.assertEqual(res[0][TABLE_COL_INT], 1)
-        self.assertEqual(res[0][TABLE_COL_VARCHAR], unicode_str)
-
     def test_sql_quote___miss(self):
-        TO_QUOTE = u'no quoting required'
+        TO_QUOTE = 'no quoting required'
         conn = self._makeOne(use_unicode=True)
-        self.assertEqual(conn.sql_quote__(TO_QUOTE), u"'%s'" % TO_QUOTE)
+        self.assertEqual(conn.sql_quote__(TO_QUOTE), "'%s'" % TO_QUOTE)
 
     def test_sql_quote___embedded_apostrophe(self):
-        TO_QUOTE = u"w'embedded apostrophe"
+        TO_QUOTE = "w'embedded apostrophe"
         conn = self._makeOne(use_unicode=True)
         self.assertEqual(conn.sql_quote__(TO_QUOTE),
-                         u"'w\\'embedded apostrophe'")
+                         "'w\\'embedded apostrophe'")
 
     def test_sql_quote___embedded_backslash(self):
-        TO_QUOTE = u'embedded \\backslash'
+        TO_QUOTE = 'embedded \\backslash'
         conn = self._makeOne(use_unicode=True)
         self.assertEqual(conn.sql_quote__(TO_QUOTE),
-                         u"'embedded \\\\backslash'")
+                         "'embedded \\\\backslash'")
 
     def test_sql_quote___embedded_double_quote(self):
         # As it turns out, escaping double quotes will break
         # some servers, notably PostgreSQL, so we no longer do that.
-        TO_QUOTE = u'embedded "double quote'
+        TO_QUOTE = 'embedded "double quote'
         conn = self._makeOne(use_unicode=True)
         self.assertEqual(conn.sql_quote__(TO_QUOTE),
-                         u'\'embedded \\"double quote\'')
+                         '\'embedded \\"double quote\'')
 
     def test_sql_quote___embedded_null(self):
-        TO_QUOTE = u"w'embedded apostrophe and \x00null"
+        TO_QUOTE = "w'embedded apostrophe and \x00null"
         conn = self._makeOne(use_unicode=True)
         self.assertEqual(conn.sql_quote__(TO_QUOTE),
-                         u"'w\\'embedded apostrophe and \\0null'")
+                         "'w\\'embedded apostrophe and \\0null'")
 
         # This is another version of a nul character.
-        TO_QUOTE = u'embedded other \x1anull'
+        TO_QUOTE = 'embedded other \x1anull'
         conn = self._makeOne(use_unicode=True)
         self.assertEqual(conn.sql_quote__(TO_QUOTE),
-                         u"'embedded other \\Znull'")
+                         "'embedded other \\Znull'")
 
     def test_sql_quote___embedded_carriage_return(self):
-        TO_QUOTE = u"w'embedded carriage\rreturn"
+        TO_QUOTE = "w'embedded carriage\rreturn"
         conn = self._makeOne(use_unicode=True)
         self.assertEqual(conn.sql_quote__(TO_QUOTE),
-                         u"'w\\'embedded carriage\\rreturn'")
+                         "'w\\'embedded carriage\\rreturn'")
 
     def test_sql_quote___miss_bytes(self):
         TO_QUOTE = b'no quoting required'
@@ -474,6 +387,8 @@ class RealConnectionTests(unittest.TestCase):
 
 
 def test_suite():
-    return unittest.TestSuite((unittest.makeSuite(ConnectionTests),
-                               unittest.makeSuite(PatchedConnectionTests),
-                               unittest.makeSuite(RealConnectionTests)))
+    return unittest.TestSuite((
+        unittest.defaultTestLoader.loadTestsFromTestCase(ConnectionTests),
+        unittest.defaultTestLoader.loadTestsFromTestCase(
+            PatchedConnectionTests),
+        unittest.defaultTestLoader.loadTestsFromTestCase(RealConnectionTests)))

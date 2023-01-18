@@ -12,16 +12,19 @@
 ##############################################################################
 import logging
 import time
+from _thread import allocate_lock
+from _thread import get_ident
 
 import MySQLdb
-import six
+import MySQLdb as _mysql
+from MySQLdb import NotSupportedError
+from MySQLdb import OperationalError
+from MySQLdb import ProgrammingError
 from MySQLdb.constants import CLIENT
 from MySQLdb.constants import CR
 from MySQLdb.constants import ER
 from MySQLdb.constants import FIELD_TYPE
 from MySQLdb.converters import conversions
-from six.moves._thread import allocate_lock
-from six.moves._thread import get_ident
 
 import transaction
 from DateTime.DateTime import DateTime
@@ -29,18 +32,6 @@ from DateTime.interfaces import DateTimeError
 from Shared.DC.ZRDB.TM import TM
 from ZODB.POSException import ConflictError
 from ZODB.POSException import TransactionFailedError
-
-
-try:
-    import _mysql
-    from _mysql_exceptions import NotSupportedError
-    from _mysql_exceptions import OperationalError
-    from _mysql_exceptions import ProgrammingError
-except ImportError:  # mysqlclient > 1.4
-    import MySQLdb as _mysql
-    from MySQLdb import NotSupportedError
-    from MySQLdb import OperationalError
-    from MySQLdb import ProgrammingError
 
 
 LOG = logging.getLogger('ZMySQLDA')
@@ -100,7 +91,7 @@ def DateTime_or_None(s):
         return None
 
 
-class DBPool(object):
+class DBPool:
     """
       This class is an interface to the database connection..
       Its caracteristic is that an instance of this class interfaces multiple
@@ -415,7 +406,7 @@ class DB(TM):
             for index, key in ((0, 't_name'), (1, 't_engine'), (4, 't_size'),
                                (14, 't_cs')):
                 value = row[index]
-                if isinstance(value, six.binary_type):
+                if isinstance(value, bytes):
                     value = value.decode(charset)
                 variables[key] = value
 
@@ -444,21 +435,20 @@ class DB(TM):
 
         for Field, Type, Null, Key, Default, Extra in db_result.fetch_row(0):
 
-            if six.PY3:
-                # Force-decoding to make the Browse ZMI tab work across
-                # all supported Python versions
-                if isinstance(Field, six.binary_type):
-                    Field = Field.decode(charset)
-                if isinstance(Type, six.binary_type):
-                    Type = Type.decode(charset)
-                if isinstance(Null, six.binary_type):
-                    Null = Null.decode(charset)
-                if isinstance(Key, six.binary_type):
-                    Key = Key.decode(charset)
-                if isinstance(Default, six.binary_type):
-                    Default = Default.decode(charset)
-                if isinstance(Extra, six.binary_type):
-                    Extra = Extra.decode(charset)
+            # Force-decoding to make the Browse ZMI tab work across
+            # all supported Python versions
+            if isinstance(Field, bytes):
+                Field = Field.decode(charset)
+            if isinstance(Type, bytes):
+                Type = Type.decode(charset)
+            if isinstance(Null, bytes):
+                Null = Null.decode(charset)
+            if isinstance(Key, bytes):
+                Key = Key.decode(charset)
+            if isinstance(Default, bytes):
+                Default = Default.decode(charset)
+            if isinstance(Extra, bytes):
+                Extra = Extra.decode(charset)
 
             info = {'name': Field,
                     'extra': (Extra,),
@@ -512,7 +502,7 @@ class DB(TM):
         """
         # variable_name, value
         variables = self._query('SHOW VARIABLES')
-        return dict((name, value) for name, value in variables.fetch_row(0))
+        return {name: value for name, value in variables.fetch_row(0)}
 
     def _query(self, query, force_reconnect=False):
         """
@@ -530,7 +520,7 @@ class DB(TM):
         except OperationalError as exc:
             if exc.args[0] in query_syntax_error:
                 raise OperationalError(exc.args[0],
-                                       '%s: %s' % (exc.args[1], query))
+                                       '{}: {}'.format(exc.args[1], query))
 
             if not force_reconnect and \
                (self._mysql_lock or self._transactions) or \
@@ -707,7 +697,7 @@ class DB(TM):
         return _SavePoint(self)
 
 
-class _SavePoint(object):
+class _SavePoint:
     """ Simple savepoint object
     """
 
