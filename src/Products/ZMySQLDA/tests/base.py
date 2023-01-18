@@ -23,7 +23,7 @@ from .dummy import FakeConnection
 DB = 'zmysqldatest'
 DB_USER = 'zmysqldatest'
 DB_PASSWORD = 'zmysqldatest'
-DB_CONN_STRING = '{} {} {}'.format(DB, DB_USER, DB_PASSWORD)
+DB_CONN_STRING = f'{DB} {DB_USER} {DB_PASSWORD}'
 
 random_value = uuid.uuid4().hex
 TABLE_NAME = 'test_zmysqlda_%s' % str(random_value)

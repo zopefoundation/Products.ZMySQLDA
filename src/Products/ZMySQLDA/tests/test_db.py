@@ -142,12 +142,12 @@ class RealConnectionDBPoolTests(unittest.TestCase):
         from MySQLdb import OperationalError
 
         # DB doesn't exist and should not be created
-        conn_str = 'notexisting {} {}'.format(DB_USER, DB_PASSWORD)
+        conn_str = f'notexisting {DB_USER} {DB_PASSWORD}'
         self.assertRaises(OperationalError, self._makeOne, conn_str,
                           use_unicode=True, create_db=False)
 
         # DB doesn't exist and should be created
-        conn_str = 'notexisting {} {}'.format(DB_USER, DB_PASSWORD)
+        conn_str = f'notexisting {DB_USER} {DB_PASSWORD}'
         self.assertRaises(OperationalError, self._makeOne, conn_str,
                           use_unicode=True, create_db=True)
 
