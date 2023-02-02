@@ -37,7 +37,7 @@ setup(
     version='5.0.dev0',
     license='ZPL 2.1',
     author='Zope Foundation and Contributors',
-    author_email='zope-dev@zope.org',
+    author_email='zope-dev@zope.dev',
     url='https://zmysqlda.readthedocs.io',
     project_urls={
         'Documentation': 'https://zmysqlda.readthedocs.io',
