@@ -237,7 +237,7 @@ class RealConnectionTests(unittest.TestCase):
         self.da = self._makeOne(use_unicode=False)
         unicode_str = '\xfcbrigens'
         utf8_str = unicode_str.encode('utf8')
-        sql = "INSERT INTO {} VALUES (1, '{}')".format(TABLE_NAME, unicode_str)
+        sql = f"INSERT INTO {TABLE_NAME} VALUES (1, '{unicode_str}')"
         self.da.manage_test(sql)
 
         res = self.da.manage_test('SELECT * FROM %s' % TABLE_NAME)
@@ -250,7 +250,7 @@ class RealConnectionTests(unittest.TestCase):
         # will return unicode data.
         self.da = self._makeOne(use_unicode=True)
         unicode_str = '\xfcbrigens'
-        sql = "INSERT INTO {} VALUES (1, '{}')".format(TABLE_NAME, unicode_str)
+        sql = f"INSERT INTO {TABLE_NAME} VALUES (1, '{unicode_str}')"
         self.da.manage_test(sql)
 
         res = self.da.manage_test('SELECT * FROM %s' % TABLE_NAME)
@@ -263,7 +263,7 @@ class RealConnectionTests(unittest.TestCase):
         # will return unicode data.
         self.da = self._makeOne(use_unicode=True, charset='utf8mb4')
         unicode_str = '\xfcbrigens'
-        sql = "INSERT INTO {} VALUES (1, '{}')".format(TABLE_NAME, unicode_str)
+        sql = f"INSERT INTO {TABLE_NAME} VALUES (1, '{unicode_str}')"
         self.da.manage_test(sql)
 
         res = self.da.manage_test('SELECT * FROM %s' % TABLE_NAME)
@@ -275,7 +275,7 @@ class RealConnectionTests(unittest.TestCase):
         self.da = self._makeOne(use_unicode=False, charset='utf8')
         unicode_str = '\xfcbrigens'
         utf8_str = unicode_str.encode('utf8')
-        sql = "INSERT INTO {} VALUES (1, '{}')".format(TABLE_NAME, unicode_str)
+        sql = f"INSERT INTO {TABLE_NAME} VALUES (1, '{unicode_str}')"
         self.da.manage_test(sql)
 
         res = self.da.manage_test('SELECT * FROM %s' % TABLE_NAME)
@@ -287,7 +287,7 @@ class RealConnectionTests(unittest.TestCase):
         self.da = self._makeOne(use_unicode=False, charset='utf8mb4')
         unicode_str = '\xfcbrigens'
         utf8_str = unicode_str.encode('utf8')
-        sql = "INSERT INTO {} VALUES (1, '{}')".format(TABLE_NAME, unicode_str)
+        sql = f"INSERT INTO {TABLE_NAME} VALUES (1, '{unicode_str}')"
         self.da.manage_test(sql)
 
         res = self.da.manage_test('SELECT * FROM %s' % TABLE_NAME)
