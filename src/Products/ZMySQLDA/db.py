@@ -520,7 +520,7 @@ class DB(TM):
         except OperationalError as exc:
             if exc.args[0] in query_syntax_error:
                 raise OperationalError(exc.args[0],
-                                       '{}: {}'.format(exc.args[1], query))
+                                       f'{exc.args[1]}: {query}')
 
             if not force_reconnect and \
                (self._mysql_lock or self._transactions) or \
