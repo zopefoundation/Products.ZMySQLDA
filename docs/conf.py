@@ -18,12 +18,12 @@ import pkg_resources
 import sys
 from unittest.mock import MagicMock
 from unittest.mock import Mock
+
 sys.path.insert(0, os.path.abspath('../'))
 rqmt = pkg_resources.require('Products.ZMySQLDA')[0]
 sys.modules['MySQLdb'] = Mock()
 sys.modules['MySQLdb.constants'] = Mock()
 sys.modules['MySQLdb.converters'] = MagicMock()
-
 
 # -- Project information -----------------------------------------------------
 year = datetime.datetime.now().year
@@ -35,7 +35,6 @@ author = 'Zope Foundation and Contributors'
 version = '%s.%s' % tuple(rqmt.version.split('.')[:2])
 # The full version, including alpha/beta/rc tags
 release = rqmt.version
-
 
 # -- General configuration ---------------------------------------------------
 
@@ -61,7 +60,7 @@ templates_path = ['_templates']
 # You can specify multiple suffix as a list of string:
 #
 # source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = {'.rst': 'restructuredtext'}
 
 # The master toctree document.
 master_doc = 'index'
@@ -80,7 +79,6 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
-
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -110,12 +108,10 @@ html_static_path = ['_static']
 #
 # html_sidebars = {}
 
-
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'ZMySQLDAdoc'
-
 
 # -- Options for LaTeX output ------------------------------------------------
 
@@ -145,16 +141,11 @@ latex_documents = [
      'Zope Foundation and Contributors', 'manual'),
 ]
 
-
 # -- Options for manual page output ------------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    (master_doc, 'zmysqlda', 'ZMySQLDA Documentation',
-     [author], 1)
-]
-
+man_pages = [(master_doc, 'zmysqlda', 'ZMySQLDA Documentation', [author], 1)]
 
 # -- Options for Texinfo output ----------------------------------------------
 
@@ -162,18 +153,16 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'ZMySQLDA', 'ZMySQLDA Documentation',
-     author, 'ZMySQLDA', 'One line description of project.',
-     'Miscellaneous'),
+    (master_doc, 'ZMySQLDA', 'ZMySQLDA Documentation', author, 'ZMySQLDA',
+     'One line description of project.', 'Miscellaneous'),
 ]
-
 
 # -- Extension configuration -------------------------------------------------
 
 # -- Options for intersphinx extension ---------------------------------------
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/3/': None}
+intersphinx_mapping = {'python': ('https://docs.python.org/3/', None)}
 
 # -- Options for todo extension ----------------------------------------------
 
