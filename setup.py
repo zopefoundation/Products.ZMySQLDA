@@ -47,6 +47,7 @@ setup(
     },
     description='MySQL Zope adapter.',
     long_description=read('README.rst') + '\n' + read('CHANGES.rst'),
+    long_description_content_type='text/x-rst',
     classifiers=[
         'Development Status :: 6 - Mature',
         'Environment :: Web Environment',
@@ -61,6 +62,7 @@ setup(
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
         'Programming Language :: Python :: Implementation :: CPython',
         'Topic :: Database',
         'Topic :: Database :: Front-Ends',
@@ -73,6 +75,6 @@ setup(
     python_requires='>=3.8',
     install_requires=install_requires,
     extras_require={
-        'docs': ['Sphinx', 'repoze.sphinx.autointerface'],
+        'docs': ['Sphinx', 'repoze.sphinx.autointerface', 'furo'],
     },
 )

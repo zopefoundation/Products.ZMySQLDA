@@ -7,7 +7,7 @@ Getting the source code
 =======================
 The source code is maintained on GitHub. To check out the trunk:
 
-.. code-block:: sh
+.. code-block:: console
 
   $ git clone https://github.com/zopefoundation/Products.ZMySQLDA.git
 
@@ -27,7 +27,7 @@ Running the tests using  :mod:`zc.buildout`
 :mod:`Products.ZMySQLDA` ships with its own :file:`buildout.cfg` file
 for setting up a development buildout:
 
-.. code-block:: sh
+.. code-block:: console
 
   $ cd Products.ZMySQLDA
   $ python3 -m venv .
@@ -38,7 +38,7 @@ for setting up a development buildout:
 
 Once you have a buildout, the tests can be run as follows:
 
-.. code-block:: sh
+.. code-block:: console
 
    $ bin/test
    Running tests at level 1
@@ -54,7 +54,7 @@ To run tests for all supported Python versions, code coverage and a
 PEP-8 coding style checker, you can use ``tox`` after completing the
 buildout step above:
 
-.. code-block:: sh
+.. code-block:: console
 
    $ bin/tox
    GLOB sdist-make: ...
@@ -101,18 +101,15 @@ the database server.
 
 Building the documentation using :mod:`zc.buildout`
 ===================================================
-The :mod:`Products.ZMySQLDA` buildout installs the Sphinx
-scripts required to build the documentation, including testing
-its code snippets:
+The :mod:`Products.ZMySQLDA` documentation is built using ``tox``.
 
-.. code-block:: sh
+.. code-block:: console
 
-    $ cd docs
-    $ make html
+    $ bin/tox -edocs
     ...
     build succeeded.
 
-    The HTML pages are in _build/html.
+    The HTML pages are in docs/_build/html.
 
 
 Making a release
@@ -121,7 +118,7 @@ These instructions assume that you have a development sandbox set
 up using :mod:`zc.buildout` as the scripts used here are generated
 by the buildout.
 
-.. code-block:: sh
+.. code-block:: console
 
   $ bin/buildout -N
   $ bin/buildout setup setup.py sdist bdist_wheel

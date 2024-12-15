@@ -24,7 +24,7 @@ This is the MySQL database adapter product for Zope.
 Compatibility
 -------------
 
-* ``Zope`` 5 under Python 3.7 and higher.
+* ``Zope`` 5 under Python 3.8 and higher.
 
 * MySQL versions 3.22 and later including MariaDB. You need version 4.1
   or higher for unicode support.
