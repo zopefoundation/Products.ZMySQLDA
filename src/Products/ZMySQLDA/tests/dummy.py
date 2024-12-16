@@ -12,6 +12,9 @@
 ##############################################################################
 """ Dummy fixtures for testing
 """
+from MySQLdb import OperationalError
+
+
 RESULTS = {'show table status': [['table1', 'engine1', None, None, 5, None,
                                   None, None, None, None, None, None, None,
                                   None, 'my_collation']],
@@ -50,12 +53,14 @@ class FakeConnection:
         self.last_query = None
         self.string_literal_called = False
         self.unicode_literal_called = False
+        self.ping_raises = False
 
         for k, v in kw.items():
             setattr(self, k, v)
 
     def ping(self, *args):
-        pass
+        if self.ping_raises:
+            raise OperationalError(self.ping_raises)
 
     def query(self, sql):
         self.last_query = sql

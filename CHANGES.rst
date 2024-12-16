@@ -4,6 +4,9 @@ Products.ZMySQLDA change log
 5.1 (unreleased)
 ----------------
 
+- Adjust for ``mysqlclient`` behavior change after version 2.2.0
+  (`#34 <https://github.com/zopefoundation/Products.ZMySQLDA/issues/34>`_)
+
 - Add support for Python 3.12 and 3.13.
 
 - Drop support for Python 3.7.

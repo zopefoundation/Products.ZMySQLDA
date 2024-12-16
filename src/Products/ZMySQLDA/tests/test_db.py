@@ -15,6 +15,11 @@
 import unittest
 from _thread import get_ident
 
+from MySQLdb.constants.CR import SERVER_GONE_ERROR
+from MySQLdb.constants.CR import SERVER_HANDSHAKE_ERR
+
+from ZODB.POSException import ConflictError
+
 from .base import DB_CONN_STRING
 from .base import DB_PASSWORD
 from .base import DB_USER
@@ -373,6 +378,23 @@ class DBTests(PatchedConnectionTestsBase):
         db._begin()
         self.assertTrue(db._transaction_begun)
         self.assertEqual(db.db.last_query, 'BEGIN')
+
+    def test__begin_raises(self):
+        # Starting with mysqlclient version 2.2.1 the connection object's
+        # ``ping`` method behavior changed and it may raise an exception.
+        db = self._makeOne(kw_args={})
+        db._transactions = True
+
+        # Use a type of exception that may be recoverable
+        db.db.ping_raises = SERVER_GONE_ERROR
+        db._begin()
+        self.assertTrue(db._transaction_begun)
+        self.assertEqual(db.db.last_query, 'BEGIN')
+
+        # Unrecoverable exception will be changed to a Zope transaction
+        # ConflictError
+        db.db.ping_raises = SERVER_HANDSHAKE_ERR
+        self.assertRaises(ConflictError, db._begin)
 
     def test__begin_mysql_lock(self):
         db = self._makeOne(kw_args={})
