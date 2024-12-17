@@ -342,8 +342,13 @@ class DB(TM):
             pass
 
         self.db = MySQLdb.connect(**self._kw_args)
-        # Newer mysqldb requires ping argument to attmept a reconnect.
-        # This setting is persistent, so only needed once per connection.
+        # Calling ``ping`` to verify that the connection works and passing
+        # ``True`` to enable the automatic reconnection feature.
+        # The MySQL/MariaDB client library supports automatic reconnections if
+        # the connection is down and a statement is sent to the server. This
+        # option (``MYSQL_OPT_RECONNECT``) is deprecated starting with MySQL
+        # 8.0.34/8.1 and will cause a warning to be written to STDERR.
+        # Future versions of this package will disable it.
         self.db.ping(True)
 
     @classmethod
@@ -647,11 +652,12 @@ class DB(TM):
         """
         try:
             try:
+                # Calling ``ping`` to verify that the connection is working.
                 self.db.ping()
             except OperationalError as exc:
-                # Starting with mysqlclient version 2.2.1 the connection object
-                # ``ping`` method behavior changed. It may raise an exception.
-                # If the connection is broken attempt to reconnect first.
+                # Before mysqlclient version 2.2.1 the ``ping`` method seemed
+                # to never raise exceptions, now it does. Attempt to reconnect
+                # if the exception type implies a stale connection.
                 if exc.args[0] in hosed_connection:
                     self._forceReconnection(reason=exc.args[0])
                 else:
