@@ -21,6 +21,7 @@ known_third_party = "six, MySQLdb, pkg_resources"
 [check-manifest]
 additional-ignores = [
     "docs/_build/html/_static/*",
+    "docs/_build/html/_static/scripts/*",
     ]
 
 [manifest]

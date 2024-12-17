@@ -323,16 +323,32 @@ class DB(TM):
 
     __del__ = close
 
-    def _forceReconnection(self):
+    def _forceReconnection(self, reason=''):
         """ (Re)Connect to database.
+
+        Kwargs:
+            reason (str): A reason for the reconnection, which will be logged.
         """
+        if reason:
+            if reason in hosed_connection:
+                LOG.error('Forcing reconnection: %s' % hosed_connection[
+                    reason])
+            else:
+                LOG.debug('Forcing reconnection, reason: %s.' % reason)
+
         try:  # try to clean up first
             self.db.close()
         except Exception:
             pass
+
         self.db = MySQLdb.connect(**self._kw_args)
-        # Newer mysqldb requires ping argument to attmept a reconnect.
-        # This setting is persistent, so only needed once per connection.
+        # Calling ``ping`` to verify that the connection works and passing
+        # ``True`` to enable the automatic reconnection feature.
+        # The MySQL/MariaDB client library supports automatic reconnections if
+        # the connection is down and a statement is sent to the server. This
+        # option (``MYSQL_OPT_RECONNECT``) is deprecated starting with MySQL
+        # 8.0.34/8.1 and will cause a warning to be written to STDERR.
+        # Future versions of this package will disable it.
         self.db.ping(True)
 
     @classmethod
@@ -533,16 +549,11 @@ class DB(TM):
                 raise
 
             # Hm. maybe the db is hosed.  Let's restart it.
-            if exc.args[0] in hosed_connection:
-                msg = '%s Forcing a reconnect.' % hosed_connection[exc.args[0]]
-                LOG.error(msg)
-            self._forceReconnection()
+            self._forceReconnection(reason=exc.args[0])
             self.db.query(query)
         except ProgrammingError as exc:
             if exc.args[0] in hosed_connection:
-                self._forceReconnection()
-                msg = '%s Forcing a reconnect.' % hosed_connection[exc.args[0]]
-                LOG.error(msg)
+                self._forceReconnection(reason=exc.args[0])
             else:
                 if len(query) > 2000:
                     msg = '%s... (truncated at 2000 chars)' % query[:2000]
@@ -640,15 +651,26 @@ class DB(TM):
         Also called from _register() upon first query.
         """
         try:
+            try:
+                # Calling ``ping`` to verify that the connection is working.
+                self.db.ping()
+            except OperationalError as exc:
+                # Before mysqlclient version 2.2.1 the ``ping`` method seemed
+                # to never raise exceptions, now it does. Attempt to reconnect
+                # if the exception type implies a stale connection.
+                if exc.args[0] in hosed_connection:
+                    self._forceReconnection(reason=exc.args[0])
+                else:
+                    raise
+
             self._transaction_begun = True
-            self.db.ping()
             if self._transactions:
                 self._query('BEGIN')
             if self._mysql_lock:
                 self._query("SELECT GET_LOCK('%s',0)" % self._mysql_lock)
-        except Exception:
-            LOG.error('exception during _begin', exc_info=True)
-            raise ConflictError
+        except Exception as exc:
+            LOG.error('Exception during _begin', exc_info=True)
+            raise ConflictError('Database error %s' % exc.args[0])
 
     def _finish(self, *ignored):
         """ Commit a transaction, if transactions are enabled and the
