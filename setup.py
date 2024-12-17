@@ -20,11 +20,11 @@ from setuptools import setup
 install_requires = [
     'setuptools',
     'Products.ZSQLMethods',
-    'Zope >= 5',
+    'Zope',
 ]
 if not os.environ.get('READTHEDOCS') == 'True':
     install_requires += [
-        'mysqlclient >= 1.4',
+        'mysqlclient',
     ]
 
 
@@ -34,7 +34,7 @@ def read(*rnames):
 
 setup(
     name='Products.ZMySQLDA',
-    version='5.1.dev0',
+    version='6.0',
     license='ZPL 2.1',
     author='Zope Foundation and Contributors',
     author_email='zope-dev@zope.dev',

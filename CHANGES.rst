@@ -1,7 +1,7 @@
 Products.ZMySQLDA change log
 ============================
 
-5.1 (unreleased)
+6.0 (2024-12-17)
 ----------------
 
 - Adjust for ``mysqlclient`` behavior change after version 2.2.0
