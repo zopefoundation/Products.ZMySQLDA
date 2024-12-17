@@ -331,7 +331,7 @@ class DB(TM):
         """
         if reason:
             if reason in hosed_connection:
-                LOG.error('Forcing reconnection: %s' % hosed_connection[
+                LOG.debug('Forcing reconnection: %s' % hosed_connection[
                     reason])
             else:
                 LOG.debug('Forcing reconnection, reason: %s.' % reason)
