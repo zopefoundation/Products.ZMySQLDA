@@ -35,7 +35,7 @@ def read(*rnames):
 setup(
     name='Products.ZMySQLDA',
     version='6.1.dev0',
-    license='ZPL 2.1',
+    license='ZPL-2.1',
     author='Zope Foundation and Contributors',
     author_email='zope-dev@zope.dev',
     url='https://zmysqlda.readthedocs.io',
@@ -57,7 +57,6 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
@@ -72,7 +71,7 @@ setup(
     include_package_data=True,
     namespace_packages=['Products'],
     zip_safe=False,
-    python_requires='>=3.8',
+    python_requires='>=3.9',
     install_requires=install_requires,
     extras_require={
         'docs': ['Sphinx', 'repoze.sphinx.autointerface', 'furo'],
