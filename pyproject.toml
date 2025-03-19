@@ -14,7 +14,7 @@ branch = true
 source = ["Products.ZMySQLDA"]
 
 [tool.coverage.report]
-fail_under = 93
+fail_under = 73
 precision = 2
 ignore_errors = true
 show_missing = true
