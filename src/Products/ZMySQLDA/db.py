@@ -347,7 +347,9 @@ class DB(TM):
         """
         if reason:
             if reason in hosed_connection:
-                LOG.error('Forcing reconnection: %s' % hosed_connection[reason])
+                LOG.error(
+                    'Forcing reconnection: %s' %
+                    hosed_connection[reason])
             else:
                 LOG.debug('Forcing reconnection, reason: %s' % reason)
 
@@ -372,10 +374,14 @@ class DB(TM):
                 return
             except OperationalError as e:
                 if attempt < max_retries - 1:
-                    LOG.debug('Connection attempt %d failed, retrying...' % (attempt + 1))
+                    LOG.debug(
+                        'Connection attempt %d failed, retrying...' %
+                        (attempt + 1))
                     time.sleep(retry_delay)
                     continue
-                LOG.error('Failed to reconnect after %d attempts' % max_retries)
+                LOG.error(
+                    'Failed to reconnect after %d attempts' %
+                    max_retries)
                 raise
             except Exception as e:
                 LOG.error('Unexpected error during reconnection: %s' % str(e))
