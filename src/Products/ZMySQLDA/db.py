@@ -323,33 +323,63 @@ class DB(TM):
 
     __del__ = close
 
-    def _forceReconnection(self, reason=''):
-        """ (Re)Connect to database.
+    def _verify_connection(self):
+        """Verify and maintain database connection."""
+        if not hasattr(self, 'db') or not self.db:
+            self._forceReconnection(reason='Connection not initialized')
+            return
 
-        Kwargs:
-            reason (str): A reason for the reconnection, which will be logged.
+        try:
+            # Use simple query instead of ping for more reliable check
+            self.db.query("SELECT 1")
+            self.db.store_result()
+        except OperationalError as e:
+            if e.args[0] in hosed_connection:
+                self._forceReconnection(reason=e.args[0])
+            else:
+                raise
+
+    def _forceReconnection(self, reason=''):
+        """ (Re)Connect to database with improved reconnection logic.
+
+        Args:
+            reason (str): Reason for reconnection
         """
         if reason:
             if reason in hosed_connection:
-                LOG.debug('Forcing reconnection: %s' % hosed_connection[
-                    reason])
+                LOG.error('Forcing reconnection: %s' % hosed_connection[reason])
             else:
-                LOG.debug('Forcing reconnection, reason: %s.' % reason)
+                LOG.debug('Forcing reconnection, reason: %s' % reason)
 
-        try:  # try to clean up first
-            self.db.close()
-        except Exception:
-            pass
+        # Close existing connection if it exists
+        if hasattr(self, 'db') and self.db:
+            try:
+                self.db.close()
+            except Exception as e:
+                LOG.debug('Error closing connection: %s' % str(e))
 
-        self.db = MySQLdb.connect(**self._kw_args)
-        # Calling ``ping`` to verify that the connection works and passing
-        # ``True`` to enable the automatic reconnection feature.
-        # The MySQL/MariaDB client library supports automatic reconnections if
-        # the connection is down and a statement is sent to the server. This
-        # option (``MYSQL_OPT_RECONNECT``) is deprecated starting with MySQL
-        # 8.0.34/8.1 and will cause a warning to be written to STDERR.
-        # Future versions of this package will disable it.
-        self.db.ping(True)
+        # Implement retry logic for new connection
+        max_retries = 3
+        retry_delay = 1  # seconds
+
+        for attempt in range(max_retries):
+            try:
+                self.db = MySQLdb.connect(**self._kw_args)
+                # Verify connection with simple query
+                self.db.query("SELECT 1")
+                self.db.store_result()
+                LOG.debug('Successfully reconnected to database')
+                return
+            except OperationalError as e:
+                if attempt < max_retries - 1:
+                    LOG.debug('Connection attempt %d failed, retrying...' % (attempt + 1))
+                    time.sleep(retry_delay)
+                    continue
+                LOG.error('Failed to reconnect after %d attempts' % max_retries)
+                raise
+            except Exception as e:
+                LOG.error('Unexpected error during reconnection: %s' % str(e))
+                raise
 
     @classmethod
     def _parse_connection_string(cls, connection, use_unicode=False,
@@ -532,6 +562,7 @@ class DB(TM):
              overridden by passing force_reconnect with True value.
         """
         try:
+            self._verify_connection()
             self.db.query(query)
         except OperationalError as exc:
             if exc.args[0] in query_syntax_error:
@@ -651,18 +682,7 @@ class DB(TM):
         Also called from _register() upon first query.
         """
         try:
-            try:
-                # Calling ``ping`` to verify that the connection is working.
-                self.db.ping()
-            except OperationalError as exc:
-                # Before mysqlclient version 2.2.1 the ``ping`` method seemed
-                # to never raise exceptions, now it does. Attempt to reconnect
-                # if the exception type implies a stale connection.
-                if exc.args[0] in hosed_connection:
-                    self._forceReconnection(reason=exc.args[0])
-                else:
-                    raise
-
+            self._verify_connection()
             self._transaction_begun = True
             if self._transactions:
                 self._query('BEGIN')
