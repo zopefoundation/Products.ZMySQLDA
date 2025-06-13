@@ -41,6 +41,7 @@ hosed_connection = {
     CR.SERVER_LOST: 'Server lost.',
     CR.COMMANDS_OUT_OF_SYNC: 'Commands out of sync. Possibly a misplaced'
                              ' semicolon (;) in a query.',
+    4031: 'MySQL client interaction timeout.',
 }
 
 query_syntax_error = (ER.BAD_FIELD_ERROR,)

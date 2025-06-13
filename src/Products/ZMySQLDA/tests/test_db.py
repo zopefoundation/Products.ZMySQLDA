@@ -379,7 +379,7 @@ class DBTests(PatchedConnectionTestsBase):
         self.assertTrue(db._transaction_begun)
         self.assertEqual(db.db.last_query, 'BEGIN')
 
-    def test__begin_raises(self):
+    def test__begin_raises_recoverable(self):
         # Starting with mysqlclient version 2.2.1 the connection object's
         # ``ping`` method behavior changed and it may raise an exception.
         db = self._makeOne(kw_args={})
@@ -390,6 +390,22 @@ class DBTests(PatchedConnectionTestsBase):
         db._begin()
         self.assertTrue(db._transaction_begun)
         self.assertEqual(db.db.last_query, 'BEGIN')
+
+    def test__begin_raises_mysql_client_interaction_timeout(self):
+        db = self._makeOne(kw_args={})
+        db._transactions = True
+
+        # Use a type of exception that may be recoverable
+        db.db.ping_raises = 4031  # MySQL >= 8.0.24 client interaction timeout
+        db._begin()
+        self.assertTrue(db._transaction_begun)
+        self.assertEqual(db.db.last_query, 'BEGIN')
+
+    def test__begin_raises_unrecoverable(self):
+        # Starting with mysqlclient version 2.2.1 the connection object's
+        # ``ping`` method behavior changed and it may raise an exception.
+        db = self._makeOne(kw_args={})
+        db._transactions = True
 
         # Unrecoverable exception will be changed to a Zope transaction
         # ConflictError
