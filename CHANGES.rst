@@ -1,7 +1,7 @@
 Products.ZMySQLDA change log
 ============================
 
-6.1 (unreleased)
+6.1 (2025-06-13)
 ----------------
 
 - Account for new MySQL error code 4031 for stale connections.
