@@ -4,8 +4,11 @@ Products.ZMySQLDA change log
 6.1 (unreleased)
 ----------------
 
+- Account for new MySQL error code 4031 for stale connections.
+  (`#40 <https://github.com/zopefoundation/Products.ZMySQLDA/issues/40>`_)
 
 - Drop support for Python 3.8.
+
 
 6.0 (2024-12-17)
 ----------------
