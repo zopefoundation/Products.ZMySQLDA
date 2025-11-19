@@ -70,4 +70,5 @@ setup(
     extras_require={
         'docs': ['Sphinx', 'furo'],
     },
+    include_package_data=True,
 )
