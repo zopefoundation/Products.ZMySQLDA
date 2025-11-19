@@ -13,7 +13,6 @@
 ##############################################################################
 import os
 
-from setuptools import find_packages
 from setuptools import setup
 
 
@@ -57,23 +56,18 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12',
         'Programming Language :: Python :: 3.13',
+        'Programming Language :: Python :: 3.14',
         'Programming Language :: Python :: Implementation :: CPython',
         'Topic :: Database',
         'Topic :: Database :: Front-Ends',
     ],
-    packages=find_packages('src'),
-    package_dir={'': 'src'},
-    include_package_data=True,
-    namespace_packages=['Products'],
-    zip_safe=False,
-    python_requires='>=3.9',
+    python_requires='>=3.10',
     install_requires=install_requires,
     extras_require={
-        'docs': ['Sphinx', 'repoze.sphinx.autointerface', 'furo'],
+        'docs': ['Sphinx', 'furo'],
     },
 )

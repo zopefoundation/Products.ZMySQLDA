@@ -14,14 +14,13 @@
 import datetime
 import os
 import sys
+from importlib.metadata import distribution
 from unittest.mock import MagicMock
 from unittest.mock import Mock
 
-import pkg_resources
 
-
-sys.path.insert(0, os.path.abspath('../'))
-rqmt = pkg_resources.require('Products.ZMySQLDA')[0]
+sys.path.append(os.path.abspath('../src'))
+rqmt = distribution('Products.ZMySQLDA')
 sys.modules['MySQLdb'] = Mock()
 sys.modules['MySQLdb.constants'] = Mock()
 sys.modules['MySQLdb.converters'] = MagicMock()
@@ -29,7 +28,7 @@ sys.modules['MySQLdb.converters'] = MagicMock()
 # -- Project information -----------------------------------------------------
 year = datetime.datetime.now().year
 project = 'Products.ZMySQLDA'
-copyright = '2001-%s, Zope Foundation and Contributors' % year
+copyright = f'2001-{year}, Zope Foundation and Contributors'
 author = 'Zope Foundation and Contributors'
 
 # The short X.Y version
