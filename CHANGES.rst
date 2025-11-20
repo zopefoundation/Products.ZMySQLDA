@@ -1,7 +1,7 @@
 Products.ZMySQLDA change log
 ============================
 
-6.2 (unreleased)
+6.2 (2025-11-20)
 ----------------
 
 - Switch to PEP 420 native namespace.
