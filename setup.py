@@ -17,7 +17,6 @@ from setuptools import setup
 
 
 install_requires = [
-    'setuptools',
     'Products.ZSQLMethods',
     'Zope',
 ]
