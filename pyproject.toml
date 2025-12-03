@@ -40,7 +40,7 @@ maintainers = [
 ]
 dependencies = [
     "Products.ZSQLMethods",
-    "Zope",
+    "Zope >= 5",
     "mysqlclient",
 ]
 
