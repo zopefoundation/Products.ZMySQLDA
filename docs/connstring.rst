@@ -16,7 +16,7 @@ to use a MySQL server on the local host via the standard UNIX socket.
 The components are as follows:
 
   * ``*lock_name`` at the begining of the connection string leads to
-    pseudo-transactional behavior. When the :term:`Zope` transaction begins, 
+    pseudo-transactional behavior. When the :term:`Zope` transaction begins,
     a lock named after ``lock_name`` is acquired on the database server. When
     the :term:`Zope` transaction commits, the database lock will be released.
     If the :term:`Zope` transaction is aborted and restarted, which can happen
